@@ -1,10 +1,11 @@
-const CACHE = 'cafe-barrio-v1';
+const CACHE = 'cafe-barrio-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './audio/Cafe.mp3'
 ];
 
 self.addEventListener('install', (e) => {

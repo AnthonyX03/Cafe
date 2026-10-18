@@ -66,9 +66,9 @@ header p{margin:0;font-size:13px;opacity:.88}
 .stat small{display:block;color:var(--muted);font-size:11px}
 .stat strong{display:block;font-size:16px;margin-top:4px;overflow-wrap:anywhere}
 main{padding:0 12px 100px;max-width:860px;margin:auto}
-.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:2px 0 14px}
+.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:2px 0 14px}
 .tab{
-  padding:10px 2px;background:#e9dfd2;color:#665246;font-size:11px;
+  padding:10px 2px;background:#e9dfd2;color:#665246;font-size:10px;
   border-radius:11px;font-weight:650;
 }
 .tab.active{background:var(--brown);color:#fff;box-shadow:0 2px 8px rgba(117,69,47,.3)}
@@ -256,15 +256,35 @@ footer button{flex:1;max-width:200px}
 .badge.danger{background:#f9e4df;color:#92382d}
 @media(min-width:600px){
   .grid,.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .tab{font-size:13px}
+  .tab{font-size:12px}
   .stats{gap:12px}
   .stat{padding:14px}
   .modal-overlay{align-items:center}
   .modal{border-radius:20px;margin:20px}
 }
+
+.stars{color:#c9a227;letter-spacing:1px;font-size:14px}
+.staff-card{padding:14px;margin:8px 0}
+.staff-card .role{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.chart-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+.chart-wrap canvas{width:100%;height:160px;display:block}
+.offline-banner{
+  display:none;background:#3d2a20;color:#fff;text-align:center;padding:8px 12px;font-size:13px;
+  position:sticky;top:0;z-index:15;
+}
+.offline-banner.show{display:block}
+.rep-bar{height:10px;background:#eee4d8;border-radius:8px;overflow:hidden;margin:6px 0}
+.rep-bar span{display:block;height:100%;background:linear-gradient(90deg,#347452,#6bbf7a);transition:width .3s}
+.event-banner{
+  padding:12px;border-radius:12px;margin:10px 0;font-size:13px;border-left:4px solid var(--accent);
+  background:#f4e9dc;
+}
+.event-banner.bad{border-left-color:var(--red);background:#f9e4df}
+.event-banner.good{border-left-color:var(--green);background:#e8f5ec}
 </style>
 </head>
 <body>
+<div id="offlineBanner" class="offline-banner">Sin conexión — el juego sigue disponible offline</div>
 
 <div id="intro">
   <div class="introbox">
@@ -301,6 +321,7 @@ footer button{flex:1;max-width:200px}
     <button class="tab" data-tab="shop" onclick="showTab('shop')">Tienda</button>
     <button class="tab" data-tab="stock" onclick="showTab('stock')">Almacén</button>
     <button class="tab" data-tab="prices" onclick="showTab('prices')">Precios</button>
+    <button class="tab" data-tab="staff" onclick="showTab('staff')">Personal</button>
     <button class="tab" data-tab="finance" onclick="showTab('finance')">Finanzas</button>
   </nav>
 
@@ -312,6 +333,9 @@ footer button{flex:1;max-width:200px}
       <div class="row"><span>Clientes atendidos</span><strong id="servedHome">0</strong></div>
       <div class="row"><span>Productos en almacén</span><strong id="stockCount">0 uds</strong></div>
       <div class="row"><span>Facturas pendientes</span><strong id="billsPending">0</strong></div>
+      <div class="row"><span>Reputación</span><strong id="repLabel">50/100</strong></div>
+      <div class="rep-bar"><span id="repBar" style="width:50%"></span></div>
+      <div id="homeEvent" class="event-banner hidden"></div>
       <div class="notice" id="homeTip">Consejo: compra ingredientes antes de abrir. Sin existencias no podrás vender.</div>
       <button class="primary wide" id="startDay" onclick="beginDay()">Abrir y empezar el día · 60 s</button>
       <button class="secondary wide" onclick="showTab('shop')">Ir a comprar productos</button>
@@ -342,9 +366,25 @@ footer button{flex:1;max-width:200px}
   <section id="prices" class="hidden">
     <div class="panel">
       <h2>Carta y precios</h2>
-      <p class="muted">Precio alto puede reducir la demanda. El coste aproximado se calcula con tus existencias.</p>
+      <p class="muted">El precio de referencia (Ref.) es el precio medio del mercado. Si subes mucho, la mayoría no compra (pero algunos sí).</p>
       <div id="priceList" class="grid-3"></div>
       <button class="primary wide" onclick="savePrices()">Guardar precios</button>
+    </div>
+  </section>
+
+
+  <section id="staff" class="hidden">
+    <div class="panel">
+      <h2>Personal</h2>
+      <p class="muted">Contrata hasta 1 de cada rol. Mayor rango ⭐ cuesta más, pero aporta más. Las nóminas se pagan en Finanzas cada día cerrado.</p>
+      <div class="row"><span>Nómina diaria estimada</span><strong id="staffPayroll">0,00 €</strong></div>
+      <div class="row"><span>Empleados activos</span><strong id="staffCount">0 / 3</strong></div>
+    </div>
+    <div id="staffList"></div>
+    <div class="panel">
+      <h3>Contratar</h3>
+      <p class="muted">Elige rol y rango. Solo puedes tener uno de cada puesto.</p>
+      <div id="hireList"></div>
     </div>
   </section>
 
@@ -355,8 +395,19 @@ footer button{flex:1;max-width:200px}
       <div class="row"><span>Ingresos acumulados</span><strong id="finIncome">0 €</strong></div>
       <div class="row"><span>Compras de stock</span><strong id="finSpend">0 €</strong></div>
       <div class="row"><span>Gastos pagados (luz/alquiler)</span><strong id="finBills">0 €</strong></div>
+      <div class="row"><span>Nóminas pagadas</span><strong id="finPayroll">0 €</strong></div>
       <div class="row"><span>Resultado acumulado</span><strong id="finNet">0 €</strong></div>
-      <p class="muted">Resultado = ingresos − compras − gastos operativos − facturas pagadas.</p>
+      <p class="muted">Resultado = ingresos − compras − operativos − facturas − nóminas. Evita la quiebra.</p>
+    </div>
+    <div class="panel">
+      <h2>Nóminas del personal</h2>
+      <p class="muted">Debes pagar tras cada jornada. Si acumulas retraso, pueden marcharse y reclamar. Sin pagar no puedes despedir.</p>
+      <div id="payrollBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Evolución de beneficios</h2>
+      <div class="chart-wrap"><canvas id="profitChart" width="600" height="160"></canvas></div>
+      <p class="muted" id="chartHint">Completa jornadas para ver el gráfico.</p>
     </div>
     <div class="panel">
       <h2>Facturas pendientes</h2>
@@ -436,10 +487,17 @@ footer button{flex:1;max-width:200px}
     <h2>Ajustes</h2>
     <div class="setting-row">
       <div>
-        <strong>Sonido</strong>
-        <div class="muted" style="font-size:12px">Efectos de venta, apertura y clics</div>
+        <strong>Efectos de sonido</strong>
+        <div class="muted" style="font-size:12px">Ventas, apertura, clics</div>
       </div>
       <div class="switch" id="soundSwitch" onclick="toggleSound()"></div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <strong>Música de fondo</strong>
+        <div class="muted" style="font-size:12px">Ambiente de cafetería (bucle)</div>
+      </div>
+      <div class="switch" id="musicSwitch" onclick="toggleMusic()"></div>
     </div>
     <div class="setting-row">
       <div>
@@ -521,6 +579,42 @@ const recipes = [
 
 const BILL_DEADLINE_DAYS = 2; // días para pagar tras generar
 
+
+const STAFF_ROLES = {
+  mesero: {
+    id: 'mesero', title: 'Mesero', emoji: '🧑‍🍳',
+    desc: 'Atiende mesas: más clientes por jornada.',
+    ranks: [
+      {rank:1, hire:25, salary:6, bonus:{customers:0.12}},
+      {rank:2, hire:55, salary:11, bonus:{customers:0.22}},
+      {rank:3, hire:95, salary:18, bonus:{customers:0.35}}
+    ]
+  },
+  cajero: {
+    id: 'cajero', title: 'Cajero', emoji: '🧮',
+    desc: 'Agiliza cobros: menos gastos operativos por venta.',
+    ranks: [
+      {rank:1, hire:22, salary:5, bonus:{overhead:0.25}},
+      {rank:2, hire:48, salary:9, bonus:{overhead:0.45}},
+      {rank:3, hire:85, salary:15, bonus:{overhead:0.65}}
+    ]
+  },
+  barista: {
+    id: 'barista', title: 'Barista', emoji: '☕',
+    desc: 'Mejora la calidad: más reputación y ticket medio.',
+    ranks: [
+      {rank:1, hire:30, salary:7, bonus:{rep:0.4, priceMult:1.04}},
+      {rank:2, hire:65, salary:12, bonus:{rep:0.7, priceMult:1.08}},
+      {rank:3, hire:110, salary:20, bonus:{rep:1.1, priceMult:1.12}}
+    ]
+  }
+};
+const STAFF_NAMES = {
+  mesero: ['Lucía','Marco','Sofía','Diego','Elena'],
+  cajero: ['Pablo','Ana','Hugo','Clara','Nico'],
+  barista: ['Valeria','Leo','Iris','Bruno','Maya']
+};
+
 const initial = () => ({
   name: 'Café de Barrio',
   day: 1,
@@ -531,12 +625,19 @@ const initial = () => ({
   spend: 0,
   operating: 0,
   billsPaid: 0,
-  bills: [], // {id, type, label, amount, dayCreated, dueDay, paid}
+  payrollPaid: 0,
+  bills: [],
   history: [],
   last: null,
   started: false,
   sound: true,
-  vibrate: true
+  music: true,
+  vibrate: true,
+  reputation: 50,
+  staff: [], // {id, role, rank, name, hireDay, salaryDue, daysUnpaid}
+  payrollOwed: 0,
+  event: null,
+  bankrupt: false
 });
 
 let game = initial();
@@ -673,6 +774,12 @@ function loadGame() {
       game.history = d.history || [];
       game.bills = d.bills || [];
       if (typeof d.sound !== 'boolean') game.sound = true;
+      if (typeof d.music !== 'boolean') game.music = true;
+      if (typeof d.reputation !== 'number') game.reputation = 50;
+      if (!Array.isArray(d.staff)) game.staff = [];
+      if (typeof d.payrollOwed !== 'number') game.payrollOwed = 0;
+      if (typeof d.payrollPaid !== 'number') game.payrollPaid = 0;
+      if (typeof d.bankrupt !== 'boolean') game.bankrupt = false;
       if (typeof d.vibrate !== 'boolean') game.vibrate = true;
       if (typeof d.billsPaid !== 'number') game.billsPaid = 0;
     }
@@ -756,6 +863,7 @@ function startGame() {
   updateSoundUI();
   saveGame(true);
   sfx('open');
+  playMusic();
   vibrate(20);
 }
 
@@ -766,7 +874,7 @@ function showTab(tab) {
     return;
   }
   sfx('click');
-  ['home', 'shop', 'stock', 'prices', 'finance', 'running', 'report'].forEach(id => {
+  ['home', 'shop', 'stock', 'prices', 'staff', 'finance', 'running', 'report'].forEach(id => {
     el(id).classList.toggle('hidden', id !== tab);
   });
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -775,6 +883,7 @@ function showTab(tab) {
   if (tab === 'shop') renderShop();
   if (tab === 'stock') renderStock();
   if (tab === 'prices') renderPrices();
+  if (tab === 'staff') renderStaff();
   if (tab === 'finance') renderFinance();
 }
 
@@ -808,6 +917,10 @@ function renderAll() {
   const totalUnits = Object.values(game.stock).reduce((a, b) => a + b, 0);
   el('stockCount').textContent = fmtStock(totalUnits) + ' uds';
   el('billsPending').textContent = unpaidBills().length + (overdueBills().length ? ' (¡vencidas!)' : '');
+  const rl = el('repLabel');
+  if (rl) rl.textContent = Math.round(game.reputation) + '/100';
+  const rb = el('repBar');
+  if (rb) rb.style.width = Math.max(0, Math.min(100, game.reputation)) + '%';
   renderShop();
   renderStock();
   renderPrices();
@@ -947,16 +1060,29 @@ function renderStock() {
 }
 
 function renderPrices() {
-  el('priceList').innerHTML = recipes.map(r => `
+  el('priceList').innerHTML = recipes.map(r => {
+    const d = demandLabel(r);
+    return `
     <div class="card-item">
       <div class="top"><span class="emoji" style="font-size:28px">${r.emoji}</span> <strong>${r.name}</strong></div>
       <div class="muted" style="font-size:12px">${r.desc}</div>
-      <div class="muted" style="font-size:11px">Coste ≈ ${euro(recipeCost(r))}</div>
+      <div class="muted" style="font-size:11px">Coste ≈ ${euro(recipeCost(r))} · Ref. ${euro(r.price)}</div>
+      <div class="muted" style="font-size:11px"><span class="${d.cls}">${d.text}</span> (~${Math.round(buyChance(r)*100)}% lo comprarían)</div>
       <label style="display:block;margin-top:4px">
         <input class="priceedit" type="number" min=".1" max="100" step=".05" inputmode="decimal"
-          id="price-${r.id}" value="${game.prices[r.id] ?? r.price}">
+          id="price-${r.id}" value="${game.prices[r.id] ?? r.price}"
+          onchange="previewDemand('${r.id}', this.value)">
       </label>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+function previewDemand(id, val) {
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+  let p = Number(val);
+  if (!Number.isFinite(p) || p < 0.1) p = 0.1;
+  game.prices[r.id] = Math.min(100, Math.round(p * 100) / 100);
+  renderPrices();
 }
 
 function savePrices() {
@@ -978,12 +1104,56 @@ function recipeCost(r) {
   }, 0);
 }
 
+/** Probabilidad de que un cliente acepte el precio (0–1).
+ *  base = precio de referencia del producto.
+ *  <= base → casi siempre compra
+ *  base–1.3x → muy alta
+ *  1.3–1.6x → cae fuerte
+ *  >1.8x → pocos clientes (pero no cero)
+ */
+function buyChance(r) {
+  const base = r.price;
+  const p = Number(game.prices[r.id] ?? r.price);
+  if (!base || base <= 0) return 1;
+  const ratio = p / base;
+  if (ratio <= 1.0) return 0.98;
+  if (ratio <= 1.15) return 0.90;
+  if (ratio <= 1.30) return 0.72;
+  if (ratio <= 1.50) return 0.45;
+  if (ratio <= 1.70) return 0.22;
+  if (ratio <= 2.00) return 0.10;
+  if (ratio <= 2.50) return 0.04;
+  return 0.015; // siempre queda un pequeño % que paga lo que sea
+}
+
+function demandLabel(r) {
+  const c = buyChance(r);
+  if (c >= 0.85) return { text: 'Demanda alta', cls: 'money' };
+  if (c >= 0.55) return { text: 'Demanda media', cls: '' };
+  if (c >= 0.20) return { text: 'Demanda baja', cls: 'loss' };
+  return { text: 'Muy caro', cls: 'loss' };
+}
+
 function renderFinance() {
   el('finCash').textContent = euro(game.cash);
   el('finIncome').textContent = euro(game.income);
   el('finSpend').textContent = euro(game.spend);
   el('finBills').textContent = euro(game.billsPaid);
-  el('finNet').textContent = euro(game.income - game.spend - game.operating - game.billsPaid);
+  const fp = el('finPayroll');
+  if (fp) fp.textContent = euro(game.payrollPaid || 0);
+  el('finNet').textContent = euro(game.income - game.spend - game.operating - game.billsPaid - (game.payrollPaid||0));
+  const pb = el('payrollBox');
+  if (pb) {
+    if (game.payrollOwed > 0) {
+      pb.innerHTML = `<div class="row"><span>Pendiente de pago</span><strong class="loss">${euro(game.payrollOwed)}</strong></div>
+        <button class="primary wide" onclick="payPayroll()">Pagar nóminas</button>`;
+    } else if (game.staff.length) {
+      pb.innerHTML = `<p class="muted">Nóminas al día. Próxima tras cerrar la jornada: ${euro(dailyPayroll())}</p>`;
+    } else {
+      pb.innerHTML = `<p class="muted">Sin personal contratado.</p>`;
+    }
+  }
+  drawProfitChart();
 
   const unpaid = unpaidBills();
   if (!unpaid.length) {
@@ -1022,6 +1192,284 @@ function renderFinance() {
     : 'Completa tu primera jornada para ver el registro.';
 }
 
+
+/* ========== REPUTATION / STAFF / EVENTS ========== */
+function clampRep(v){ game.reputation = Math.max(0, Math.min(100, Math.round(v*10)/10)); }
+
+function staffBonus() {
+  const b = {customers:1, overhead:1, rep:0, priceMult:1};
+  game.staff.forEach(s => {
+    const role = STAFF_ROLES[s.role];
+    if (!role) return;
+    const rk = role.ranks[s.rank-1];
+    if (!rk) return;
+    if (rk.bonus.customers) b.customers += rk.bonus.customers;
+    if (rk.bonus.overhead) b.overhead *= (1 - rk.bonus.overhead);
+    if (rk.bonus.rep) b.rep += rk.bonus.rep;
+    if (rk.bonus.priceMult) b.priceMult *= rk.bonus.priceMult;
+  });
+  return b;
+}
+
+function dailyPayroll() {
+  return game.staff.reduce((sum, s) => {
+    const role = STAFF_ROLES[s.role];
+    const rk = role && role.ranks[s.rank-1];
+    return sum + (rk ? rk.salary : 0);
+  }, 0);
+}
+
+function stars(n){ return '⭐'.repeat(n) + '☆'.repeat(3-n); }
+
+function hireStaff(roleId, rank) {
+  if (game.bankrupt) return;
+  if (game.staff.some(s => s.role === roleId)) {
+    toast('Ya tienes a alguien en ese puesto.');
+    sfx('error');
+    return;
+  }
+  const role = STAFF_ROLES[roleId];
+  const rk = role.ranks[rank-1];
+  if (!rk) return;
+  if (game.cash < rk.hire) {
+    toast('No tienes suficiente dinero para contratar.');
+    sfx('error');
+    return;
+  }
+  game.cash -= rk.hire;
+  game.spend += rk.hire;
+  const names = STAFF_NAMES[roleId];
+  const name = names[Math.floor(Math.random()*names.length)];
+  game.staff.push({
+    id: roleId + '-' + Date.now(),
+    role: roleId,
+    rank,
+    name,
+    hireDay: game.day,
+    daysUnpaid: 0
+  });
+  toast(name + ' se une como ' + role.title + ' ' + stars(rank));
+  sfx('buy');
+  vibrate(15);
+  renderAll();
+  saveGame(true);
+}
+
+function fireStaff(id) {
+  const s = game.staff.find(x => x.id === id);
+  if (!s) return;
+  if (game.payrollOwed > 0 || s.daysUnpaid > 0) {
+    toast('No puedes despedir con nóminas pendientes. Paga primero.');
+    sfx('error');
+    return;
+  }
+  if (!confirm('¿Despedir a ' + s.name + '?')) return;
+  game.staff = game.staff.filter(x => x.id !== id);
+  toast(s.name + ' ha dejado el equipo.');
+  sfx('click');
+  clampRep(game.reputation - 2);
+  renderAll();
+  saveGame(true);
+}
+
+function payPayroll() {
+  if (game.payrollOwed <= 0) {
+    toast('No hay nóminas pendientes.');
+    return;
+  }
+  if (game.cash < game.payrollOwed) {
+    toast('Fondos insuficientes para las nóminas.');
+    sfx('error');
+    checkBankruptcy();
+    return;
+  }
+  game.cash -= game.payrollOwed;
+  game.payrollPaid += game.payrollOwed;
+  game.payrollOwed = 0;
+  game.staff.forEach(s => s.daysUnpaid = 0);
+  toast('Nóminas pagadas.');
+  sfx('pay');
+  vibrate(15);
+  renderAll();
+  saveGame(true);
+}
+
+function processStaffAfterDay() {
+  const pay = dailyPayroll();
+  if (pay > 0) {
+    game.payrollOwed += pay;
+    game.staff.forEach(s => s.daysUnpaid = (s.daysUnpaid || 0) + 1);
+  }
+  // Quienes llevan 2+ días sin cobrar pueden irse
+  const leaving = [];
+  game.staff.forEach(s => {
+    if (s.daysUnpaid >= 2 && Math.random() < 0.55 + s.daysUnpaid * 0.15) {
+      leaving.push(s);
+    }
+  });
+  leaving.forEach(s => {
+    game.staff = game.staff.filter(x => x.id !== s.id);
+    const claim = (STAFF_ROLES[s.role].ranks[s.rank-1].salary) * s.daysUnpaid;
+    game.payrollOwed += claim * 0.5; // indemnización extra reclamada
+    toast(s.name + ' se ha marchado y reclama ' + euro(claim * 0.5));
+    clampRep(game.reputation - 8);
+  });
+}
+
+function checkBankruptcy() {
+  if (game.bankrupt) return true;
+  // Quiebra: dinero negativo grave o sin poder cubrir deudas críticas con reputación 0
+  if (game.cash < -30 || (game.cash < 0 && game.reputation <= 5 && game.payrollOwed + unpaidBills().reduce((a,b)=>a+b.amount,0) > 80)) {
+    triggerBankruptcy();
+    return true;
+  }
+  return false;
+}
+
+function triggerBankruptcy() {
+  game.bankrupt = true;
+  dayRunning = false;
+  clearInterval(tickHandle);
+  clearInterval(customerHandle);
+  stopMusic();
+  el('reportDate').textContent = 'QUIEBRA · Día ' + game.day;
+  el('reportDetails').innerHTML = `
+    <div class="notice warn">Has quebrado. Deudas impagadas, reputación hundida o fondos agotados.</div>
+    <div class="lineitem"><span>Dinero</span><strong class="loss">${euro(game.cash)}</strong></div>
+    <div class="lineitem"><span>Nóminas debidas</span><strong>${euro(game.payrollOwed)}</strong></div>
+    <div class="lineitem"><span>Reputación</span><strong>${game.reputation}/100</strong></div>`;
+  el('reportNet').textContent = euro(game.cash);
+  el('reportNet').className = 'loss';
+  el('reportMessage').textContent = 'Fin de la partida. Puedes borrar y empezar de cero desde Ajustes.';
+  showTab('report');
+  // hide next day button effect via message
+  const btn = document.querySelector('#report .primary');
+  if (btn) { btn.textContent = 'Partida terminada'; btn.onclick = () => openSettings(); }
+  saveGame(true);
+  sfx('end');
+}
+
+const DAY_EVENTS = [
+  {id:'rain', name:'Día de lluvia', kind:'bad', weight:18,
+    apply(){ return {customerMult:0.72, msg:'Llueve: menos gente en la calle (−28% clientes).'}; }},
+  {id:'fair', name:'Feria del barrio', kind:'good', weight:14,
+    apply(){ return {customerMult:1.35, msg:'¡Feria del barrio! Mucho más tránsito (+35% clientes).'}; }},
+  {id:'power', name:'Subida de la luz', kind:'bad', weight:12,
+    apply(){
+      const extra = Math.round((4 + game.day * 0.6)*100)/100;
+      game.bills.push({id:'evt-luz-'+Date.now(), type:'luz', label:'Extra luz (pico de tarifa)', amount:extra, dayCreated:game.day, dueDay:game.day+1, paid:false});
+      return {customerMult:1, msg:'Subida imprevista de luz: +'+euro(extra)+' en facturas (vence mañana).'};
+    }},
+  {id:'review', name:'Crítica positiva', kind:'good', weight:12,
+    apply(){ clampRep(game.reputation + 6); return {customerMult:1.1, msg:'Una reseña excelente mejora tu reputación (+6).'}; }},
+  {id:'complaint', name:'Queja en redes', kind:'bad', weight:10,
+    apply(){ clampRep(game.reputation - 5); return {customerMult:0.9, msg:'Una queja viral baja la reputación (−5).'}; }},
+  {id:'calm', name:'Jornada normal', kind:'neutral', weight:34,
+    apply(){ return {customerMult:1, msg:'Día tranquilo en el barrio.'}; }}
+];
+
+function rollDayEvent() {
+  const total = DAY_EVENTS.reduce((s,e)=>s+e.weight,0);
+  let r = Math.random()*total;
+  for (const e of DAY_EVENTS) {
+    r -= e.weight;
+    if (r <= 0) {
+      const result = e.apply();
+      game.event = {id:e.id, name:e.name, kind:e.kind, ...result};
+      return game.event;
+    }
+  }
+  game.event = {id:'calm', name:'Jornada normal', kind:'neutral', customerMult:1, msg:'Día tranquilo.'};
+  return game.event;
+}
+
+function customerIntervalMs() {
+  const bonus = staffBonus();
+  const repFactor = 0.7 + (game.reputation/100)*0.6; // 0.7–1.3
+  const evt = (game.event && game.event.customerMult) || 1;
+  // base 1500ms; más reputación/staff → intervalos más cortos
+  const ms = 1500 / (bonus.customers * repFactor * evt);
+  return Math.max(700, Math.min(2200, ms));
+}
+
+function renderStaff() {
+  el('staffPayroll').textContent = euro(dailyPayroll());
+  el('staffCount').textContent = game.staff.length + ' / 3';
+  el('staffList').innerHTML = game.staff.length ? game.staff.map(s => {
+    const role = STAFF_ROLES[s.role];
+    const rk = role.ranks[s.rank-1];
+    return `<div class="panel staff-card">
+      <div class="row">
+        <div>
+          <div class="role">${role.emoji} ${role.title}</div>
+          <strong>${s.name}</strong>
+          <div class="stars">${stars(s.rank)}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="muted">Nómina/día</div>
+          <strong>${euro(rk.salary)}</strong>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:6px">${role.desc}</div>
+      <div class="row" style="margin-top:8px">
+        <span class="muted">${s.daysUnpaid ? ('Días sin cobrar: '+s.daysUnpaid) : 'Al día'}</span>
+        <button class="danger" style="padding:8px 12px;font-size:13px" onclick="fireStaff('${s.id}')">Despedir</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="panel muted">Aún no has contratado a nadie.</div>';
+
+  el('hireList').innerHTML = Object.values(STAFF_ROLES).map(role => {
+    const taken = game.staff.some(s => s.role === role.id);
+    return `<div class="panel staff-card">
+      <div class="row"><strong>${role.emoji} ${role.title}</strong>${taken?'<span class="badge">Ocupado</span>':''}</div>
+      <p class="muted">${role.desc}</p>
+      ${role.ranks.map(rk => `
+        <div class="row" style="margin-top:8px">
+          <span class="stars">${stars(rk.rank)}</span>
+          <span class="muted">Alta ${euro(rk.hire)} · Nómina ${euro(rk.salary)}/día</span>
+          <button class="primary" style="padding:8px 12px;font-size:13px" ${taken?'disabled':''}
+            onclick="hireStaff('${role.id}',${rk.rank})">Contratar</button>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function drawProfitChart() {
+  const canvas = el('profitChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const data = game.history.slice(-12);
+  if (!data.length) {
+    el('chartHint').textContent = 'Completa jornadas para ver el gráfico.';
+    return;
+  }
+  el('chartHint').textContent = 'Últimos ' + data.length + ' días (neto por jornada).';
+  const nets = data.map(d => d.net);
+  const maxV = Math.max(10, ...nets.map(Math.abs));
+  const pad = 20;
+  const mid = h/2;
+  ctx.strokeStyle = '#e8ddd0';
+  ctx.beginPath(); ctx.moveTo(pad, mid); ctx.lineTo(w-pad, mid); ctx.stroke();
+  const step = (w - pad*2) / Math.max(1, data.length-1);
+  ctx.strokeStyle = '#75452f';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  data.forEach((d,i) => {
+    const x = pad + i*step;
+    const y = mid - (d.net / maxV) * (h/2 - pad);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  data.forEach((d,i) => {
+    const x = pad + i*step;
+    const y = mid - (d.net / maxV) * (h/2 - pad);
+    ctx.fillStyle = d.net >= 0 ? '#347452' : '#b94e42';
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+  });
+}
+
 /* ========== DAY LOGIC ========== */
 function canMake(r) {
   return Object.entries(r.parts).every(([id, q]) => (game.stock[id] || 0) + 1e-9 >= q);
@@ -1049,6 +1497,12 @@ function formatClock(secondsIntoDay) {
 
 function beginDay() {
   if (dayRunning) return;
+  if (game.bankrupt) {
+    toast('Has quebrado. Empieza una partida nueva desde Ajustes.');
+    openSettings();
+    return;
+  }
+  if (checkBankruptcy()) return;
   if (game.cash < 0) {
     toast('Necesitas recuperar fondos antes de abrir.');
     sfx('error');
@@ -1060,6 +1514,20 @@ function beginDay() {
     sfx('error');
     showTab('finance');
     return;
+  }
+  if (game.payrollOwed > 0 && game.staff.some(s => s.daysUnpaid >= 2)) {
+    toast('Tienes nóminas muy atrasadas. Paga al personal en Finanzas.');
+    sfx('error');
+    showTab('finance');
+    return;
+  }
+  // Evento del día
+  const ev = rollDayEvent();
+  const he = el('homeEvent');
+  if (he) {
+    he.className = 'event-banner ' + (ev.kind === 'bad' ? 'bad' : ev.kind === 'good' ? 'good' : '');
+    he.textContent = ev.name + ': ' + ev.msg;
+    he.classList.remove('hidden');
   }
 
   dayRunning = true;
@@ -1094,7 +1562,7 @@ function beginDay() {
     area.innerHTML = '<span style="opacity:.7">Esperando a los primeros clientes…</span>';
     dayState.opened = true;
     tickHandle = setInterval(dayTick, 250);
-    customerHandle = setInterval(customerVisit, 1500);
+    customerHandle = setInterval(customerVisit, customerIntervalMs());
     dayTick();
   }, 1600);
 }
@@ -1179,20 +1647,29 @@ function customerVisit() {
   const soldNames = [];
   let anySale = false;
   for (let i = 0; i < buyCount; i++) {
-    let choices = recipes.filter(r => canMake(r) && Number(game.prices[r.id] ?? r.price) <= r.price * 1.65);
-    if (!choices.length) choices = recipes.filter(r => canMake(r));
-    if (!choices.length) break;
-    const r = choices[Math.floor(Math.random() * choices.length)];
+    // Candidatos fabricables; se eligen con peso = buyChance
+    const makeable = recipes.filter(r => canMake(r));
+    if (!makeable.length) break;
+    // Filtrar por probabilidad de aceptación del precio
+    const accepted = makeable.filter(r => Math.random() < buyChance(r));
+    const pool = accepted.length ? accepted : (Math.random() < 0.08 ? makeable : []);
+    if (!pool.length) {
+      // Cliente se va sin comprar este pedido por precio alto
+      continue;
+    }
+    const r = pool[Math.floor(Math.random() * pool.length)];
     const sale = makeSale(r);
     if (!sale) break;
 
-    const overhead = 0.08;
+    const bonus = staffBonus();
+    const overhead = 0.08 * bonus.overhead;
+    const pricePaid = sale.price * (bonus.priceMult || 1);
     dayState.customers++;
-    dayState.income += sale.price;
+    dayState.income += pricePaid;
     dayState.ingredients += sale.cost;
     dayState.operating += overhead;
-    game.cash += sale.price - overhead;
-    game.income += sale.price;
+    game.cash += pricePaid - overhead;
+    game.income += pricePaid;
     game.operating += overhead;
     dayState.items[r.name] = (dayState.items[r.name] || 0) + 1;
     soldNames.push(r.name);
@@ -1325,6 +1802,8 @@ function resetGame() {
 function updateSoundUI() {
   el('soundBtn').textContent = game.sound ? '🔊' : '🔇';
   el('soundSwitch').classList.toggle('on', game.sound);
+  const ms = el('musicSwitch');
+  if (ms) ms.classList.toggle('on', !!game.music);
   el('vibSwitch').classList.toggle('on', game.vibrate);
 }
 
@@ -1400,16 +1879,58 @@ function promptInstall() {
   });
 }
 
+
+/* ========== MUSIC ========== */
+let bgMusic = null;
+function initMusic() {
+  if (bgMusic) return bgMusic;
+  bgMusic = new Audio('audio/Cafe.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.35;
+  bgMusic.preload = 'auto';
+  bgMusic.addEventListener('error', () => {
+    // fallback encoding
+    if (bgMusic.src.indexOf('Cafe.mp3') >= 0) {
+      bgMusic.src = 'audio/Caf%C3%A9.mp3';
+      bgMusic.load();
+    }
+  });
+  return bgMusic;
+}
+function playMusic() {
+  if (!game.music) return;
+  const m = initMusic();
+  const p = m.play();
+  if (p && p.catch) p.catch(() => {});
+}
+function stopMusic() {
+  if (bgMusic) { bgMusic.pause(); bgMusic.currentTime = 0; }
+}
+function toggleMusic() {
+  game.music = !game.music;
+  updateSoundUI();
+  saveGame(true);
+  if (game.music) { playMusic(); toast('Música activada'); }
+  else { stopMusic(); toast('Música desactivada'); }
+  sfx('click');
+}
+
 /* ========== BOOT ========== */
 loadGame();
 if (game.started) {
   el('intro').classList.add('hidden');
   renderAll();
+  // música tras primer gesto del usuario
 } else {
   el('intro').classList.remove('hidden');
 }
 updateSoundUI();
-document.addEventListener('pointerdown', () => ensureAudio(), {once: true});
+document.addEventListener('pointerdown', () => { ensureAudio(); if (game.started && game.music) playMusic(); }, {once: true});
+
+window.addEventListener('online', () => el('offlineBanner').classList.remove('show'));
+window.addEventListener('offline', () => el('offlineBanner').classList.add('show'));
+if (!navigator.onLine) document.addEventListener('DOMContentLoaded', () => el('offlineBanner').classList.add('show'));
+
 </script>
 </body>
 </html>
