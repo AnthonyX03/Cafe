@@ -1,0 +1,26 @@
+{
+  "name": "Café de Barrio",
+  "short_name": "Café Barrio",
+  "description": "Simulador de gestión de cafetería. Compra, prepara, vende y haz crecer tu negocio.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f0e8",
+  "theme_color": "#75452f",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"]
+}

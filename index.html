@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#75452f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Café de Barrio">
+<meta name="description" content="Simulador de gestión de cafetería. Compra, prepara, vende y haz crecer tu negocio.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Café de Barrio</title>
+<style>
+:root{
+  --bg:#f5f0e8;--card:#fffdf8;--ink:#35251e;--muted:#88796e;
+  --brown:#75452f;--accent:#c68b55;--green:#347452;--red:#b94e42;
+  --line:#e8ddd0;--shadow:0 4px 18px rgba(53,37,30,.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none;
+}
+button,input{font:inherit}
+button{
+  cursor:pointer;border:0;border-radius:12px;padding:12px 15px;
+  font-weight:700;transition:transform .12s,opacity .15s,background .15s;
+}
+button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.42;cursor:not-allowed}
+.primary{background:var(--brown);color:#fff}
+.primary:hover:not(:disabled){background:#5e3725}
+.secondary{background:#f0e5d7;color:var(--brown)}
+.secondary:hover:not(:disabled){background:#e8d9c6}
+.danger{background:#f9e4df;color:#92382d}
+.danger:hover:not(:disabled){background:#f3d4cc}
+header{
+  background:linear-gradient(145deg,#5e3725,#75452f 60%,#8a5538);
+  color:#fff;padding:16px 16px 14px;position:relative;overflow:hidden;
+}
+header::after{
+  content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;
+  background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);
+  pointer-events:none;
+}
+.brand{font-size:11px;letter-spacing:2.2px;opacity:.78;text-transform:uppercase}
+header h1{margin:4px 0 2px;font-size:22px;font-weight:800}
+header p{margin:0;font-size:13px;opacity:.88}
+.header-actions{position:absolute;top:14px;right:14px;display:flex;gap:8px}
+.icon-btn{
+  width:40px;height:40px;padding:0;border-radius:50%;
+  background:rgba(255,255,255,.15);color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.icon-btn:hover{background:rgba(255,255,255,.25)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+.stat,.panel,.product,.card-item{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);
+}
+.stat{padding:12px 8px;min-width:0;text-align:center}
+.stat small{display:block;color:var(--muted);font-size:11px}
+.stat strong{display:block;font-size:16px;margin-top:4px;overflow-wrap:anywhere}
+main{padding:0 12px 100px;max-width:860px;margin:auto}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:2px 0 14px}
+.tab{
+  padding:10px 2px;background:#e9dfd2;color:#665246;font-size:11px;
+  border-radius:11px;font-weight:650;
+}
+.tab.active{background:var(--brown);color:#fff;box-shadow:0 2px 8px rgba(117,69,47,.3)}
+.panel{padding:16px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 8px}
+h3{font-size:15px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row+.row{margin-top:10px}
+.field{
+  display:block;width:100%;border:1px solid var(--line);background:#fff;
+  border-radius:10px;padding:12px;color:var(--ink);margin:6px 0 12px;
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.grid-3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.product{padding:12px;min-width:0;transition:transform .15s}
+.product:hover{transform:translateY(-2px)}
+.icon-circle{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;letter-spacing:.5px;flex-shrink:0;
+}
+.product .icon-circle{margin-bottom:6px}
+.product strong{display:block;margin:4px 0 2px;font-size:14px}
+.emoji{font-size:28px;line-height:1}
+.product .muted{min-height:32px;font-size:12px}
+.price{font-weight:800;font-size:14px;color:var(--brown)}
+.qty{display:flex;align-items:center;gap:6px;margin-top:10px}
+.qty input{
+  width:56px;min-width:0;text-align:center;border:1px solid var(--line);
+  border-radius:8px;padding:9px;background:#fff;
+}
+.qty button{padding:8px 11px;background:#efe3d5;color:var(--brown)}
+.wide{width:100%;margin-top:10px}
+.card-item{padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card-item .top{display:flex;align-items:center;gap:10px}
+.card-item strong{font-size:14px}
+.card-item .qty-big{font-size:20px;font-weight:800;color:var(--brown)}
+.card-item .unit{font-size:11px;color:var(--muted)}
+.priceedit{
+  width:100%;text-align:right;padding:10px;border:1px solid var(--line);
+  border-radius:9px;background:#fff;font-weight:700;
+}
+.bar{
+  height:8px;background:#eee4d8;border-radius:8px;overflow:hidden;margin:9px 0;
+}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#d4a574);width:0;transition:width .35s ease}
+.hidden{display:none!important}
+.notice{
+  padding:12px;background:#f4e9dc;border-radius:12px;font-size:13px;margin:10px 0;
+  border-left:4px solid var(--accent);
+}
+.notice.warn{border-left-color:var(--red);background:#f9e4df}
+.money{color:var(--green)}
+.loss{color:var(--red)}
+footer{
+  position:fixed;bottom:0;left:0;right:0;background:rgba(255,253,248,.96);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  display:flex;gap:10px;justify-content:space-between;align-items:center;z-index:5;
+}
+footer small{display:block;color:var(--muted);font-size:11px}
+footer button{flex:1;max-width:200px}
+.customer-area{
+  min-height:210px;display:flex;align-items:center;justify-content:center;
+  gap:12px;flex-wrap:wrap;background:linear-gradient(180deg,#f2e7d9,#ebe0d0);
+  border-radius:14px;padding:16px;overflow:hidden;position:relative;
+}
+.customer-area::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 100%,rgba(198,139,85,.12),transparent 60%);
+  pointer-events:none;
+}
+.customer{font-size:42px;animation:arrive .7s cubic-bezier(.22,1.2,.36,1) both;filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));display:inline-block}
+.customer.leaving{animation:leave .65s ease forwards}
+.customer-area .customer + .customer{margin-left:2px}
+@keyframes arrive{
+  from{transform:translateX(-90px) scale(.7);opacity:0}
+  to{transform:translateX(0) scale(1);opacity:1}
+}
+@keyframes leave{
+  to{transform:translateX(110px) scale(.85);opacity:0}
+}
+.open-stage{
+  position:relative;min-height:220px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#2a1a14,#4a3024);border-radius:14px;overflow:hidden;
+  color:#fff;
+}
+.doors{position:absolute;inset:0;display:flex;z-index:2}
+.door{
+  flex:1;background:linear-gradient(90deg,#5c3a28,#7a4e36 40%,#5c3a28);
+  transition:transform 1.1s cubic-bezier(.4,0,.2,1);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.35);
+}
+.door.left{transform-origin:left;border-right:3px solid #3d261a}
+.door.right{transform-origin:right;border-left:3px solid #3d261a}
+.open-stage.open .door.left{transform:perspective(600px) rotateY(-78deg)}
+.open-stage.open .door.right{transform:perspective(600px) rotateY(78deg)}
+.open-stage.closing .door.left{transform:perspective(600px) rotateY(0)}
+.open-stage.closing .door.right{transform:perspective(600px) rotateY(0)}
+.open-light{
+  position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,220,160,.55),transparent 70%);
+  opacity:0;transition:opacity 1s .2s;z-index:1;
+}
+.open-stage.open .open-light{opacity:1}
+.open-stage.closing .open-light{opacity:0;transition:opacity .6s}
+.open-msg{
+  position:relative;z-index:3;text-align:center;padding:20px;
+  opacity:0;transform:translateY(12px);transition:opacity .5s .7s,transform .5s .7s;
+}
+.open-stage.open .open-msg{opacity:1;transform:translateY(0)}
+.open-stage.closing .open-msg{opacity:1;transform:translateY(0);transition:none}
+.clock-display{
+  font-variant-numeric:tabular-nums;font-weight:800;font-size:20px;
+  letter-spacing:1px;color:var(--brown);
+}
+#intro{
+  position:fixed;inset:0;background:linear-gradient(155deg,#2a1810,#805239 70%,#a66b45);
+  display:flex;align-items:center;justify-content:center;padding:22px;z-index:40;color:#fff;
+}
+.introbox{width:100%;max-width:400px;text-align:center}
+.logo{
+  width:80px;height:80px;margin:0 auto 8px;border-radius:20px;
+  background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;
+  font-size:48px;animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.introbox h1{font-size:32px;margin:6px 0;font-weight:800}
+.introbox p{line-height:1.55;color:#f0dfd0;font-size:14px}
+.introbox input{background:#fffdf8;color:var(--ink)}
+#toast{
+  position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
+  background:#30231e;color:#fff;padding:12px 18px;border-radius:12px;z-index:80;
+  display:none;max-width:90%;text-align:center;font-size:14px;opacity:0;
+  transition:opacity .25s,transform .25s;pointer-events:none;
+}
+#toast.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+.lineitem{
+  display:flex;justify-content:space-between;gap:8px;padding:9px 0;
+  border-bottom:1px solid var(--line);font-size:13px;align-items:center;
+}
+/* Modals */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(30,20,15,.55);z-index:60;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--card);width:100%;max-width:440px;border-radius:20px 20px 0 0;
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);max-height:85vh;overflow-y:auto;
+}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal h2{margin-bottom:14px}
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--line);
+}
+.switch{
+  width:48px;height:28px;background:#d4c8b8;border-radius:14px;position:relative;
+  transition:background .2s;cursor:pointer;flex-shrink:0;
+}
+.switch.on{background:var(--green)}
+.switch::after{
+  content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;
+  top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.switch.on::after{transform:translateX(20px)}
+.install-banner{
+  background:#f4e9dc;border-radius:12px;padding:12px;margin-top:12px;
+  display:none;align-items:center;gap:10px;font-size:13px;
+}
+.install-banner.show{display:flex}
+.bill-card{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;
+}
+.bill-card.overdue{border-color:var(--red);background:#fdf6f5}
+.bill-card .due{font-size:12px;color:var(--muted)}
+.bill-card.overdue .due{color:var(--red);font-weight:700}
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
+  background:#f0e5d7;color:var(--brown);
+}
+.badge.danger{background:#f9e4df;color:#92382d}
+@media(min-width:600px){
+  .grid,.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tab{font-size:13px}
+  .stats{gap:12px}
+  .stat{padding:14px}
+  .modal-overlay{align-items:center}
+  .modal{border-radius:20px;margin:20px}
+}
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="introbox">
+    <div class="logo">☕</div>
+    <div class="brand">Tu nueva aventura</div>
+    <h1>Café de Barrio</h1>
+    <p>Empieza con una pequeña cafetería y conviértela en el lugar favorito de todo el barrio. Compra, prepara, vende y haz crecer tu negocio.</p>
+    <label for="cafeName">¿Cómo se llamará tu cafetería?</label>
+    <input id="cafeName" class="field" maxlength="30" placeholder="Ej. El Rincón del Café" autocomplete="off">
+    <button class="primary wide" onclick="startGame()">Abrir mi cafetería →</button>
+    <p style="font-size:11px;margin-top:14px;opacity:.7">Tu progreso se guarda automáticamente en este dispositivo.</p>
+  </div>
+</div>
+
+<header>
+  <div class="brand">Simulador de gestión</div>
+  <h1 id="headerName">Café de Barrio</h1>
+  <p id="dayLabel">Día 1 · Preparando la apertura</p>
+  <div class="header-actions">
+    <button class="icon-btn" id="soundBtn" onclick="toggleSound()" title="Sonido" aria-label="Sonido">🔊</button>
+    <button class="icon-btn" onclick="openSettings()" title="Ajustes" aria-label="Ajustes">⚙</button>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><small>Dinero</small><strong id="cash">50,00 €</strong></div>
+  <div class="stat"><small>Beneficio hoy</small><strong id="profit">0,00 €</strong></div>
+  <div class="stat"><small>Clientes</small><strong id="customers">0</strong></div>
+</div>
+
+<main>
+  <nav class="tabs">
+    <button class="tab active" data-tab="home" onclick="showTab('home')">Inicio</button>
+    <button class="tab" data-tab="shop" onclick="showTab('shop')">Tienda</button>
+    <button class="tab" data-tab="stock" onclick="showTab('stock')">Almacén</button>
+    <button class="tab" data-tab="prices" onclick="showTab('prices')">Precios</button>
+    <button class="tab" data-tab="finance" onclick="showTab('finance')">Finanzas</button>
+  </nav>
+
+  <section id="home">
+    <div class="panel">
+      <h2>¡Bienvenido a tu cafetería!</h2>
+      <p class="muted">Prepara el almacén, ajusta precios y abre. Cada jornada dura 60 s (horario 9:00–21:00).</p>
+      <div class="row"><span>Jornada actual</span><strong id="dayNumber">Día 1</strong></div>
+      <div class="row"><span>Clientes atendidos</span><strong id="servedHome">0</strong></div>
+      <div class="row"><span>Productos en almacén</span><strong id="stockCount">0 uds</strong></div>
+      <div class="row"><span>Facturas pendientes</span><strong id="billsPending">0</strong></div>
+      <div class="notice" id="homeTip">Consejo: compra ingredientes antes de abrir. Sin existencias no podrás vender.</div>
+      <button class="primary wide" id="startDay" onclick="beginDay()">Abrir y empezar el día · 60 s</button>
+      <button class="secondary wide" onclick="showTab('shop')">Ir a comprar productos</button>
+    </div>
+    <div class="panel">
+      <h3>Última jornada</h3>
+      <div id="lastSummary" class="muted">Todavía no has completado ninguna jornada.</div>
+    </div>
+  </section>
+
+  <section id="shop" class="hidden">
+    <div class="panel">
+      <h2>Tienda de suministros</h2>
+      <p class="muted">Elige cantidades y añádelas a la cesta. Usa el botón inferior para revisarla y pagar.</p>
+      <div class="row"><strong>Tu presupuesto</strong><strong id="shopCash">50,00 €</strong></div>
+    </div>
+    <div id="shopGrid" class="grid"></div>
+  </section>
+
+  <section id="stock" class="hidden">
+    <div class="panel">
+      <h2>Tu almacén</h2>
+      <p class="muted">Ingredientes comprados. Cada venta consume existencias (redondeo a 1 decimal si hace falta).</p>
+      <div id="stockList" class="grid-3"></div>
+    </div>
+  </section>
+
+  <section id="prices" class="hidden">
+    <div class="panel">
+      <h2>Carta y precios</h2>
+      <p class="muted">Precio alto puede reducir la demanda. El coste aproximado se calcula con tus existencias.</p>
+      <div id="priceList" class="grid-3"></div>
+      <button class="primary wide" onclick="savePrices()">Guardar precios</button>
+    </div>
+  </section>
+
+  <section id="finance" class="hidden">
+    <div class="panel">
+      <h2>Finanzas</h2>
+      <div class="row"><span>Dinero actual</span><strong id="finCash">0 €</strong></div>
+      <div class="row"><span>Ingresos acumulados</span><strong id="finIncome">0 €</strong></div>
+      <div class="row"><span>Compras de stock</span><strong id="finSpend">0 €</strong></div>
+      <div class="row"><span>Gastos pagados (luz/alquiler)</span><strong id="finBills">0 €</strong></div>
+      <div class="row"><span>Resultado acumulado</span><strong id="finNet">0 €</strong></div>
+      <p class="muted">Resultado = ingresos − compras − gastos operativos − facturas pagadas.</p>
+    </div>
+    <div class="panel">
+      <h2>Facturas pendientes</h2>
+      <p class="muted">Luz y alquiler se generan cada día. Debes pagarlas en el plazo indicado. Si se retrasan, no podrás abrir.</p>
+      <div id="billsList"></div>
+    </div>
+    <div class="panel">
+      <h2>Registro de jornadas</h2>
+      <div id="history">Completa tu primera jornada para ver el registro.</div>
+    </div>
+  </section>
+
+  <section id="running" class="hidden">
+    <div class="panel">
+      <h2>La cafetería está abierta</h2>
+      <p class="muted">Los clientes llegan. Sigue el ritmo de la jornada.</p>
+      <div class="row">
+        <span>Hora</span>
+        <strong class="clock-display" id="clock">09:00</strong>
+      </div>
+      <div class="row"><span>Tiempo restante</span><strong id="timer">60 s</strong></div>
+      <div class="bar"><span id="dayProgress"></span></div>
+      <div class="open-stage" id="openStage">
+        <div class="doors">
+          <div class="door left"></div>
+          <div class="door right"></div>
+        </div>
+        <div class="open-light"></div>
+        <div class="open-msg" id="openMsg">
+          <div style="font-size:36px;margin-bottom:6px">🚪</div>
+          <strong>¡Abriendo puertas!</strong>
+        </div>
+      </div>
+      <div class="customer-area hidden" id="customerArea"></div>
+      <div class="row" style="margin-top:14px"><span>Pedidos completados</span><strong id="liveServed">0</strong></div>
+      <div class="row"><span>Ventas del día</span><strong id="liveIncome">0,00 €</strong></div>
+      <div class="row"><span>Gastos del día</span><strong id="liveExpenses">0,00 €</strong></div>
+      <div class="notice" id="liveMessage">¡Abriendo las puertas!</div>
+    </div>
+  </section>
+
+  <section id="report" class="hidden">
+    <div class="panel">
+      <h2>Cierre de caja</h2>
+      <p class="muted" id="reportDate">Fin de la jornada</p>
+      <div id="reportDetails"></div>
+      <div class="row" style="font-size:18px;margin-top:14px"><strong>Resultado neto</strong><strong id="reportNet">0,00 €</strong></div>
+      <div class="notice" id="reportMessage"></div>
+      <button class="primary wide" onclick="nextDay()">Preparar el siguiente día →</button>
+      <button class="secondary wide" onclick="showTab('finance')">Consultar finanzas</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div><strong id="footerCash">50,00 €</strong><small>Dinero disponible</small></div>
+  <button class="primary" id="footerButton" onclick="onFooterClick()">Ver cesta</button>
+</footer>
+
+<div id="toast"></div>
+
+<!-- Cart modal -->
+<div class="modal-overlay" id="cartModal" onclick="if(event.target===this)closeCart()">
+  <div class="modal">
+    <h2>Tu cesta</h2>
+    <div id="cartItems" class="muted">Tu cesta está vacía.</div>
+    <div class="row" style="margin-top:16px;font-size:17px"><strong>Total</strong><strong id="cartTotal">0,00 €</strong></div>
+    <button class="primary wide" id="checkoutBtn" onclick="checkout()">Confirmar compra</button>
+    <button class="secondary wide" onclick="clearCart()">Vaciar cesta</button>
+    <button class="secondary wide" onclick="closeCart()">Seguir comprando</button>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h2>Ajustes</h2>
+    <div class="setting-row">
+      <div>
+        <strong>Sonido</strong>
+        <div class="muted" style="font-size:12px">Efectos de venta, apertura y clics</div>
+      </div>
+      <div class="switch" id="soundSwitch" onclick="toggleSound()"></div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <strong>Vibración</strong>
+        <div class="muted" style="font-size:12px">Feedback háptico (si el dispositivo lo permite)</div>
+      </div>
+      <div class="switch on" id="vibSwitch" onclick="toggleVib()"></div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <strong>Pantalla completa</strong>
+        <div class="muted" style="font-size:12px">Oculta la barra del navegador</div>
+      </div>
+      <div class="switch" id="fsSwitch" onclick="toggleFullscreen()"></div>
+    </div>
+    <div class="install-banner" id="installBanner">
+      <div style="flex:1">
+        <strong>Instalar app</strong>
+        <div class="muted" style="font-size:12px">Añádela a tu pantalla de inicio</div>
+      </div>
+      <button class="primary" style="padding:8px 12px;font-size:13px" onclick="promptInstall()">Instalar</button>
+    </div>
+    <h3 style="margin-top:20px">Partida</h3>
+    <button class="secondary wide" onclick="saveGame(false);closeSettings()">Guardar partida ahora</button>
+    <button class="danger wide" onclick="resetGame()">Borrar partida y empezar de cero</button>
+    <button class="secondary wide" style="margin-top:12px" onclick="closeSettings()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ========== DATA ========== */
+const COLORS = {
+  beans:'#6b4226', milk:'#7a9e8a', tea:'#5a8f5a', choc:'#8b3a2a', sugar:'#a09070',
+  flour:'#c4a86a', pastry:'#d4a05a', cake:'#c47a9a', juice:'#e07a3a', bread:'#c9a06a',
+  eggs:'#e8c84a', fruit:'#d44a4a'
+};
+const LABELS = {
+  beans:'CG', milk:'LE', tea:'TE', choc:'CH', sugar:'AZ', flour:'HA',
+  pastry:'BO', cake:'PA', juice:'ZU', bread:'PN', eggs:'HU', fruit:'FR'
+};
+
+const supplies = [
+  {id:'beans',name:'Café molido',emoji:'☕',cost:.18,unit:'dosis',desc:'Base para espressos y cafés con leche'},
+  {id:'milk',name:'Leche',emoji:'🥛',cost:.12,unit:'dosis',desc:'Para preparar cafés cremosos'},
+  {id:'tea',name:'Té',emoji:'🍵',cost:.15,unit:'bolsitas',desc:'Té caliente para tus clientes'},
+  {id:'choc',name:'Chocolate',emoji:'🍫',cost:.22,unit:'dosis',desc:'Chocolate para bebidas calientes'},
+  {id:'sugar',name:'Azúcar',emoji:'🍬',cost:.04,unit:'dosis',desc:'Un extra para las bebidas'},
+  {id:'flour',name:'Harina',emoji:'🌾',cost:.10,unit:'dosis',desc:'Ingrediente para repostería'},
+  {id:'pastry',name:'Galletas',emoji:'🍪',cost:.55,unit:'unidades',desc:'Galletas y dulces listos'},
+  {id:'cake',name:'Pasteles',emoji:'🍰',cost:1.10,unit:'porciones',desc:'Porciones de tarta'},
+  {id:'juice',name:'Zumos',emoji:'🧃',cost:.55,unit:'unidades',desc:'Zumos de naranja'},
+  {id:'bread',name:'Pan',emoji:'🍞',cost:.30,unit:'unidades',desc:'Para bocadillos y tostadas'},
+  {id:'eggs',name:'Huevos',emoji:'🥚',cost:.20,unit:'unidades',desc:'Para desayunos y recetas'},
+  {id:'fruit',name:'Fruta',emoji:'🍎',cost:.35,unit:'unidades',desc:'Fruta fresca para acompañar'},
+  {id:'cheese',name:'Queso',emoji:'🧀',cost:.40,unit:'dosis',desc:'Para bocadillos y tostadas'},
+  {id:'honey',name:'Miel',emoji:'🍯',cost:.25,unit:'dosis',desc:'Endulzante natural'},
+  {id:'butter',name:'Mermelada',emoji:'🍑',cost:.18,unit:'dosis',desc:'Para tostadas y dulces'},
+  {id:'icecream',name:'Helado',emoji:'🍦',cost:.90,unit:'unidades',desc:'Helado para llevar'},
+  {id:'cupcake',name:'Cupcakes',emoji:'🎂',cost:.85,unit:'unidades',desc:'Magdalenas decoradas'},
+  {id:'donut',name:'Donuts',emoji:'🍩',cost:.70,unit:'unidades',desc:'Donuts glaseados'}
+];
+
+const recipes = [
+  {id:'espresso',name:'Espresso',emoji:'☕',price:1.50,parts:{beans:1,sugar:0.2},desc:'Un café intenso'},
+  {id:'latte',name:'Café con leche',emoji:'🥛',price:2.10,parts:{beans:1,milk:1,sugar:0.3},desc:'Café suave y cremoso'},
+  {id:'tea',name:'Té caliente',emoji:'🍵',price:1.60,parts:{tea:1,sugar:0.2},desc:'Una taza reconfortante'},
+  {id:'choco',name:'Chocolate caliente',emoji:'🍫',price:2.30,parts:{milk:1,choc:1,sugar:0.2},desc:'Chocolate cremoso'},
+  {id:'pastry',name:'Galleta',emoji:'🍪',price:1.40,parts:{pastry:1},desc:'Galleta recién servida'},
+  {id:'cake',name:'Porción de tarta',emoji:'🍰',price:2.80,parts:{cake:1},desc:'Un dulce especial'},
+  {id:'juice',name:'Zumo de naranja',emoji:'🧃',price:1.80,parts:{juice:1},desc:'Zumo natural'},
+  {id:'toast',name:'Tostada',emoji:'🍞',price:1.90,parts:{bread:1,eggs:0.3,butter:0.5},desc:'Desayuno sencillo'},
+  {id:'fruit',name:'Fruta fresca',emoji:'🍎',price:1.50,parts:{fruit:1},desc:'Una opción ligera'},
+  {id:'sandwich',name:'Bocadillo',emoji:'🍞',price:3.20,parts:{bread:1,cheese:1,butter:0.3},desc:'Bocadillo de queso'},
+  {id:'honeytoast',name:'Tostada con miel',emoji:'🍯',price:2.40,parts:{bread:1,honey:1,butter:0.3},desc:'Dulce y crujiente'},
+  {id:'icecream',name:'Helado',emoji:'🍦',price:2.50,parts:{icecream:1},desc:'Helado para llevar'},
+  {id:'cupcake',name:'Cupcake',emoji:'🎂',price:2.20,parts:{cupcake:1},desc:'Magdalena decorada'},
+  {id:'donut',name:'Donut',emoji:'🍩',price:1.90,parts:{donut:1},desc:'Donut glaseado'}
+];
+
+const BILL_DEADLINE_DAYS = 2; // días para pagar tras generar
+
+const initial = () => ({
+  name: 'Café de Barrio',
+  day: 1,
+  cash: 50,
+  stock: {},
+  prices: {},
+  income: 0,
+  spend: 0,
+  operating: 0,
+  billsPaid: 0,
+  bills: [], // {id, type, label, amount, dayCreated, dueDay, paid}
+  history: [],
+  last: null,
+  started: false,
+  sound: true,
+  vibrate: true
+});
+
+let game = initial();
+let cart = {};
+let dayRunning = false;
+let dayState = null;
+let tickHandle = null;
+let customerHandle = null;
+let deferredPrompt = null;
+let audioCtx = null;
+let footerMode = 'shop'; // shop | cart
+
+/* ========== HELPERS ========== */
+const euro = n => Number(n || 0).toLocaleString('es-ES', {style: 'currency', currency: 'EUR'});
+const el = id => document.getElementById(id);
+
+function iconHTML(id, size = 44) {
+  const bg = COLORS[id] || '#75452f';
+  const lab = LABELS[id] || '??';
+  return `<div class="icon-circle" style="background:${bg};width:${size}px;height:${size}px;font-size:${size>40?13:11}px">${lab}</div>`;
+}
+
+function recipeIcon(r, size = 44) {
+  return `<div class="icon-circle" style="background:${r.color};width:${size}px;height:${size}px;font-size:${size>40?13:11}px">${r.label}</div>`;
+}
+
+function fmtStock(n) {
+  const v = Number(n) || 0;
+  const rounded = Math.round(v * 10) / 10;
+  if (Math.abs(rounded - Math.round(rounded)) < 0.05) return String(Math.round(rounded));
+  return rounded.toFixed(1);
+}
+
+function cleanStock(id) {
+  if (game.stock[id] == null) return;
+  const v = Math.max(0, Math.round(game.stock[id] * 1000) / 1000);
+  if (v < 0.001) delete game.stock[id];
+  else game.stock[id] = v;
+}
+
+function toast(msg) {
+  const t = el('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._h);
+  toast._h = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function vibrate(ms = 12) {
+  if (game.vibrate && navigator.vibrate) navigator.vibrate(ms);
+}
+
+/* ========== AUDIO ========== */
+function ensureAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone(freq, dur, type = 'sine', vol = 0.12, slideTo = null) {
+  if (!game.sound) return;
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime);
+  if (slideTo) osc.frequency.linearRampToValueAtTime(slideTo, ctx.currentTime + dur);
+  gain.gain.setValueAtTime(vol, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + dur + 0.02);
+}
+
+function sfx(name) {
+  if (!game.sound) return;
+  switch (name) {
+    case 'click': playTone(620, 0.05, 'square', 0.05); break;
+    case 'add':
+      playTone(480, 0.08, 'triangle', 0.08);
+      setTimeout(() => playTone(640, 0.07, 'triangle', 0.06), 60);
+      break;
+    case 'buy':
+      playTone(320, 0.12, 'sine', 0.1);
+      setTimeout(() => playTone(480, 0.15, 'sine', 0.09), 90);
+      setTimeout(() => playTone(640, 0.18, 'sine', 0.07), 180);
+      break;
+    case 'open':
+      playTone(180, 0.4, 'sine', 0.08, 320);
+      setTimeout(() => playTone(260, 0.5, 'triangle', 0.06, 420), 200);
+      break;
+    case 'close':
+      playTone(320, 0.25, 'sine', 0.07, 160);
+      setTimeout(() => playTone(200, 0.35, 'triangle', 0.05), 180);
+      break;
+    case 'sale':
+      playTone(520, 0.07, 'sine', 0.09);
+      setTimeout(() => playTone(780, 0.12, 'sine', 0.07), 70);
+      break;
+    case 'end':
+      playTone(400, 0.15, 'sine', 0.08);
+      setTimeout(() => playTone(320, 0.2, 'sine', 0.07), 120);
+      setTimeout(() => playTone(240, 0.35, 'sine', 0.06), 260);
+      break;
+    case 'pay':
+      playTone(440, 0.1, 'sine', 0.09);
+      setTimeout(() => playTone(660, 0.15, 'sine', 0.08), 80);
+      break;
+    case 'error': playTone(180, 0.18, 'sawtooth', 0.06); break;
+  }
+}
+
+/* ========== SAVE / LOAD ========== */
+function saveGame(silent = false) {
+  try {
+    localStorage.setItem('cafebarrio-save', JSON.stringify(game));
+    if (!silent) { toast('Partida guardada.'); sfx('click'); }
+  } catch (e) {
+    if (!silent) toast('No se pudo guardar.');
+  }
+}
+
+function loadGame() {
+  try {
+    const d = JSON.parse(localStorage.getItem('cafebarrio-save'));
+    if (d && d.name) {
+      game = {...initial(), ...d};
+      game.stock = d.stock || {};
+      game.prices = d.prices || {};
+      game.history = d.history || [];
+      game.bills = d.bills || [];
+      if (typeof d.sound !== 'boolean') game.sound = true;
+      if (typeof d.vibrate !== 'boolean') game.vibrate = true;
+      if (typeof d.billsPaid !== 'number') game.billsPaid = 0;
+    }
+  } catch (e) {}
+}
+
+/* ========== BILLS (Luz + Alquiler) ========== */
+function generateDayBills(day) {
+  // Base amounts scale with day
+  const rent = Math.round((18 + day * 3.5) * 100) / 100;
+  const light = Math.round((8 + day * 1.8) * 100) / 100;
+  const due = day + BILL_DEADLINE_DAYS;
+  const idBase = 'b' + day + '-' + Date.now();
+  game.bills.push({
+    id: idBase + '-r', type: 'alquiler', label: 'Alquiler del local',
+    amount: rent, dayCreated: day, dueDay: due, paid: false
+  });
+  game.bills.push({
+    id: idBase + '-l', type: 'luz', label: 'Factura de luz',
+    amount: light, dayCreated: day, dueDay: due, paid: false
+  });
+}
+
+function unpaidBills() {
+  return game.bills.filter(b => !b.paid);
+}
+
+function overdueBills() {
+  return unpaidBills().filter(b => game.day > b.dueDay);
+}
+
+function payBill(id) {
+  const b = game.bills.find(x => x.id === id);
+  if (!b || b.paid) return;
+  if (game.cash < b.amount) {
+    toast('No tienes suficiente dinero.');
+    sfx('error');
+    return;
+  }
+  game.cash -= b.amount;
+  game.billsPaid += b.amount;
+  b.paid = true;
+  toast('Factura pagada: ' + b.label);
+  sfx('pay');
+  vibrate(15);
+  renderAll();
+  saveGame(true);
+}
+
+function payAllBills() {
+  const list = unpaidBills();
+  if (!list.length) {
+    toast('No hay facturas pendientes.');
+    return;
+  }
+  const total = list.reduce((s, b) => s + b.amount, 0);
+  if (game.cash < total) {
+    toast('No tienes suficiente para pagar todas (' + euro(total) + ').');
+    sfx('error');
+    return;
+  }
+  list.forEach(b => {
+    game.cash -= b.amount;
+    game.billsPaid += b.amount;
+    b.paid = true;
+  });
+  toast('Todas las facturas pagadas (' + euro(total) + ').');
+  sfx('pay');
+  vibrate(20);
+  renderAll();
+  saveGame(true);
+}
+
+/* ========== UI ========== */
+function startGame() {
+  const name = el('cafeName').value.trim();
+  game.name = name || 'Café de Barrio';
+  game.started = true;
+  el('intro').classList.add('hidden');
+  renderAll();
+  updateSoundUI();
+  saveGame(true);
+  sfx('open');
+  vibrate(20);
+}
+
+function showTab(tab) {
+  if (dayRunning && tab !== 'running') {
+    toast('La jornada está en marcha.');
+    sfx('error');
+    return;
+  }
+  sfx('click');
+  ['home', 'shop', 'stock', 'prices', 'finance', 'running', 'report'].forEach(id => {
+    el(id).classList.toggle('hidden', id !== tab);
+  });
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  footerMode = tab === 'shop' ? 'cart' : 'shop';
+  updateFooterBtn();
+  if (tab === 'shop') renderShop();
+  if (tab === 'stock') renderStock();
+  if (tab === 'prices') renderPrices();
+  if (tab === 'finance') renderFinance();
+}
+
+function updateFooterBtn() {
+  const btn = el('footerButton');
+  if (footerMode === 'cart') {
+    const n = Object.values(cart).reduce((a, b) => a + b, 0);
+    btn.textContent = n > 0 ? `Ver cesta (${n})` : 'Ver cesta';
+    btn.onclick = openCart;
+  } else {
+    btn.textContent = 'Ir a comprar';
+    btn.onclick = () => showTab('shop');
+  }
+}
+
+function onFooterClick() {
+  if (footerMode === 'cart') openCart();
+  else showTab('shop');
+}
+
+function renderAll() {
+  el('headerName').textContent = '☕ ' + game.name;
+  el('dayLabel').textContent = 'Día ' + game.day + ' · ' + (dayRunning ? 'Abierto' : 'Gestión de la cafetería');
+  el('dayNumber').textContent = 'Día ' + game.day;
+  const cashStr = euro(game.cash);
+  el('cash').textContent = el('shopCash').textContent = el('footerCash').textContent = cashStr;
+  el('profit').textContent = euro(game.last ? game.last.net : 0);
+  el('profit').className = game.last && game.last.net < 0 ? 'loss' : 'money';
+  el('customers').textContent = game.last ? game.last.customers : 0;
+  el('servedHome').textContent = game.last ? game.last.customers : 0;
+  const totalUnits = Object.values(game.stock).reduce((a, b) => a + b, 0);
+  el('stockCount').textContent = fmtStock(totalUnits) + ' uds';
+  el('billsPending').textContent = unpaidBills().length + (overdueBills().length ? ' (¡vencidas!)' : '');
+  renderShop();
+  renderStock();
+  renderPrices();
+  renderFinance();
+  if (game.last) {
+    el('lastSummary').textContent = `Día ${game.last.day}: ventas ${euro(game.last.income)}, gastos ${euro(game.last.expenses)}, neto ${euro(game.last.net)}.`;
+  }
+  updateSoundUI();
+  updateFooterBtn();
+  updateFsUI();
+}
+
+function renderShop() {
+  el('shopGrid').innerHTML = supplies.map(s => `
+    <div class="product">
+      <div class="emoji">${s.emoji}</div>
+      <strong>${s.name}</strong>
+      <div class="muted">${s.desc}</div>
+      <div class="price">${euro(s.cost)} / ${s.unit}</div>
+      <div class="muted">Almacén: ${fmtStock(game.stock[s.id] || 0)}</div>
+      <div class="qty">
+        <button onclick="changeQty('${s.id}',-1)">−</button>
+        <input type="number" min="0" max="999" step="1" id="qty-${s.id}" value="${cart[s.id] || 0}" onchange="setQty('${s.id}',this.value)">
+        <button onclick="changeQty('${s.id}',1)">+</button>
+      </div>
+      <button class="secondary wide" onclick="addToCart('${s.id}')">Añadir</button>
+    </div>`).join('');
+}
+
+function changeQty(id, n) {
+  const input = el('qty-' + id);
+  input.value = Math.max(0, Math.min(999, (parseInt(input.value) || 0) + n));
+  sfx('click');
+}
+
+function setQty(id, val) {
+  el('qty-' + id).value = Math.max(0, Math.min(999, parseInt(val) || 0));
+}
+
+function addToCart(id) {
+  const q = Math.max(0, Math.min(999, parseInt(el('qty-' + id).value) || 0));
+  if (q === 0) {
+    toast('Elige una cantidad mayor que cero.');
+    sfx('error');
+    return;
+  }
+  cart[id] = (cart[id] || 0) + q;
+  el('qty-' + id).value = 0;
+  updateFooterBtn();
+  toast('Añadido a la cesta.');
+  sfx('add');
+  vibrate(8);
+}
+
+function changeCart(id, n) {
+  cart[id] = Math.max(0, (cart[id] || 0) + n);
+  if (!cart[id]) delete cart[id];
+  renderCartModal();
+  updateFooterBtn();
+  sfx('click');
+}
+
+function clearCart() {
+  cart = {};
+  renderCartModal();
+  updateFooterBtn();
+  sfx('click');
+}
+
+function cartCost() {
+  return supplies.reduce((sum, s) => sum + s.cost * (cart[s.id] || 0), 0);
+}
+
+function renderCartModal() {
+  const items = supplies.filter(s => cart[s.id]);
+  el('cartItems').innerHTML = items.length
+    ? items.map(s => `
+      <div class="lineitem">
+        <span>${s.emoji} ${s.name} × ${cart[s.id]}</span>
+        <span style="display:flex;align-items:center;gap:6px">${euro(s.cost * cart[s.id])}
+          <button class="secondary" style="padding:4px 8px" onclick="changeCart('${s.id}',-1)">−</button>
+        </span>
+      </div>`).join('')
+    : 'Tu cesta está vacía.';
+  el('cartTotal').textContent = euro(cartCost());
+  el('checkoutBtn').disabled = items.length === 0;
+}
+
+function openCart() {
+  renderCartModal();
+  el('cartModal').classList.add('show');
+  sfx('click');
+}
+
+function closeCart() {
+  el('cartModal').classList.remove('show');
+}
+
+function checkout() {
+  const total = cartCost();
+  if (total <= 0) {
+    toast('Tu cesta está vacía.');
+    sfx('error');
+    return;
+  }
+  if (total > game.cash) {
+    toast('No tienes suficiente dinero.');
+    sfx('error');
+    return;
+  }
+  supplies.forEach(s => {
+    if (cart[s.id]) {
+      game.stock[s.id] = (game.stock[s.id] || 0) + cart[s.id];
+      cleanStock(s.id);
+    }
+  });
+  game.cash -= total;
+  game.spend += total;
+  cart = {};
+  closeCart();
+  renderAll();
+  saveGame(true);
+  toast('Compra realizada. Productos en el almacén.');
+  sfx('buy');
+  vibrate(25);
+}
+
+function renderStock() {
+  el('stockList').innerHTML = supplies.map(s => {
+    const qty = game.stock[s.id] || 0;
+    return `<div class="card-item">
+      <div class="top"><span class="emoji" style="font-size:28px">${s.emoji}</span> <strong>${s.name}</strong></div>
+      <div class="qty-big">${fmtStock(qty)}</div>
+      <div class="unit">${s.unit} disponibles</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPrices() {
+  el('priceList').innerHTML = recipes.map(r => `
+    <div class="card-item">
+      <div class="top"><span class="emoji" style="font-size:28px">${r.emoji}</span> <strong>${r.name}</strong></div>
+      <div class="muted" style="font-size:12px">${r.desc}</div>
+      <div class="muted" style="font-size:11px">Coste ≈ ${euro(recipeCost(r))}</div>
+      <label style="display:block;margin-top:4px">
+        <input class="priceedit" type="number" min=".1" max="100" step=".05" inputmode="decimal"
+          id="price-${r.id}" value="${game.prices[r.id] ?? r.price}">
+      </label>
+    </div>`).join('');
+}
+
+function savePrices() {
+  recipes.forEach(r => {
+    let p = Number(el('price-' + r.id).value);
+    if (!Number.isFinite(p) || p < 0.1) p = 0.1;
+    game.prices[r.id] = Math.min(100, Math.round(p * 100) / 100);
+  });
+  renderPrices();
+  saveGame(true);
+  toast('Precios guardados.');
+  sfx('click');
+}
+
+function recipeCost(r) {
+  return Object.entries(r.parts).reduce((sum, [id, q]) => {
+    const s = supplies.find(x => x.id === id);
+    return sum + (s ? s.cost : 0) * q;
+  }, 0);
+}
+
+function renderFinance() {
+  el('finCash').textContent = euro(game.cash);
+  el('finIncome').textContent = euro(game.income);
+  el('finSpend').textContent = euro(game.spend);
+  el('finBills').textContent = euro(game.billsPaid);
+  el('finNet').textContent = euro(game.income - game.spend - game.operating - game.billsPaid);
+
+  const unpaid = unpaidBills();
+  if (!unpaid.length) {
+    el('billsList').innerHTML = '<p class="muted">No hay facturas pendientes. ¡Bien!</p>';
+  } else {
+    el('billsList').innerHTML = unpaid.map(b => {
+      const overdue = game.day > b.dueDay;
+      const daysLeft = b.dueDay - game.day;
+      return `<div class="bill-card ${overdue ? 'overdue' : ''}">
+        <div class="row">
+          <strong>${b.label}</strong>
+          <strong>${euro(b.amount)}</strong>
+        </div>
+        <div class="due">${overdue
+          ? 'VENCIDA (día ' + b.dueDay + ')'
+          : 'Vence el día ' + b.dueDay + (daysLeft === 0 ? ' (hoy)' : ' · ' + daysLeft + ' día(s)')}</div>
+        <div class="row" style="margin-top:8px">
+          <span class="badge ${overdue ? 'danger' : ''}">${b.type === 'luz' ? 'Luz' : 'Alquiler'}</span>
+          <button class="primary" style="padding:8px 14px;font-size:13px" onclick="payBill('${b.id}')">Pagar</button>
+        </div>
+      </div>`;
+    }).join('') + (unpaid.length > 1
+      ? `<button class="secondary wide" onclick="payAllBills()">Pagar todas (${euro(unpaid.reduce((s,b)=>s+b.amount,0))})</button>`
+      : '');
+  }
+
+  el('history').innerHTML = game.history.length
+    ? game.history.slice().reverse().map(h => `
+      <div class="bill-card">
+        <strong>Día ${h.day}</strong>
+        <div class="lineitem"><span>Ventas (${h.customers} clientes)</span><strong>${euro(h.income)}</strong></div>
+        <div class="lineitem"><span>Ingredientes</span><strong>${euro(h.ingredients)}</strong></div>
+        <div class="lineitem"><span>Gastos operativos</span><strong>${euro(h.operating)}</strong></div>
+        <div class="lineitem"><span>Resultado neto</span><strong class="${h.net < 0 ? 'loss' : 'money'}">${euro(h.net)}</strong></div>
+      </div>`).join('')
+    : 'Completa tu primera jornada para ver el registro.';
+}
+
+/* ========== DAY LOGIC ========== */
+function canMake(r) {
+  return Object.entries(r.parts).every(([id, q]) => (game.stock[id] || 0) + 1e-9 >= q);
+}
+
+function makeSale(r) {
+  if (!canMake(r)) return false;
+  Object.entries(r.parts).forEach(([id, q]) => {
+    game.stock[id] = (game.stock[id] || 0) - q;
+    cleanStock(id);
+  });
+  const price = Number(game.prices[r.id] ?? r.price);
+  const cost = recipeCost(r);
+  return {name: r.name, price, cost};
+}
+
+function formatClock(secondsIntoDay) {
+  const totalMinutes = 12 * 60;
+  const progress = Math.min(1, Math.max(0, secondsIntoDay / 60));
+  const mins = Math.floor(progress * totalMinutes);
+  const h = 9 + Math.floor(mins / 60);
+  const m = mins % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+function beginDay() {
+  if (dayRunning) return;
+  if (game.cash < 0) {
+    toast('Necesitas recuperar fondos antes de abrir.');
+    sfx('error');
+    return;
+  }
+  const overdue = overdueBills();
+  if (overdue.length) {
+    toast('Tienes facturas vencidas. Págales en Finanzas antes de abrir.');
+    sfx('error');
+    showTab('finance');
+    return;
+  }
+
+  dayRunning = true;
+  dayState = {
+    start: Date.now(),
+    remaining: 60,
+    customers: 0,
+    income: 0,
+    ingredients: 0,
+    operating: 0,
+    items: {},
+    opened: false
+  };
+  showTab('running');
+  el('startDay').disabled = true;
+
+  const stage = el('openStage');
+  const area = el('customerArea');
+  stage.classList.remove('open', 'closing', 'hidden');
+  area.classList.add('hidden');
+  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🚪</div><strong>¡Abriendo puertas!</strong>';
+  el('liveMessage').textContent = '¡Abriendo las puertas!';
+  el('clock').textContent = '09:00';
+  sfx('open');
+  vibrate(30);
+
+  setTimeout(() => stage.classList.add('open'), 80);
+
+  setTimeout(() => {
+    stage.classList.add('hidden');
+    area.classList.remove('hidden');
+    area.innerHTML = '<span style="opacity:.7">Esperando a los primeros clientes…</span>';
+    dayState.opened = true;
+    tickHandle = setInterval(dayTick, 250);
+    customerHandle = setInterval(customerVisit, 1500);
+    dayTick();
+  }, 1600);
+}
+
+function dayTick() {
+  if (!dayRunning) return;
+  const elapsed = (Date.now() - dayState.start) / 1000;
+  dayState.remaining = Math.max(0, 60 - elapsed);
+  el('timer').textContent = Math.ceil(dayState.remaining) + ' s';
+  el('dayProgress').style.width = (elapsed / 60 * 100) + '%';
+  el('clock').textContent = formatClock(elapsed);
+  el('liveServed').textContent = dayState.customers;
+  el('liveIncome').textContent = euro(dayState.income);
+  el('liveExpenses').textContent = euro(dayState.ingredients + dayState.operating);
+  el('profit').textContent = euro(dayState.income - dayState.ingredients - dayState.operating);
+  el('customers').textContent = dayState.customers;
+  el('cash').textContent = el('footerCash').textContent = euro(game.cash);
+  if (dayState.remaining <= 0) finishDay();
+}
+
+function customerVisit() {
+  if (!dayRunning || !dayState.opened) return;
+  const area = el('customerArea');
+
+  const PERSONS = ['🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🧒🏻','👦🏻','👧🏻','🧑🏻','👱🏻','👨🏻','🧔🏻','👩🏻','👴🏻','👵🏻','👨🏼','👩🏼','👨🏽','👩🏽','👨🏾','👩🏾','👨🏿','👩🏿','👦🏼','👦🏽','👦🏾','👦🏿','👧🏼','👧🏽','👧🏾','👧🏿','👴🏼','👴🏽','часа','👴🏿','👵🏼','👵🏽','⠨','👵🏿'];
+  const BABIES = ['👶','👶🏻','👶🏼','👶🏽','👶🏾','Biggl'];
+
+  // Tipo de visita: solo 55%, pareja 28%, familia 17%
+  const roll = Math.random();
+  let groupType, buyCount, groupLabel;
+  if (roll < 0.55) {
+    groupType = 'solo';
+    buyCount = 1;
+    groupLabel = 'un cliente';
+  } else if (roll < 0.83) {
+    groupType = 'pair';
+    buyCount = 2;
+    groupLabel = 'una pareja';
+  } else {
+    groupType = 'family';
+    buyCount = 2 + Math.floor(Math.random() * 3); // 2–4
+    groupLabel = 'una familia';
+  }
+
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  let displayEmojis = [];
+
+  if (groupType === 'solo') {
+    // Nunca un bebé solo
+    displayEmojis = [pick(PERSONS)];
+  } else if (groupType === 'pair') {
+    // Dos personas sueltas, o adulto + bebé
+    if (Math.random() < 0.35) {
+      displayEmojis = [pick(PERSONS), pick(BABIES)]; // adulto/niño + bebé
+    } else {
+      displayEmojis = [pick(PERSONS), pick(PERSONS)];
+    }
+  } else {
+    // Familia: 3–4 personas; si hay bebé, siempre junto a alguien
+    const size = 3 + Math.floor(Math.random() * 2);
+    const withBaby = Math.random() < 0.45;
+    for (let i = 0; i < size; i++) displayEmojis.push(pick(PERSONS));
+    if (withBaby) displayEmojis.push(pick(BABIES)); // bebé al final, junto al grupo
+  }
+
+  area.innerHTML = '';
+  displayEmojis.forEach((em, idx) => {
+    const person = document.createElement('span');
+    person.className = 'customer';
+    person.style.animationDelay = (idx * 0.1) + 's';
+    person.textContent = em;
+    area.appendChild(person);
+  });
+
+  const affordable = recipes.filter(r => canMake(r));
+  if (!affordable.length) {
+    el('liveMessage').textContent = 'Faltan ingredientes. Los clientes se van sin comprar.';
+    sfx('error');
+    return;
+  }
+
+  const soldNames = [];
+  let anySale = false;
+  for (let i = 0; i < buyCount; i++) {
+    let choices = recipes.filter(r => canMake(r) && Number(game.prices[r.id] ?? r.price) <= r.price * 1.65);
+    if (!choices.length) choices = recipes.filter(r => canMake(r));
+    if (!choices.length) break;
+    const r = choices[Math.floor(Math.random() * choices.length)];
+    const sale = makeSale(r);
+    if (!sale) break;
+
+    const overhead = 0.08;
+    dayState.customers++;
+    dayState.income += sale.price;
+    dayState.ingredients += sale.cost;
+    dayState.operating += overhead;
+    game.cash += sale.price - overhead;
+    game.income += sale.price;
+    game.operating += overhead;
+    dayState.items[r.name] = (dayState.items[r.name] || 0) + 1;
+    soldNames.push(r.name);
+    anySale = true;
+  }
+
+  if (!anySale) {
+    el('liveMessage').textContent = 'Faltan ingredientes. Los clientes se van sin comprar.';
+    sfx('error');
+    return;
+  }
+
+  const faceStr = displayEmojis.join('');
+  if (soldNames.length === 1) {
+    el('liveMessage').textContent = faceStr + ' ha comprado ' + soldNames[0] + '.';
+  } else {
+    el('liveMessage').textContent = faceStr + ' (' + groupLabel + ') han comprado: ' + soldNames.join(', ') + '.';
+  }
+  sfx('sale');
+  vibrate(10);
+
+  setTimeout(() => {
+    if (!dayRunning) return;
+    area.querySelectorAll('.customer').forEach(p => p.classList.add('leaving'));
+  }, 700);
+
+  el('liveServed').textContent = dayState.customers;
+  el('liveIncome').textContent = euro(dayState.income);
+  el('liveExpenses').textContent = euro(dayState.ingredients + dayState.operating);
+  el('cash').textContent = el('footerCash').textContent = euro(game.cash);
+  el('customers').textContent = dayState.customers;
+  renderStock();
+}
+
+function finishDay() {
+  if (!dayRunning) return;
+  dayRunning = false;
+  clearInterval(tickHandle);
+  clearInterval(customerHandle);
+
+  // Closing animation
+  const stage = el('openStage');
+  const area = el('customerArea');
+  area.classList.add('hidden');
+  stage.classList.remove('hidden', 'open');
+  stage.classList.add('open'); // start open
+  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🌙</div><strong>Cerrando… 21:00</strong>';
+  sfx('close');
+
+  requestAnimationFrame(() => {
+    stage.classList.add('closing');
+    stage.classList.remove('open');
+  });
+
+  setTimeout(() => {
+    const d = dayState;
+    const net = d.income - d.ingredients - d.operating;
+    const h = {
+      day: game.day,
+      customers: d.customers,
+      income: d.income,
+      ingredients: d.ingredients,
+      operating: d.operating,
+      expenses: d.ingredients + d.operating,
+      net,
+      items: d.items
+    };
+    game.last = h;
+    game.history.push(h);
+
+    // Generate bills for this day
+    generateDayBills(game.day);
+
+    el('dayLabel').textContent = 'Día ' + game.day + ' · Jornada cerrada';
+    el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · 21:00';
+    el('reportDetails').innerHTML = `
+      <div class="lineitem"><span>Ingresos por ventas</span><strong>${euro(d.income)}</strong></div>
+      <div class="lineitem"><span>Coste de ingredientes</span><strong>−${euro(d.ingredients)}</strong></div>
+      <div class="lineitem"><span>Gastos operativos</span><strong>−${euro(d.operating)}</strong></div>
+      <div class="lineitem"><span>Clientes atendidos</span><strong>${d.customers}</strong></div>
+      <h3 style="margin-top:16px">Productos vendidos</h3>
+      ${Object.keys(d.items).length
+        ? Object.entries(d.items).map(([name, q]) => `<div class="lineitem"><span>${name}</span><strong>${q}</strong></div>`).join('')
+        : 'No se han realizado ventas.'}
+      <div class="notice" style="margin-top:12px">Se han generado facturas de luz y alquiler. Págales en Finanzas antes de que venzan.</div>`;
+    el('reportNet').textContent = euro(net);
+    el('reportNet').className = net < 0 ? 'loss' : 'money';
+    el('reportMessage').textContent = net >= 0
+      ? '¡Buen trabajo! Resultado positivo. No olvides las facturas.'
+      : 'Hoy has tenido pérdidas. Revisa precios y existencias.';
+    el('startDay').disabled = false;
+    el('lastSummary').textContent = `Día ${h.day}: ventas ${euro(h.income)}, costes ${euro(h.ingredients + h.operating)}, neto ${euro(h.net)}.`;
+    renderAll();
+    saveGame(true);
+    showTab('report');
+    sfx('end');
+    vibrate([15, 40, 15]);
+  }, 1200);
+}
+
+function nextDay() {
+  game.day++;
+  dayState = null;
+  el('dayLabel').textContent = 'Día ' + game.day + ' · Preparando la apertura';
+  el('homeTip').textContent = 'Revisa existencias, precios y facturas pendientes antes de abrir.';
+  renderAll();
+  showTab('home');
+  saveGame(true);
+  sfx('click');
+}
+
+function resetGame() {
+  if (!confirm('¿Seguro que quieres borrar la partida? Se perderá todo el progreso.')) return;
+  localStorage.removeItem('cafebarrio-save');
+  game = initial();
+  cart = {};
+  dayRunning = false;
+  clearInterval(tickHandle);
+  clearInterval(customerHandle);
+  el('intro').classList.remove('hidden');
+  el('cafeName').value = '';
+  el('startDay').disabled = false;
+  closeSettings();
+  renderAll();
+  showTab('home');
+  sfx('click');
+}
+
+/* ========== SETTINGS ========== */
+function updateSoundUI() {
+  el('soundBtn').textContent = game.sound ? '🔊' : '🔇';
+  el('soundSwitch').classList.toggle('on', game.sound);
+  el('vibSwitch').classList.toggle('on', game.vibrate);
+}
+
+function updateFsUI() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  el('fsSwitch').classList.toggle('on', isFs);
+}
+
+function toggleSound() {
+  game.sound = !game.sound;
+  updateSoundUI();
+  saveGame(true);
+  if (game.sound) { sfx('click'); toast('Sonido activado'); }
+  else toast('Sonido desactivado');
+}
+
+function toggleVib() {
+  game.vibrate = !game.vibrate;
+  updateSoundUI();
+  saveGame(true);
+  if (game.vibrate) vibrate(20);
+  toast(game.vibrate ? 'Vibración activada' : 'Vibración desactivada');
+}
+
+function toggleFullscreen() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  if (!isFs) {
+    const root = document.documentElement;
+    const req = root.requestFullscreen || root.webkitRequestFullscreen || root.msRequestFullscreen;
+    if (req) req.call(root).then(updateFsUI).catch(() => toast('No se pudo activar pantalla completa'));
+  } else {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (exit) exit.call(document).then(updateFsUI);
+  }
+  sfx('click');
+}
+
+document.addEventListener('fullscreenchange', updateFsUI);
+document.addEventListener('webkitfullscreenchange', updateFsUI);
+
+function openSettings() {
+  el('settingsModal').classList.add('show');
+  updateFsUI();
+  sfx('click');
+  if (deferredPrompt) el('installBanner').classList.add('show');
+}
+
+function closeSettings() {
+  el('settingsModal').classList.remove('show');
+}
+
+/* ========== PWA ========== */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+function promptInstall() {
+  if (!deferredPrompt) {
+    toast('Usa el menú del navegador → “Añadir a pantalla de inicio”');
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    el('installBanner').classList.remove('show');
+  });
+}
+
+/* ========== BOOT ========== */
+loadGame();
+if (game.started) {
+  el('intro').classList.add('hidden');
+  renderAll();
+} else {
+  el('intro').classList.remove('hidden');
+}
+updateSoundUI();
+document.addEventListener('pointerdown', () => ensureAudio(), {once: true});
+</script>
+</body>
+</html>
