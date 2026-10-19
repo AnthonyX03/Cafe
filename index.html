@@ -66,10 +66,10 @@ header p{margin:0;font-size:13px;opacity:.88}
 .stat small{display:block;color:var(--muted);font-size:11px}
 .stat strong{display:block;font-size:16px;margin-top:4px;overflow-wrap:anywhere}
 main{padding:0 12px 100px;max-width:860px;margin:auto}
-.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:2px 0 14px}
+.tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:2px 0 14px}
 .tab{
-  padding:10px 2px;background:#e9dfd2;color:#665246;font-size:10px;
-  border-radius:11px;font-weight:650;
+  padding:9px 1px;background:#e9dfd2;color:#665246;font-size:9px;
+  border-radius:10px;font-weight:650;
 }
 .tab.active{background:var(--brown);color:#fff;box-shadow:0 2px 8px rgba(117,69,47,.3)}
 .panel{padding:16px;margin-bottom:12px}
@@ -256,7 +256,7 @@ footer button{flex:1;max-width:200px}
 .badge.danger{background:#f9e4df;color:#92382d}
 @media(min-width:600px){
   .grid,.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .tab{font-size:12px}
+  .tab{font-size:11px}
   .stats{gap:12px}
   .stat{padding:14px}
   .modal-overlay{align-items:center}
@@ -341,6 +341,7 @@ footer button{flex:1;max-width:200px}
     <button class="tab" data-tab="shop" onclick="showTab('shop')">Tienda</button>
     <button class="tab" data-tab="stock" onclick="showTab('stock')">Almacén</button>
     <button class="tab" data-tab="prices" onclick="showTab('prices')">Precios</button>
+    <button class="tab" data-tab="upgrades" onclick="showTab('upgrades')">Mejoras</button>
     <button class="tab" data-tab="staff" onclick="showTab('staff')">Personal</button>
     <button class="tab" data-tab="finance" onclick="showTab('finance')">Finanzas</button>
   </nav>
@@ -357,6 +358,8 @@ footer button{flex:1;max-width:200px}
       <div class="row"><span>Facturas pendientes</span><strong id="billsPending">0</strong></div>
       <div class="row"><span>Reputación</span><strong id="repLabel">50/100</strong></div>
       <div class="rep-bar"><span id="repBar" style="width:50%"></span></div>
+      <div class="row"><span>Clima de hoy</span><strong id="weatherLabel">—</strong></div>
+      <div id="homeWeather" class="event-banner hidden"></div>
       <div id="homeEvent" class="event-banner hidden"></div>
       <div class="notice" id="homeTip">Consejo: compra ingredientes antes de abrir. Sin existencias no podrás vender.</div>
       <button class="primary wide" id="startDay" onclick="beginDay()">Abrir y empezar el día · 60 s</button>
@@ -365,21 +368,6 @@ footer button{flex:1;max-width:200px}
     <div class="panel">
       <h3>Última jornada</h3>
       <div id="lastSummary" class="muted">Todavía no has completado ninguna jornada.</div>
-    </div>
-    <div class="panel">
-      <h2>Mejoras del local</h2>
-      <p class="muted">Inversiones permanentes. Algunas tienen mantenimiento diario.</p>
-      <div id="upgradesList"></div>
-    </div>
-    <div class="panel" id="expandPanel">
-      <h2>Expansión de la empresa</h2>
-      <p class="muted">Cuando tu cafetería sea sólida, podrás abrir un restaurante (12:00–00:00) con carta y personal propios. La caja es compartida.</p>
-      <div id="expandBox"></div>
-    </div>
-    <div class="panel">
-      <h2>Préstamo bancario</h2>
-      <p class="muted">Dinero rápido con intereses. Si no lo devuelves a tiempo, la deuda crece y puedes quebrar.</p>
-      <div id="loanBox"></div>
     </div>
   </section>
 
@@ -410,6 +398,14 @@ footer button{flex:1;max-width:200px}
   </section>
 
 
+  <section id="upgrades" class="hidden">
+    <div class="panel">
+      <h2>Mejoras del local</h2>
+      <p class="muted">Inversiones del local activo (cafetería o restaurante). Algunas tienen mantenimiento diario que se cobra al cerrar.</p>
+      <div id="upgradesList"></div>
+    </div>
+  </section>
+
   <section id="staff" class="hidden">
     <div class="panel">
       <h2>Personal</h2>
@@ -435,6 +431,16 @@ footer button{flex:1;max-width:200px}
       <div class="row"><span>Nóminas pagadas</span><strong id="finPayroll">0 €</strong></div>
       <div class="row"><span>Resultado acumulado</span><strong id="finNet">0 €</strong></div>
       <p class="muted">Resultado = ingresos − compras − operativos − facturas − nóminas. Evita la quiebra.</p>
+    </div>
+    <div class="panel" id="expandPanel">
+      <h2>Expansión de la empresa</h2>
+      <p class="muted">Abre un restaurante (12:00–00:00) cuando la cafetería sea sólida. La caja es compartida.</p>
+      <div id="expandBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Préstamo bancario</h2>
+      <p class="muted">Dinero rápido con intereses. Si no lo devuelves a tiempo, la deuda crece y puedes quebrar.</p>
+      <div id="loanBox"></div>
     </div>
     <div class="panel">
       <h2>Nóminas del personal</h2>
@@ -561,8 +567,20 @@ footer button{flex:1;max-width:200px}
       </div>
       <button class="primary" style="padding:8px 12px;font-size:13px" onclick="promptInstall()">Instalar</button>
     </div>
+    <h3 style="margin-top:20px">Ayuda</h3>
+    <div class="muted" style="font-size:13px;line-height:1.5;text-align:left">
+      <p><strong>Estaciones</strong> (Primavera, Verano, Otoño, Invierno): cambian cada 5 días. Suben o bajan la demanda de ciertos productos (helados en verano, chocolate en invierno, etc.).</p>
+      <p><strong>Clima</strong> (Soleado, Nublado, Lluvia, Tormenta, Niebla, Viento): se sortea al abrir el día y afecta a cuánta clientela llega. Independiente de los eventos.</p>
+      <p><strong>Eventos</strong>: noticias o imprevistos (feria, quejas, subida de luz, crítica positiva…). No son el clima; pueden sumar o restar clientes, reputación o facturas.</p>
+      <p><strong>Empresa</strong>: misma caja para cafetería y restaurante. Cambia de local en el encabezado cuando desbloquees el restaurante.</p>
+      <p><strong>Personal y nóminas</strong>: paga a tiempo o pueden marcharse. Sin pagar no puedes despedir.</p>
+      <p><strong>Quiebra</strong>: deudas, préstamo impagado o fondos hundidos terminan la partida.</p>
+    </div>
     <h3 style="margin-top:20px">Partida</h3>
     <button class="secondary wide" onclick="saveGame(false);closeSettings()">Guardar partida ahora</button>
+    <button class="secondary wide" onclick="exportSave()">Exportar partida</button>
+    <button class="secondary wide" onclick="document.getElementById('importFile').click()">Importar partida</button>
+    <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importSave(event)">
     <button class="danger wide" onclick="resetGame()">Borrar partida y empezar de cero</button>
     <button class="secondary wide" style="margin-top:12px" onclick="closeSettings()">Cerrar</button>
   </div>
@@ -767,7 +785,13 @@ const UPGRADES = [
   {id:'sign', name:'Rótulo luminoso', emoji:'💡', cost:55, upkeep:2,
     desc:'Más visibilidad (+10% clientes).', bonus:{customers:0.10}},
   {id:'training', name:'Zona de formación', emoji:'📚', cost:90, upkeep:0,
-    desc:'El personal rinde un 15% más.', bonus:{staffBoost:0.15}}
+    desc:'El personal rinde un 15% más.', bonus:{staffBoost:0.15}},
+  {id:'loyalty', name:'Tarjeta de fidelización', emoji:'💳', cost:40, upkeep:1,
+    desc:'Clientes recurrentes (+10% clientela).', bonus:{customers:0.10}},
+  {id:'delivery', name:'Servicio a domicilio', emoji:'🛵', cost:110, upkeep:5,
+    desc:'Pedidos a casa (+20% clientes, ideal con lluvia).', bonus:{customers:0.20, rainGuard:0.15}},
+  {id:'ac', name:'Climatización', emoji:'🌡️', cost:75, upkeep:3,
+    desc:'Confort en calor o frío (+8% clientes).', bonus:{customers:0.08}}
 ];
 
 const LOAN_OFFERS = [
@@ -824,6 +848,7 @@ const initial = () => ({
   music: true,
   vibrate: true,
   event: null,
+  weather: null,
   bankrupt: false,
   loan: null,
   shift: 'morning',
@@ -1189,7 +1214,7 @@ function showTab(tab) {
     return;
   }
   sfx('click');
-  ['home', 'shop', 'stock', 'prices', 'staff', 'finance', 'running', 'report'].forEach(id => {
+  ['home', 'shop', 'stock', 'prices', 'upgrades', 'staff', 'finance', 'running', 'report'].forEach(id => {
     el(id).classList.toggle('hidden', id !== tab);
   });
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -1198,6 +1223,7 @@ function showTab(tab) {
   if (tab === 'shop') renderShop();
   if (tab === 'stock') renderStock();
   if (tab === 'prices') renderPrices();
+  if (tab === 'upgrades') renderUpgrades();
   if (tab === 'staff') renderStaff();
   if (tab === 'finance') renderFinance();
 }
@@ -1232,6 +1258,11 @@ function renderAll() {
     if (br) br.classList.toggle('active-venue', isRest);
   }
   if (typeof renderExpand === 'function') renderExpand();
+  const wl = el('weatherLabel');
+  if (wl) {
+    if (game.weather) wl.textContent = (game.weather.emoji||'') + ' ' + game.weather.name;
+    else wl.textContent = 'Se define al abrir';
+  }
   el('dayLabel').textContent = 'Día ' + game.day + ' · ' + (dayRunning ? 'Abierto' : 'Gestión de la cafetería');
   el('dayNumber').textContent = 'Día ' + game.day;
   const cashStr = euro(game.cash);
@@ -1698,44 +1729,89 @@ function triggerBankruptcy() {
   sfx('end');
 }
 
+
+const WEATHER_TYPES = [
+  {id:'sunny', name:'Soleado', emoji:'☀️', weight:28, customerMult:1.12, msg:'Hace un día estupendo: más gente en la calle.'},
+  {id:'cloudy', name:'Nublado', emoji:'☁️', weight:22, customerMult:1.0, msg:'Cielo gris, afluencia normal.'},
+  {id:'rain', name:'Lluvia', emoji:'🌧️', weight:18, customerMult:0.78, msg:'Llueve: menos paseos, menos clientes.'},
+  {id:'storm', name:'Tormenta', emoji:'⛈️', weight:8, customerMult:0.55, msg:'Tormenta fuerte: casi nadie se acerca.'},
+  {id:'fog', name:'Niebla', emoji:'🌫️', weight:12, customerMult:0.85, msg:'Niebla densa: el barrio se mueve con calma.'},
+  {id:'wind', name:'Viento', emoji:'💨', weight:12, customerMult:0.9, msg:'Mucho viento: algo menos de tránsito peatonal.'}
+];
+
 const DAY_EVENTS = [
-  {id:'rain', name:'Día de lluvia', kind:'bad', weight:18,
-    apply(){ return {customerMult:0.72, msg:'Llueve: menos gente en la calle (−28% clientes).'}; }},
-  {id:'fair', name:'Feria del barrio', kind:'good', weight:14,
-    apply(){ return {customerMult:1.35, msg:'¡Feria del barrio! Mucho más tránsito (+35% clientes).'}; }},
-  {id:'power', name:'Subida de la luz', kind:'bad', weight:12,
+  {id:'fair', name:'Feria del barrio', kind:'good', weight:12,
+    apply(){ return {customerMult:1.30, msg:'¡Feria en el barrio! Mucho más tránsito.'}; }},
+  {id:'power', name:'Subida de la luz', kind:'bad', weight:10,
     apply(){
       const extra = Math.round((4 + game.day * 0.6)*100)/100;
       game.bills.push({id:'evt-luz-'+Date.now(), type:'luz', label:'Extra luz (pico de tarifa)', amount:extra, dayCreated:game.day, dueDay:game.day+1, paid:false});
-      return {customerMult:1, msg:'Subida imprevista de luz: +'+euro(extra)+' en facturas (vence mañana).'};
+      return {customerMult:1, msg:'Subida imprevista de luz: +'+euro(extra)+' (vence mañana).'};
     }},
-  {id:'review', name:'Crítica positiva', kind:'good', weight:12,
-    apply(){ clampRep(game.reputation + 6); return {customerMult:1.1, msg:'Una reseña excelente mejora tu reputación (+6).'}; }},
+  {id:'review', name:'Crítica positiva', kind:'good', weight:11,
+    apply(){ clampRep(game.reputation + 6); return {customerMult:1.08, msg:'Una reseña excelente (+6 reputación).'}; }},
   {id:'complaint', name:'Queja en redes', kind:'bad', weight:10,
-    apply(){ clampRep(game.reputation - 5); return {customerMult:0.9, msg:'Una queja viral baja la reputación (−5).'}; }},
-  {id:'calm', name:'Jornada normal', kind:'neutral', weight:34,
-    apply(){ return {customerMult:1, msg:'Día tranquilo en el barrio.'}; }}
+    apply(){ clampRep(game.reputation - 5); return {customerMult:0.92, msg:'Una queja viral (−5 reputación).'}; }},
+  {id:'influencer', name:'Visita influencer', kind:'good', weight:7,
+    apply(){ clampRep(game.reputation + 8); return {customerMult:1.2, msg:'Un influencer publica desde tu local (+8 rep.).'}; }},
+  {id:'inspection', name:'Inspección sanitaria', kind:'bad', weight:6,
+    apply(){
+      const fine = Math.round((8 + game.day * 0.5)*100)/100;
+      if (game.cash >= fine) { game.cash -= fine; game.spend += fine; }
+      else { game.cash -= fine; }
+      return {customerMult:0.95, msg:'Inspección: tasa de '+euro(fine)+'.'};
+    }},
+  {id:'supplier', name:'Oferta de proveedor', kind:'good', weight:8,
+    apply(){
+      game.cash += 12;
+      return {customerMult:1, msg:'El proveedor te devuelve 12 € por fidelidad.'};
+    }},
+  {id:'strike', name:'Obras en la calle', kind:'bad', weight:9,
+    apply(){ return {customerMult:0.7, msg:'Obras delante del local: menos visibilidad (−30% clientes).'}; }},
+  {id:'holiday', name:'Puente festivo', kind:'good', weight:8,
+    apply(){ return {customerMult:1.25, msg:'Puente festivo: el barrio se llena.'}; }},
+  {id:'rival', name:'Promo de la competencia', kind:'bad', weight:9,
+    apply(){ return {customerMult:0.8, msg:'El local de enfrente hace 2x1: te quitan clientela.'}; }},
+  {id:'viral', name:'Plato/café viral', kind:'good', weight:6,
+    apply(){ clampRep(game.reputation + 4); return {customerMult:1.15, msg:'Algo de tu carta se hace viral (+4 rep.).'}; }},
+  {id:'calm', name:'Día sin noticias', kind:'neutral', weight:20,
+    apply(){ return {customerMult:1, msg:'Nada especial en el barrio hoy.'}; }}
 ];
 
-function rollDayEvent() {
-  const total = DAY_EVENTS.reduce((s,e)=>s+e.weight,0);
-  let r = Math.random()*total;
-  for (const e of DAY_EVENTS) {
-    r -= e.weight;
-    if (r <= 0) {
-      const result = e.apply();
-      game.event = {id:e.id, name:e.name, kind:e.kind, ...result};
-      return game.event;
-    }
+function pickWeighted(list) {
+  const total = list.reduce((s,e)=>s+(e.weight||1),0);
+  let r = Math.random() * total;
+  for (const e of list) {
+    r -= (e.weight||1);
+    if (r <= 0) return e;
   }
-  game.event = {id:'calm', name:'Jornada normal', kind:'neutral', customerMult:1, msg:'Día tranquilo.'};
+  return list[list.length-1];
+}
+
+
+function rollWeather() {
+  const w = pickWeighted(WEATHER_TYPES);
+  game.weather = {id:w.id, name:w.name, emoji:w.emoji, customerMult:w.customerMult, msg:w.msg};
+  return game.weather;
+}
+
+function rollDayEvent() {
+  const e = pickWeighted(DAY_EVENTS);
+  const result = e.apply();
+  game.event = {id:e.id, name:e.name, kind:e.kind, ...result};
   return game.event;
 }
+
 
 function customerIntervalMs() {
   const bonus = staffBonus();
   const repFactor = 0.7 + (game.reputation/100)*0.6;
   const evt = (game.event && game.event.customerMult) || 1;
+  let weatherM = (game.weather && game.weather.customerMult) || 1;
+  const ub = upgradeBonus();
+  if (ub.rainGuard && game.weather && (game.weather.id === 'rain' || game.weather.id === 'storm')) {
+    weatherM = Math.min(1.05, weatherM + ub.rainGuard);
+  }
   const season = currentSeason(game.day).customerMult;
   let shiftMult = 1;
   if (game.shift === 'afternoon') {
@@ -1746,7 +1822,7 @@ function customerIntervalMs() {
     // mañana: más familias si hay mesero
     if (game.staff.some(s => s.role === 'mesero')) shiftMult = 1.08;
   }
-  const ms = 1500 / (bonus.customers * repFactor * evt * season * shiftMult);
+  const ms = 1500 / (bonus.customers * repFactor * evt * weatherM * season * shiftMult);
   return Math.max(650, Math.min(2300, ms));
 }
 
@@ -1833,7 +1909,7 @@ function drawProfitChart() {
 function hasUpgrade(id){ return (game.upgrades||[]).includes(id); }
 
 function upgradeBonus() {
-  const b = {customers:0, rep:0, priceMult:1, sweetBoost:0, afternoon:0, staffBoost:0, upkeep:0};
+  const b = {customers:0, rep:0, priceMult:1, sweetBoost:0, afternoon:0, staffBoost:0, upkeep:0, rainGuard:0};
   (game.upgrades||[]).forEach(id => {
     const u = UPGRADES.find(x => x.id === id);
     if (!u) return;
@@ -1844,6 +1920,7 @@ function upgradeBonus() {
     if (u.bonus.sweetBoost) b.sweetBoost += u.bonus.sweetBoost;
     if (u.bonus.afternoon) b.afternoon += u.bonus.afternoon;
     if (u.bonus.staffBoost) b.staffBoost += u.bonus.staffBoost;
+    if (u.bonus.rainGuard) b.rainGuard += u.bonus.rainGuard;
   });
   return b;
 }
@@ -2030,12 +2107,21 @@ function beginDay() {
     showTab('finance');
     return;
   }
-  // Evento del día
+  // Clima y evento (independientes)
+  const w = rollWeather();
   const ev = rollDayEvent();
+  const hw = el('homeWeather');
+  if (hw) {
+    hw.className = 'event-banner ' + (w.customerMult < 0.9 ? 'bad' : w.customerMult > 1.05 ? 'good' : '');
+    hw.textContent = w.emoji + ' ' + w.name + ': ' + w.msg;
+    hw.classList.remove('hidden');
+  }
+  const wl = el('weatherLabel');
+  if (wl) wl.textContent = w.emoji + ' ' + w.name;
   const he = el('homeEvent');
   if (he) {
     he.className = 'event-banner ' + (ev.kind === 'bad' ? 'bad' : ev.kind === 'good' ? 'good' : '');
-    he.textContent = ev.name + ': ' + ev.msg;
+    he.textContent = '📰 ' + ev.name + ': ' + ev.msg;
     he.classList.remove('hidden');
   }
 
@@ -2473,7 +2559,49 @@ function toggleMusic() {
   sfx('click');
 }
 
+
+function exportSave() {
+  try {
+    syncVenueFromGame();
+    const data = JSON.stringify(game, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cafe-barrio-save-dia' + game.day + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('Partida exportada');
+    sfx('click');
+  } catch (e) {
+    toast('No se pudo exportar');
+  }
+}
+function importSave(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const d = JSON.parse(reader.result);
+      if (!d || !d.name) throw new Error('invalid');
+      localStorage.setItem('cafebarrio-save', JSON.stringify(d));
+      loadGame();
+      if (game.started) el('intro').classList.add('hidden');
+      renderAll();
+      toast('Partida importada');
+      sfx('buy');
+      closeSettings();
+    } catch (e) {
+      toast('Archivo no válido');
+      sfx('error');
+    }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
 /* ========== BOOT ========== */
+
 loadGame();
 if (game.started) {
   el('intro').classList.add('hidden');
