@@ -141,7 +141,7 @@ footer button{flex:1;max-width:200px}
   background:radial-gradient(ellipse at 50% 100%,rgba(198,139,85,.12),transparent 60%);
   pointer-events:none;
 }
-.customer{font-size:42px;animation:arrive .7s cubic-bezier(.22,1.2,.36,1) both;filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));display:inline-block}
+.customer{font-size:42px;animation:arrive .7s cubic-bezier(.22,1.2,.36,1) both;filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));display:inline-block;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji","Twemoji Mozilla","Android Emoji",sans-serif;line-height:1}
 .customer.leaving{animation:leave .65s ease forwards}
 .customer-area .customer + .customer{margin-left:2px}
 @keyframes arrive{
@@ -281,6 +281,22 @@ footer button{flex:1;max-width:200px}
 }
 .event-banner.bad{border-left-color:var(--red);background:#f9e4df}
 .event-banner.good{border-left-color:var(--green);background:#e8f5ec}
+
+.upgrade-card{padding:12px;margin:8px 0}
+.upgrade-card.owned{border-color:#347452;background:#f3faf5}
+.season-badge{
+  display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;
+  background:#f0e5d7;color:var(--brown);margin-left:6px;
+}
+.level-badge{font-size:13px;font-weight:800;color:var(--brown)}
+.shift-bar{display:flex;gap:6px;margin:8px 0}
+.shift-bar .shift{
+  flex:1;text-align:center;padding:8px;border-radius:10px;background:#efe3d5;font-size:12px;font-weight:700;
+}
+.shift-bar .shift.active{background:var(--brown);color:#fff}
+
+.venue-switch{display:flex!important;gap:8px;flex-wrap:wrap}
+.venue-switch button.active-venue{background:var(--brown)!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -291,18 +307,22 @@ footer button{flex:1;max-width:200px}
     <div class="logo">☕</div>
     <div class="brand">Tu nueva aventura</div>
     <h1>Café de Barrio</h1>
-    <p>Empieza con una pequeña cafetería y conviértela en el lugar favorito de todo el barrio. Compra, prepara, vende y haz crecer tu negocio.</p>
-    <label for="cafeName">¿Cómo se llamará tu cafetería?</label>
-    <input id="cafeName" class="field" maxlength="30" placeholder="Ej. El Rincón del Café" autocomplete="off">
+    <p>Empieza con una cafetería y expande tu empresa abriendo un restaurante. Misma gestión, mayor escala.</p>
+    <label for="cafeName">¿Cómo se llamará tu empresa?</label>
+    <input id="cafeName" class="field" maxlength="30" placeholder="Ej. Grupo Rincón" autocomplete="off">
     <button class="primary wide" onclick="startGame()">Abrir mi cafetería →</button>
     <p style="font-size:11px;margin-top:14px;opacity:.7">Tu progreso se guarda automáticamente en este dispositivo.</p>
   </div>
 </div>
 
 <header>
-  <div class="brand">Simulador de gestión</div>
+  <div class="brand">Simulador de gestión · <span id="venueTypeLabel">Cafetería</span></div>
   <h1 id="headerName">Café de Barrio</h1>
   <p id="dayLabel">Día 1 · Preparando la apertura</p>
+  <div id="venueSwitcher" class="venue-switch hidden" style="margin-top:10px;display:none;gap:8px">
+    <button type="button" class="secondary" id="btnVenueCafe" onclick="switchVenue('cafe')" style="padding:8px 12px;font-size:12px">☕ Cafetería</button>
+    <button type="button" class="secondary" id="btnVenueRest" onclick="switchVenue('restaurant')" style="padding:8px 12px;font-size:12px">🍽️ Restaurante</button>
+  </div>
   <div class="header-actions">
     <button class="icon-btn" id="soundBtn" onclick="toggleSound()" title="Sonido" aria-label="Sonido">🔊</button>
     <button class="icon-btn" onclick="openSettings()" title="Ajustes" aria-label="Ajustes">⚙</button>
@@ -330,6 +350,8 @@ footer button{flex:1;max-width:200px}
       <h2>¡Bienvenido a tu cafetería!</h2>
       <p class="muted">Prepara el almacén, ajusta precios y abre. Cada jornada dura 60 s (horario 9:00–21:00).</p>
       <div class="row"><span>Jornada actual</span><strong id="dayNumber">Día 1</strong></div>
+      <div class="row"><span>Estación</span><strong id="seasonLabel">🌸 Primavera</strong></div>
+      <div class="row"><span>Nivel del local</span><strong class="level-badge" id="levelLabel">Nv.1 Rincón</strong></div>
       <div class="row"><span>Clientes atendidos</span><strong id="servedHome">0</strong></div>
       <div class="row"><span>Productos en almacén</span><strong id="stockCount">0 uds</strong></div>
       <div class="row"><span>Facturas pendientes</span><strong id="billsPending">0</strong></div>
@@ -343,6 +365,21 @@ footer button{flex:1;max-width:200px}
     <div class="panel">
       <h3>Última jornada</h3>
       <div id="lastSummary" class="muted">Todavía no has completado ninguna jornada.</div>
+    </div>
+    <div class="panel">
+      <h2>Mejoras del local</h2>
+      <p class="muted">Inversiones permanentes. Algunas tienen mantenimiento diario.</p>
+      <div id="upgradesList"></div>
+    </div>
+    <div class="panel" id="expandPanel">
+      <h2>Expansión de la empresa</h2>
+      <p class="muted">Cuando tu cafetería sea sólida, podrás abrir un restaurante (12:00–00:00) con carta y personal propios. La caja es compartida.</p>
+      <div id="expandBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Préstamo bancario</h2>
+      <p class="muted">Dinero rápido con intereses. Si no lo devuelves a tiempo, la deuda crece y puedes quebrar.</p>
+      <div id="loanBox"></div>
     </div>
   </section>
 
@@ -427,6 +464,10 @@ footer button{flex:1;max-width:200px}
       <div class="row">
         <span>Hora</span>
         <strong class="clock-display" id="clock">09:00</strong>
+      </div>
+      <div class="shift-bar">
+        <div class="shift active" id="shiftMorning">🌅 Mañana</div>
+        <div class="shift" id="shiftAfternoon">🌇 Tarde</div>
       </div>
       <div class="row"><span>Tiempo restante</span><strong id="timer">60 s</strong></div>
       <div class="bar"><span id="dayProgress"></span></div>
@@ -539,7 +580,8 @@ const LABELS = {
   pastry:'BO', cake:'PA', juice:'ZU', bread:'PN', eggs:'HU', fruit:'FR'
 };
 
-const supplies = [
+
+const CAFE_SUPPLIES = [
   {id:'beans',name:'Café molido',emoji:'☕',cost:.18,unit:'dosis',desc:'Base para espressos y cafés con leche'},
   {id:'milk',name:'Leche',emoji:'🥛',cost:.12,unit:'dosis',desc:'Para preparar cafés cremosos'},
   {id:'tea',name:'Té',emoji:'🍵',cost:.15,unit:'bolsitas',desc:'Té caliente para tus clientes'},
@@ -559,8 +601,7 @@ const supplies = [
   {id:'cupcake',name:'Cupcakes',emoji:'🎂',cost:.85,unit:'unidades',desc:'Magdalenas decoradas'},
   {id:'donut',name:'Donuts',emoji:'🍩',cost:.70,unit:'unidades',desc:'Donuts glaseados'}
 ];
-
-const recipes = [
+const CAFE_RECIPES = [
   {id:'espresso',name:'Espresso',emoji:'☕',price:1.50,parts:{beans:1,sugar:0.2},desc:'Un café intenso'},
   {id:'latte',name:'Café con leche',emoji:'🥛',price:2.10,parts:{beans:1,milk:1,sugar:0.3},desc:'Café suave y cremoso'},
   {id:'tea',name:'Té caliente',emoji:'🍵',price:1.60,parts:{tea:1,sugar:0.2},desc:'Una taza reconfortante'},
@@ -577,12 +618,51 @@ const recipes = [
   {id:'donut',name:'Donut',emoji:'🍩',price:1.90,parts:{donut:1},desc:'Donut glaseado'}
 ];
 
+/* Restaurante: ingredientes y carta (emojis clásicos y legibles) */
+const REST_SUPPLIES = [
+  {id:'pasta',name:'Pasta',emoji:'🍝',cost:.35,unit:'raciones',desc:'Base para platos italianos'},
+  {id:'rice',name:'Arroz',emoji:'🍚',cost:.25,unit:'raciones',desc:'Guarnición y arroces'},
+  {id:'meat',name:'Carne',emoji:'🥩',cost:1.40,unit:'raciones',desc:'Ternera o pollo para guisos'},
+  {id:'fish',name:'Pescado',emoji:'🐟',cost:1.60,unit:'raciones',desc:'Pescado fresco del día'},
+  {id:'veg',name:'Verduras',emoji:'🥗',cost:.45,unit:'raciones',desc:'Ensaladas y guarniciones'},
+  {id:'tomato',name:'Tomate',emoji:'🍅',cost:.20,unit:'dosis',desc:'Salsas y ensaladas'},
+  {id:'cheese',name:'Queso',emoji:'🧀',cost:.40,unit:'dosis',desc:'Gratinados y tablas'},
+  {id:'bread',name:'Pan',emoji:'🍞',cost:.30,unit:'unidades',desc:'Cesta de pan'},
+  {id:'oil',name:'Aceite',emoji:'🫒',cost:.15,unit:'dosis',desc:'Aliños y cocina'},
+  {id:'wine',name:'Vino',emoji:'🍷',cost:2.20,unit:'copas',desc:'Carta de vinos'},
+  {id:'water',name:'Agua',emoji:'💧',cost:.20,unit:'botellas',desc:'Agua mineral'},
+  {id:'potato',name:'Patata',emoji:'🥔',cost:.18,unit:'raciones',desc:'Guarnición clásica'},
+  {id:'egg',name:'Huevos',emoji:'🥚',cost:.20,unit:'unidades',desc:'Tortillas y más'},
+  {id:'dessert',name:'Postres',emoji:'🍮',cost:.90,unit:'raciones',desc:'Postres caseros'},
+  {id:'soup',name:'Caldo',emoji:'🥣',cost:.30,unit:'raciones',desc:'Base de sopas'}
+];
+const REST_RECIPES = [
+  {id:'salad',name:'Ensalada mixta',emoji:'🥗',price:6.50,parts:{veg:1,tomato:1,oil:1,cheese:0.3},desc:'Fresca de la huerta'},
+  {id:'soup',name:'Sopa del día',emoji:'🥣',price:5.50,parts:{soup:1,veg:0.5,bread:0.5},desc:'Caliente y reconfortante'},
+  {id:'pasta_b',name:'Pasta boloñesa',emoji:'🍝',price:9.90,parts:{pasta:1,meat:0.6,tomato:1,cheese:0.3},desc:'Clásico italiano'},
+  {id:'rice_m',name:'Arroz con carne',emoji:'🍛',price:10.50,parts:{rice:1,meat:0.7,veg:0.5},desc:'Ración generosa'},
+  {id:'grilled',name:'Carne a la plancha',emoji:'🥩',price:12.90,parts:{meat:1,potato:1,oil:0.5},desc:'Con guarnición'},
+  {id:'fish_d',name:'Pescado del día',emoji:'🐟',price:13.50,parts:{fish:1,veg:0.8,oil:0.5,lemon:0},desc:'A la plancha'},
+  {id:'omelette',name:'Tortilla',emoji:'🍳',price:7.50,parts:{egg:2,potato:0.8,oil:0.4},desc:'Casera'},
+  {id:'menu',name:'Menú del día',emoji:'🍽️',price:11.90,parts:{soup:0.5,meat:0.5,bread:1,dessert:0.5,water:1},desc:'Entrante + principal + postre'},
+  {id:'wine_g',name:'Copa de vino',emoji:'🍷',price:3.50,parts:{wine:1},desc:'Tinto o blanco'},
+  {id:'water_b',name:'Agua',emoji:'💧',price:1.80,parts:{water:1},desc:'Botella'},
+  {id:'dessert_c',name:'Postre casero',emoji:'🍮',price:4.50,parts:{dessert:1},desc:'El dulce final'},
+  {id:'bread_b',name:'Cesta de pan',emoji:'🍞',price:1.50,parts:{bread:1,oil:0.2},desc:'Pan de la casa'}
+];
+/* quitar lemon de fish si no existe */
+REST_RECIPES.forEach(r => { if (r.parts && 'lemon' in r.parts) delete r.parts.lemon; });
+
+let supplies = CAFE_SUPPLIES;
+let recipes = CAFE_RECIPES;
+
 const BILL_DEADLINE_DAYS = 2; // días para pagar tras generar
 
 
-const STAFF_ROLES = {
+
+const CAFE_STAFF_ROLES = {
   mesero: {
-    id: 'mesero', title: 'Mesero', emoji: '🧑‍🍳',
+    id: 'mesero', title: 'Mesero', emoji: '🛎️',
     desc: 'Atiende mesas: más clientes por jornada.',
     ranks: [
       {rank:1, hire:25, salary:6, bonus:{customers:0.12}},
@@ -591,7 +671,7 @@ const STAFF_ROLES = {
     ]
   },
   cajero: {
-    id: 'cajero', title: 'Cajero', emoji: '🧮',
+    id: 'cajero', title: 'Cajero', emoji: '🧾',
     desc: 'Agiliza cobros: menos gastos operativos por venta.',
     ranks: [
       {rank:1, hire:22, salary:5, bonus:{overhead:0.25}},
@@ -609,38 +689,249 @@ const STAFF_ROLES = {
     ]
   }
 };
+const REST_STAFF_ROLES = {
+  camarero: {
+    id: 'camarero', title: 'Camarero', emoji: '🛎️',
+    desc: 'Sala: más comensales por servicio.',
+    ranks: [
+      {rank:1, hire:40, salary:10, bonus:{customers:0.14}},
+      {rank:2, hire:85, salary:16, bonus:{customers:0.26}},
+      {rank:3, hire:140, salary:24, bonus:{customers:0.40}}
+    ]
+  },
+  chef: {
+    id: 'chef', title: 'Chef', emoji: '👨‍🍳',
+    desc: 'Cocina: más reputación y mejor ticket.',
+    ranks: [
+      {rank:1, hire:60, salary:14, bonus:{rep:0.6, priceMult:1.06}},
+      {rank:2, hire:120, salary:22, bonus:{rep:1.0, priceMult:1.10}},
+      {rank:3, hire:200, salary:32, bonus:{rep:1.5, priceMult:1.15}}
+    ]
+  },
+  pinche: {
+    id: 'pinche', title: 'Pinche', emoji: '🔪',
+    desc: 'Apoyo en cocina: menos desperdicio (overhead).',
+    ranks: [
+      {rank:1, hire:28, salary:7, bonus:{overhead:0.28}},
+      {rank:2, hire:60, salary:12, bonus:{overhead:0.48}},
+      {rank:3, hire:100, salary:18, bonus:{overhead:0.68}}
+    ]
+  }
+};
+let STAFF_ROLES = CAFE_STAFF_ROLES;
 const STAFF_NAMES = {
   mesero: ['Lucía','Marco','Sofía','Diego','Elena'],
   cajero: ['Pablo','Ana','Hugo','Clara','Nico'],
-  barista: ['Valeria','Leo','Iris','Bruno','Maya']
+  barista: ['Valeria','Leo','Iris','Bruno','Maya'],
+  camarero: ['Nora','Iván','Paula','Óscar','Lina'],
+  chef: ['Martín','Celia','Raúl','Inés','Toni'],
+  pinche: ['Álex','Marta','Joel','Nuria','Fran']
 };
+
+
+const SEASONS = [
+  {id:'spring', name:'Primavera', emoji:'🌸', days:5,
+    customerMult:1.05,
+    prefer:['fruit','juice','pastry','tea'],
+    avoid:['icecream']},
+  {id:'summer', name:'Verano', emoji:'☀️', days:5,
+    customerMult:1.12,
+    prefer:['juice','icecream','fruit','donut'],
+    avoid:['choco','tea']},
+  {id:'autumn', name:'Otoño', emoji:'🍂', days:5,
+    customerMult:1.0,
+    prefer:['pastry','cake','coffee','latte','espresso'],
+    avoid:['icecream']},
+  {id:'winter', name:'Invierno', emoji:'❄️', days:5,
+    customerMult:0.95,
+    prefer:['choco','tea','espresso','latte','cake'],
+    avoid:['icecream','juice']}
+];
+
+const CAFE_LEVELS = [
+  {level:1, name:'Rincón', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Tu pequeño rincón abre sus puertas.'},
+  {level:2, name:'Café de barrio', minIncome:120, minRep:40, customerBonus:1.12, unlockMsg:'El barrio ya te conoce.'},
+  {level:3, name:'Favorito local', minIncome:350, minRep:60, customerBonus:1.25, unlockMsg:'Eres el favorito de la zona.'},
+  {level:4, name:'De moda', minIncome:800, minRep:80, customerBonus:1.4, unlockMsg:'¡Tu cafetería está de moda!'}
+];
+
+const UPGRADES = [
+  {id:'terrace', name:'Terraza', emoji:'🪑', cost:80, upkeep:3,
+    desc:'Más asientos al aire libre (+18% clientes).', bonus:{customers:0.18}},
+  {id:'espresso', name:'Máquina espresso pro', emoji:'☕', cost:120, upkeep:4,
+    desc:'Mejor café: +reputación y +8% ticket.', bonus:{rep:0.5, priceMult:1.08}},
+  {id:'vitrine', name:'Vitrina refrigerada', emoji:'🧊', cost:70, upkeep:2,
+    desc:'Dulces más atractivos (+demanda bollería/tartas).', bonus:{sweetBoost:0.25}},
+  {id:'wifi', name:'WiFi para clientes', emoji:'📶', cost:45, upkeep:1,
+    desc:'La gente se queda más (+12% clientes tarde).', bonus:{afternoon:0.12}},
+  {id:'sign', name:'Rótulo luminoso', emoji:'💡', cost:55, upkeep:2,
+    desc:'Más visibilidad (+10% clientes).', bonus:{customers:0.10}},
+  {id:'training', name:'Zona de formación', emoji:'📚', cost:90, upkeep:0,
+    desc:'El personal rinde un 15% más.', bonus:{staffBoost:0.15}}
+];
+
+const LOAN_OFFERS = [
+  {id:'s', amount:50, interest:0.12, days:3, label:'50 € (12% · 3 días)'},
+  {id:'m', amount:100, interest:0.15, days:4, label:'100 € (15% · 4 días)'},
+  {id:'l', amount:200, interest:0.18, days:5, label:'200 € (18% · 5 días)'}
+];
+
+function currentSeason(day) {
+  const cycle = SEASONS.reduce((s,x)=>s+x.days, 0);
+  let d = ((day - 1) % cycle);
+  for (const s of SEASONS) {
+    if (d < s.days) return s;
+    d -= s.days;
+  }
+  return SEASONS[0];
+}
+
+function cafeLevel() {
+  let lv = CAFE_LEVELS[0];
+  for (const L of CAFE_LEVELS) {
+    if (game.income >= L.minIncome && game.reputation >= L.minRep) lv = L;
+  }
+  return lv;
+}
+
+function emptyVenue(kind) {
+  return {
+    kind,
+    stock: {},
+    prices: {},
+    staff: [],
+    upgrades: [],
+    reputation: kind === 'cafe' ? 50 : 40,
+    history: [],
+    last: null,
+    payrollOwed: 0,
+    unlocked: kind === 'cafe'
+  };
+}
 
 const initial = () => ({
   name: 'Café de Barrio',
   day: 1,
   cash: 50,
-  stock: {},
-  prices: {},
   income: 0,
   spend: 0,
   operating: 0,
   billsPaid: 0,
   payrollPaid: 0,
   bills: [],
-  history: [],
-  last: null,
   started: false,
   sound: true,
   music: true,
   vibrate: true,
-  reputation: 50,
-  staff: [], // {id, role, rank, name, hireDay, salaryDue, daysUnpaid}
-  payrollOwed: 0,
   event: null,
-  bankrupt: false
+  bankrupt: false,
+  loan: null,
+  shift: 'morning',
+  activeVenue: 'cafe',
+  restaurantUnlocked: false,
+  venues: {
+    cafe: emptyVenue('cafe'),
+    restaurant: emptyVenue('restaurant')
+  },
+  stock: {},
+  prices: {},
+  staff: [],
+  upgrades: [],
+  reputation: 50,
+  history: [],
+  last: null,
+  payrollOwed: 0
 });
 
+
 let game = initial();
+function bindActiveVenue() {
+  if (!game.venues) game.venues = { cafe: emptyVenue('cafe'), restaurant: emptyVenue('restaurant') };
+  if (!game.venues.cafe) game.venues.cafe = emptyVenue('cafe');
+  if (!game.venues.restaurant) game.venues.restaurant = emptyVenue('restaurant');
+  const id = (game.activeVenue === 'restaurant' && game.restaurantUnlocked) ? 'restaurant' : 'cafe';
+  game.activeVenue = id;
+  const v = game.venues[id];
+  // keep object identity: assign venue fields onto game aliases
+  game.stock = v.stock;
+  game.prices = v.prices;
+  game.staff = v.staff;
+  game.upgrades = v.upgrades;
+  game.reputation = v.reputation;
+  game.history = v.history;
+  game.last = v.last;
+  game.payrollOwed = v.payrollOwed || 0;
+  if (id === 'restaurant') {
+    supplies = REST_SUPPLIES;
+    recipes = REST_RECIPES;
+    STAFF_ROLES = REST_STAFF_ROLES;
+  } else {
+    supplies = CAFE_SUPPLIES;
+    recipes = CAFE_RECIPES;
+    STAFF_ROLES = CAFE_STAFF_ROLES;
+  }
+}
+function syncVenueFromGame() {
+  const v = game.venues && game.venues[game.activeVenue];
+  if (!v) return;
+  v.reputation = game.reputation;
+  v.payrollOwed = game.payrollOwed;
+  v.last = game.last;
+  // stock/prices/staff/upgrades/history already same refs
+}
+function switchVenue(id) {
+  if (dayRunning) { toast('No puedes cambiar de local con el servicio abierto.'); sfx('error'); return; }
+  if (id === 'restaurant' && !game.restaurantUnlocked) {
+    toast('Aún no has abierto el restaurante.'); sfx('error'); return;
+  }
+  syncVenueFromGame();
+  game.activeVenue = id;
+  bindActiveVenue();
+  cart = {};
+  renderAll();
+  saveGame(true);
+  sfx('click');
+  toast(id === 'restaurant' ? 'Gestionando el restaurante' : 'Gestionando la cafetería');
+}
+function canUnlockRestaurant() {
+  if (game.restaurantUnlocked || game.bankrupt) return false;
+  syncVenueFromGame();
+  const cafe = game.venues.cafe;
+  let lv = CAFE_LEVELS[0];
+  for (const L of CAFE_LEVELS) {
+    if (game.income >= L.minIncome && (cafe.reputation||0) >= L.minRep) lv = L;
+  }
+  return lv.level >= 3 && (cafe.reputation||0) >= 55 && game.cash >= 250 && !game.loan && !(cafe.payrollOwed > 0);
+}
+function unlockRestaurant() {
+  if (!canUnlockRestaurant()) {
+    toast('Requisitos: nivel cafetería ≥3, rep.≥55, 250€, sin préstamo ni nóminas.');
+    sfx('error'); return;
+  }
+  if (!confirm('¿Invertir 250 € para abrir el restaurante? Horario 12:00–00:00.')) return;
+  game.cash -= 250;
+  game.spend += 250;
+  game.restaurantUnlocked = true;
+  game.venues.restaurant.unlocked = true;
+  game.venues.restaurant.reputation = 45;
+  toast('¡Restaurante inaugurado!');
+  sfx('buy');
+  renderAll();
+  saveGame(true);
+}
+function renderExpand() {
+  const box = el('expandBox');
+  if (!box) return;
+  if (game.restaurantUnlocked) {
+    box.innerHTML = '<p class="muted">Restaurante de <strong>'+game.name+'</strong> operativo. Cambia de local en el encabezado. Caja compartida.</p>';
+    return;
+  }
+  const ok = canUnlockRestaurant();
+  box.innerHTML = '<p class="muted">Requisitos: nivel ≥3, reputación café ≥55, 250 €, sin préstamo/nóminas pendientes.</p>'
+    + '<button class="primary wide" '+(ok?'':'disabled')+' onclick="unlockRestaurant()">Abrir restaurante · 250 €</button>';
+}
+bindActiveVenue();
+
 let cart = {};
 let dayRunning = false;
 let dayState = null;
@@ -757,6 +1048,7 @@ function sfx(name) {
 /* ========== SAVE / LOAD ========== */
 function saveGame(silent = false) {
   try {
+    syncVenueFromGame();
     localStorage.setItem('cafebarrio-save', JSON.stringify(game));
     if (!silent) { toast('Partida guardada.'); sfx('click'); }
   } catch (e) {
@@ -768,37 +1060,59 @@ function loadGame() {
   try {
     const d = JSON.parse(localStorage.getItem('cafebarrio-save'));
     if (d && d.name) {
-      game = {...initial(), ...d};
-      game.stock = d.stock || {};
-      game.prices = d.prices || {};
-      game.history = d.history || [];
+      const base = initial();
+      game = {...base, ...d};
       game.bills = d.bills || [];
       if (typeof d.sound !== 'boolean') game.sound = true;
       if (typeof d.music !== 'boolean') game.music = true;
-      if (typeof d.reputation !== 'number') game.reputation = 50;
-      if (!Array.isArray(d.staff)) game.staff = [];
-      if (typeof d.payrollOwed !== 'number') game.payrollOwed = 0;
-      if (typeof d.payrollPaid !== 'number') game.payrollPaid = 0;
       if (typeof d.bankrupt !== 'boolean') game.bankrupt = false;
-      if (typeof d.vibrate !== 'boolean') game.vibrate = true;
-      if (typeof d.billsPaid !== 'number') game.billsPaid = 0;
+      if (d.loan === undefined) game.loan = null;
+      if (typeof d.payrollPaid !== 'number') game.payrollPaid = 0;
+      // Migración desde partidas sin venues
+      if (!d.venues) {
+        game.venues = {
+          cafe: emptyVenue('cafe'),
+          restaurant: emptyVenue('restaurant')
+        };
+        game.venues.cafe.stock = d.stock || {};
+        game.venues.cafe.prices = d.prices || {};
+        game.venues.cafe.staff = d.staff || [];
+        game.venues.cafe.upgrades = d.upgrades || [];
+        game.venues.cafe.reputation = typeof d.reputation === 'number' ? d.reputation : 50;
+        game.venues.cafe.history = d.history || [];
+        game.venues.cafe.last = d.last || null;
+        game.venues.cafe.payrollOwed = d.payrollOwed || 0;
+        game.restaurantUnlocked = false;
+        game.activeVenue = 'cafe';
+      } else {
+        game.venues = d.venues;
+        if (!game.venues.cafe) game.venues.cafe = emptyVenue('cafe');
+        if (!game.venues.restaurant) game.venues.restaurant = emptyVenue('restaurant');
+        game.restaurantUnlocked = !!d.restaurantUnlocked;
+        game.activeVenue = d.activeVenue || 'cafe';
+      }
+      bindActiveVenue();
     }
-  } catch (e) {}
+  } catch (e) { console.warn(e); }
 }
+
 
 /* ========== BILLS (Luz + Alquiler) ========== */
 function generateDayBills(day) {
-  // Base amounts scale with day
-  const rent = Math.round((18 + day * 3.5) * 100) / 100;
-  const light = Math.round((8 + day * 1.8) * 100) / 100;
+  const isRest = game.activeVenue === 'restaurant';
+  const rentBase = isRest ? 28 : 18;
+  const lightBase = isRest ? 12 : 8;
+  const rent = Math.round((rentBase + day * (isRest ? 4.2 : 3.5)) * 100) / 100;
+  const light = Math.round((lightBase + day * (isRest ? 2.2 : 1.8)) * 100) / 100;
   const due = day + BILL_DEADLINE_DAYS;
-  const idBase = 'b' + day + '-' + Date.now();
+  const idBase = 'b' + day + '-' + game.activeVenue + '-' + Date.now();
+  const tag = isRest ? 'restaurante' : 'cafetería';
   game.bills.push({
-    id: idBase + '-r', type: 'alquiler', label: 'Alquiler del local',
+    id: idBase + '-r', type: 'alquiler', label: 'Alquiler ' + tag,
     amount: rent, dayCreated: day, dueDay: due, paid: false
   });
   game.bills.push({
-    id: idBase + '-l', type: 'luz', label: 'Factura de luz',
+    id: idBase + '-l', type: 'luz', label: 'Luz ' + tag,
     amount: light, dayCreated: day, dueDay: due, paid: false
   });
 }
@@ -856,7 +1170,8 @@ function payAllBills() {
 /* ========== UI ========== */
 function startGame() {
   const name = el('cafeName').value.trim();
-  game.name = name || 'Café de Barrio';
+  game.name = name || 'Grupo Barrio';
+  bindActiveVenue();
   game.started = true;
   el('intro').classList.add('hidden');
   renderAll();
@@ -905,7 +1220,18 @@ function onFooterClick() {
 }
 
 function renderAll() {
-  el('headerName').textContent = '☕ ' + game.name;
+  const isRest = game.activeVenue === 'restaurant';
+  el('headerName').textContent = (isRest ? '🍽️ ' : '☕ ') + game.name;
+  const vtl = el('venueTypeLabel');
+  if (vtl) vtl.textContent = isRest ? 'Restaurante' : 'Cafetería';
+  const vs = el('venueSwitcher');
+  if (vs) {
+    vs.style.display = game.restaurantUnlocked ? 'flex' : 'none';
+    const bc = el('btnVenueCafe'), br = el('btnVenueRest');
+    if (bc) bc.classList.toggle('active-venue', !isRest);
+    if (br) br.classList.toggle('active-venue', isRest);
+  }
+  if (typeof renderExpand === 'function') renderExpand();
   el('dayLabel').textContent = 'Día ' + game.day + ' · ' + (dayRunning ? 'Abierto' : 'Gestión de la cafetería');
   el('dayNumber').textContent = 'Día ' + game.day;
   const cashStr = euro(game.cash);
@@ -921,6 +1247,14 @@ function renderAll() {
   if (rl) rl.textContent = Math.round(game.reputation) + '/100';
   const rb = el('repBar');
   if (rb) rb.style.width = Math.max(0, Math.min(100, game.reputation)) + '%';
+  const sea = currentSeason(game.day);
+  const sl = el('seasonLabel');
+  if (sl) sl.textContent = sea.emoji + ' ' + sea.name;
+  const lv = cafeLevel();
+  const ll = el('levelLabel');
+  if (ll) ll.textContent = 'Nv.' + lv.level + ' ' + lv.name;
+  renderUpgrades();
+  renderLoan();
   renderShop();
   renderStock();
   renderPrices();
@@ -1194,20 +1528,30 @@ function renderFinance() {
 
 
 /* ========== REPUTATION / STAFF / EVENTS ========== */
-function clampRep(v){ game.reputation = Math.max(0, Math.min(100, Math.round(v*10)/10)); }
+function clampRep(v){
+  game.reputation = Math.max(0, Math.min(100, Math.round(v*10)/10));
+  if (game.venues && game.venues[game.activeVenue]) game.venues[game.activeVenue].reputation = game.reputation;
+}
 
 function staffBonus() {
   const b = {customers:1, overhead:1, rep:0, priceMult:1};
+  const train = 1 + (upgradeBonus().staffBoost || 0);
   game.staff.forEach(s => {
     const role = STAFF_ROLES[s.role];
     if (!role) return;
     const rk = role.ranks[s.rank-1];
     if (!rk) return;
-    if (rk.bonus.customers) b.customers += rk.bonus.customers;
-    if (rk.bonus.overhead) b.overhead *= (1 - rk.bonus.overhead);
-    if (rk.bonus.rep) b.rep += rk.bonus.rep;
-    if (rk.bonus.priceMult) b.priceMult *= rk.bonus.priceMult;
+    if (rk.bonus.customers) b.customers += rk.bonus.customers * train;
+    if (rk.bonus.overhead) b.overhead *= (1 - rk.bonus.overhead * train);
+    if (rk.bonus.rep) b.rep += rk.bonus.rep * train;
+    if (rk.bonus.priceMult) b.priceMult *= (1 + (rk.bonus.priceMult - 1) * train);
   });
+  const ub = upgradeBonus();
+  b.customers += ub.customers;
+  b.rep += ub.rep;
+  b.priceMult *= ub.priceMult;
+  const lv = cafeLevel();
+  b.customers *= lv.customerBonus;
   return b;
 }
 
@@ -1286,6 +1630,7 @@ function payPayroll() {
   game.cash -= game.payrollOwed;
   game.payrollPaid += game.payrollOwed;
   game.payrollOwed = 0;
+  if (game.venues && game.venues[game.activeVenue]) game.venues[game.activeVenue].payrollOwed = 0;
   game.staff.forEach(s => s.daysUnpaid = 0);
   toast('Nóminas pagadas.');
   sfx('pay');
@@ -1298,6 +1643,7 @@ function processStaffAfterDay() {
   const pay = dailyPayroll();
   if (pay > 0) {
     game.payrollOwed += pay;
+    if (game.venues && game.venues[game.activeVenue]) game.venues[game.activeVenue].payrollOwed = game.payrollOwed;
     game.staff.forEach(s => s.daysUnpaid = (s.daysUnpaid || 0) + 1);
   }
   // Quienes llevan 2+ días sin cobrar pueden irse
@@ -1319,7 +1665,10 @@ function processStaffAfterDay() {
 function checkBankruptcy() {
   if (game.bankrupt) return true;
   // Quiebra: dinero negativo grave o sin poder cubrir deudas críticas con reputación 0
-  if (game.cash < -30 || (game.cash < 0 && game.reputation <= 5 && game.payrollOwed + unpaidBills().reduce((a,b)=>a+b.amount,0) > 80)) {
+  const loanDue = game.loan ? game.loan.totalDue : 0;
+  const debts = game.payrollOwed + unpaidBills().reduce((a,b)=>a+b.amount,0) + loanDue;
+  if (game.cash < -30 || (game.loan && game.day > game.loan.dueDay + 2 && game.cash < loanDue * 0.5) ||
+      (game.cash < 0 && game.reputation <= 5 && debts > 80)) {
     triggerBankruptcy();
     return true;
   }
@@ -1332,7 +1681,7 @@ function triggerBankruptcy() {
   clearInterval(tickHandle);
   clearInterval(customerHandle);
   stopMusic();
-  el('reportDate').textContent = 'QUIEBRA · Día ' + game.day;
+  el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · ' + (game.activeVenue === 'restaurant' ? '00:00' : '21:00');
   el('reportDetails').innerHTML = `
     <div class="notice warn">Has quebrado. Deudas impagadas, reputación hundida o fondos agotados.</div>
     <div class="lineitem"><span>Dinero</span><strong class="loss">${euro(game.cash)}</strong></div>
@@ -1385,11 +1734,20 @@ function rollDayEvent() {
 
 function customerIntervalMs() {
   const bonus = staffBonus();
-  const repFactor = 0.7 + (game.reputation/100)*0.6; // 0.7–1.3
+  const repFactor = 0.7 + (game.reputation/100)*0.6;
   const evt = (game.event && game.event.customerMult) || 1;
-  // base 1500ms; más reputación/staff → intervalos más cortos
-  const ms = 1500 / (bonus.customers * repFactor * evt);
-  return Math.max(700, Math.min(2200, ms));
+  const season = currentSeason(game.day).customerMult;
+  let shiftMult = 1;
+  if (game.shift === 'afternoon') {
+    shiftMult = 1.05 + (upgradeBonus().afternoon || 0);
+    // sin mesero, la tarde es algo más floja
+    if (!game.staff.some(s => s.role === 'mesero')) shiftMult *= 0.9;
+  } else {
+    // mañana: más familias si hay mesero
+    if (game.staff.some(s => s.role === 'mesero')) shiftMult = 1.08;
+  }
+  const ms = 1500 / (bonus.customers * repFactor * evt * season * shiftMult);
+  return Math.max(650, Math.min(2300, ms));
 }
 
 function renderStaff() {
@@ -1470,6 +1828,154 @@ function drawProfitChart() {
   });
 }
 
+
+/* ========== UPGRADES / LOAN / SEASON / SHIFT ========== */
+function hasUpgrade(id){ return (game.upgrades||[]).includes(id); }
+
+function upgradeBonus() {
+  const b = {customers:0, rep:0, priceMult:1, sweetBoost:0, afternoon:0, staffBoost:0, upkeep:0};
+  (game.upgrades||[]).forEach(id => {
+    const u = UPGRADES.find(x => x.id === id);
+    if (!u) return;
+    b.upkeep += u.upkeep || 0;
+    if (u.bonus.customers) b.customers += u.bonus.customers;
+    if (u.bonus.rep) b.rep += u.bonus.rep;
+    if (u.bonus.priceMult) b.priceMult *= u.bonus.priceMult;
+    if (u.bonus.sweetBoost) b.sweetBoost += u.bonus.sweetBoost;
+    if (u.bonus.afternoon) b.afternoon += u.bonus.afternoon;
+    if (u.bonus.staffBoost) b.staffBoost += u.bonus.staffBoost;
+  });
+  return b;
+}
+
+function buyUpgrade(id) {
+  if (game.bankrupt) return;
+  if (hasUpgrade(id)) { toast('Ya tienes esta mejora.'); return; }
+  const u = UPGRADES.find(x => x.id === id);
+  if (!u) return;
+  if (game.cash < u.cost) { toast('No te llega el dinero.'); sfx('error'); return; }
+  game.cash -= u.cost;
+  game.spend += u.cost;
+  game.upgrades.push(id);
+  toast('Mejora comprada: ' + u.name);
+  sfx('buy');
+  clampRep(game.reputation + 2);
+  renderAll();
+  saveGame(true);
+}
+
+function takeLoan(offerId) {
+  if (game.loan) { toast('Ya tienes un préstamo activo.'); sfx('error'); return; }
+  const o = LOAN_OFFERS.find(x => x.id === offerId);
+  if (!o) return;
+  const total = Math.round(o.amount * (1 + o.interest) * 100) / 100;
+  game.cash += o.amount;
+  game.loan = {
+    offerId: o.id,
+    principal: o.amount,
+    totalDue: total,
+    dueDay: game.day + o.days,
+    days: o.days
+  };
+  toast('Préstamo recibido: ' + euro(o.amount) + '. Debes devolver ' + euro(total) + ' antes del día ' + game.loan.dueDay);
+  sfx('pay');
+  renderAll();
+  saveGame(true);
+}
+
+function repayLoan() {
+  if (!game.loan) return;
+  if (game.cash < game.loan.totalDue) {
+    toast('No tienes suficiente para liquidar el préstamo.');
+    sfx('error');
+    checkBankruptcy();
+    return;
+  }
+  game.cash -= game.loan.totalDue;
+  game.spend += game.loan.totalDue;
+  toast('Préstamo liquidado (' + euro(game.loan.totalDue) + ').');
+  game.loan = null;
+  sfx('pay');
+  clampRep(game.reputation + 1);
+  renderAll();
+  saveGame(true);
+}
+
+function processLoanAfterDay() {
+  if (!game.loan) return;
+  if (game.day >= game.loan.dueDay) {
+    // Vencido: interés moratorio + amenaza de quiebra
+    const penalty = Math.round(game.loan.totalDue * 0.2 * 100) / 100;
+    game.loan.totalDue = Math.round((game.loan.totalDue + penalty) * 100) / 100;
+    game.loan.dueDay = game.day + 1;
+    toast('Préstamo vencido. Recargo ' + euro(penalty) + '. Nuevo vencimiento: día ' + game.loan.dueDay);
+    clampRep(game.reputation - 5);
+    if (game.loan.totalDue > game.cash + 40) {
+      // presión fuerte
+      if (game.cash < game.loan.totalDue * 0.3) checkBankruptcy();
+    }
+  }
+}
+
+function processUpkeepAfterDay() {
+  const up = upgradeBonus().upkeep;
+  if (up <= 0) return;
+  if (game.cash >= up) {
+    game.cash -= up;
+    game.operating += up;
+  } else {
+    game.cash -= up; // puede ir a negativo
+    game.operating += up;
+    toast('Mantenimiento del local ' + euro(up) + ' (fondos justos).');
+    clampRep(game.reputation - 2);
+  }
+}
+
+function renderUpgrades() {
+  const box = el('upgradesList');
+  if (!box) return;
+  box.innerHTML = UPGRADES.map(u => {
+    const owned = hasUpgrade(u.id);
+    return `<div class="panel upgrade-card ${owned?'owned':''}">
+      <div class="row">
+        <strong>${u.emoji} ${u.name}</strong>
+        ${owned?'<span class="badge">Comprada</span>':'<strong>'+euro(u.cost)+'</strong>'}
+      </div>
+      <p class="muted">${u.desc}${u.upkeep?(' · Mant. '+euro(u.upkeep)+'/día'):''}</p>
+      ${owned?'':`<button class="primary wide" onclick="buyUpgrade('${u.id}')">Comprar</button>`}
+    </div>`;
+  }).join('');
+}
+
+function renderLoan() {
+  const box = el('loanBox');
+  if (!box) return;
+  if (game.loan) {
+    const late = game.day > game.loan.dueDay;
+    box.innerHTML = `<div class="row"><span>Deuda total</span><strong class="${late?'loss':''}">${euro(game.loan.totalDue)}</strong></div>
+      <div class="row"><span>Vence día</span><strong>${game.loan.dueDay}${late?' (¡atrasado!)':''}</strong></div>
+      <button class="primary wide" onclick="repayLoan()">Devolver préstamo</button>`;
+  } else {
+    box.innerHTML = LOAN_OFFERS.map(o =>
+      `<button class="secondary wide" style="margin-top:6px" onclick="takeLoan('${o.id}')">${o.label}</button>`
+    ).join('') + '<p class="muted" style="margin-top:8px">Solo un préstamo a la vez.</p>';
+  }
+}
+
+function seasonDemandBoost(recipeId) {
+  const s = currentSeason(game.day);
+  let m = 1;
+  if (s.prefer.includes(recipeId)) m += 0.35;
+  if (s.avoid.includes(recipeId)) m -= 0.35;
+  const ub = upgradeBonus();
+  if (ub.sweetBoost && ['pastry','cake','donut','cupcake','icecream'].includes(recipeId)) m += ub.sweetBoost;
+  return Math.max(0.15, m);
+}
+
+function currentShift(elapsedSec) {
+  return elapsedSec < 30 ? 'morning' : 'afternoon';
+}
+
 /* ========== DAY LOGIC ========== */
 function canMake(r) {
   return Object.entries(r.parts).every(([id, q]) => (game.stock[id] || 0) + 1e-9 >= q);
@@ -1487,11 +1993,14 @@ function makeSale(r) {
 }
 
 function formatClock(secondsIntoDay) {
-  const totalMinutes = 12 * 60;
   const progress = Math.min(1, Math.max(0, secondsIntoDay / 60));
+  // Café 9:00–21:00 (12h) · Restaurante 12:00–00:00 (12h)
+  const startH = game.activeVenue === 'restaurant' ? 12 : 9;
+  const totalMinutes = 12 * 60;
   const mins = Math.floor(progress * totalMinutes);
-  const h = 9 + Math.floor(mins / 60);
+  let h = startH + Math.floor(mins / 60);
   const m = mins % 60;
+  if (h >= 24) h -= 24;
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 }
 
@@ -1550,7 +2059,7 @@ function beginDay() {
   area.classList.add('hidden');
   el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🚪</div><strong>¡Abriendo puertas!</strong>';
   el('liveMessage').textContent = '¡Abriendo las puertas!';
-  el('clock').textContent = '09:00';
+  el('clock').textContent = game.activeVenue === 'restaurant' ? '12:00' : '09:00';
   sfx('open');
   vibrate(30);
 
@@ -1574,6 +2083,25 @@ function dayTick() {
   el('timer').textContent = Math.ceil(dayState.remaining) + ' s';
   el('dayProgress').style.width = (elapsed / 60 * 100) + '%';
   el('clock').textContent = formatClock(elapsed);
+  const sh = currentShift(elapsed);
+  if (game.shift !== sh) {
+    game.shift = sh;
+    // reiniciar intervalo de clientes al cambiar de turno
+    clearInterval(customerHandle);
+    customerHandle = setInterval(customerVisit, customerIntervalMs());
+  }
+  const sm = el('shiftMorning'), sa = el('shiftAfternoon');
+  if (sm && sa) {
+    if (game.activeVenue === 'restaurant') {
+      sm.textContent = '🍽️ Comida';
+      sa.textContent = '🌙 Cena';
+    } else {
+      sm.textContent = '🌅 Mañana';
+      sa.textContent = '🌇 Tarde';
+    }
+    sm.classList.toggle('active', sh === 'morning');
+    sa.classList.toggle('active', sh === 'afternoon');
+  }
   el('liveServed').textContent = dayState.customers;
   el('liveIncome').textContent = euro(dayState.income);
   el('liveExpenses').textContent = euro(dayState.ingredients + dayState.operating);
@@ -1587,10 +2115,23 @@ function customerVisit() {
   if (!dayRunning || !dayState.opened) return;
   const area = el('customerArea');
 
-  const PERSONS = ['🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🧒🏻','👦🏻','👧🏻','🧑🏻','👱🏻','👨🏻','🧔🏻','👩🏻','👴🏻','👵🏻','👨🏼','👩🏼','👨🏽','👩🏽','👨🏾','👩🏾','👨🏿','👩🏿','👦🏼','👦🏽','👦🏾','👦🏿','👧🏼','👧🏽','👧🏾','👧🏿','👴🏼','👴🏽','часа','👴🏿','👵🏼','👵🏽','⠨','👵🏿'];
-  const BABIES = ['👶','👶🏻','👶🏼','👶🏽','👶🏾','Biggl'];
+  /* Personas solo con tono de piel (sin amarillos genéricos).
+     Sin secuencias ZWJ de familia/pareja (se rompen en móvil). */
+  const PERSONS = ['🧒🏻','🧒🏼','🧒🏽','🧒🏾','🧒🏿','👦🏻','👦🏼','👦🏽','👦🏾','👦🏿','👧🏻','👧🏼','👧🏽','👧🏾','👧🏿','🧑🏻','🧑🏼','🧑🏽','🧑🏾','🧑🏿','👨🏻','👨🏼','👨🏽','👨🏾','👨🏿','👩🏻','👩🏼','👩🏽','👩🏾','👩🏿','🧓🏻','🧓🏼','🧓🏽','🧓🏾','🧓🏿','👴🏻','👴🏼','👴🏽','👴🏾','👴🏿','👵🏻','👵🏼','👵🏽','👵🏾','👵🏿'];
+  const BABIES = ['👶🏻','👶🏼','👶🏽','👶🏾','👶🏿'];
 
-  // Tipo de visita: solo 55%, pareja 28%, familia 17%
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // Validar que el emoji no se vea como texto basura (filtros básicos)
+  function safeEmoji(em) {
+    if (!em || typeof em !== 'string') return pick(PERSONS);
+    // rechazar si solo tiene BMP raro / letras latinas
+    if (/[A-Za-z0-9]/.test(em)) return pick(PERSONS);
+    return em;
+  }
+
   const roll = Math.random();
   let groupType, buyCount, groupLabel;
   if (roll < 0.55) {
@@ -1603,29 +2144,23 @@ function customerVisit() {
     groupLabel = 'una pareja';
   } else {
     groupType = 'family';
-    buyCount = 2 + Math.floor(Math.random() * 3); // 2–4
+    buyCount = 2 + Math.floor(Math.random() * 3);
     groupLabel = 'una familia';
   }
 
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   let displayEmojis = [];
-
   if (groupType === 'solo') {
-    // Nunca un bebé solo
-    displayEmojis = [pick(PERSONS)];
+    displayEmojis = [safeEmoji(pick(PERSONS))];
   } else if (groupType === 'pair') {
-    // Dos personas sueltas, o adulto + bebé
     if (Math.random() < 0.35) {
-      displayEmojis = [pick(PERSONS), pick(BABIES)]; // adulto/niño + bebé
+      displayEmojis = [safeEmoji(pick(PERSONS)), safeEmoji(pick(BABIES))];
     } else {
-      displayEmojis = [pick(PERSONS), pick(PERSONS)];
+      displayEmojis = [safeEmoji(pick(PERSONS)), safeEmoji(pick(PERSONS))];
     }
   } else {
-    // Familia: 3–4 personas; si hay bebé, siempre junto a alguien
     const size = 3 + Math.floor(Math.random() * 2);
-    const withBaby = Math.random() < 0.45;
-    for (let i = 0; i < size; i++) displayEmojis.push(pick(PERSONS));
-    if (withBaby) displayEmojis.push(pick(BABIES)); // bebé al final, junto al grupo
+    for (let i = 0; i < size; i++) displayEmojis.push(safeEmoji(pick(PERSONS)));
+    if (Math.random() < 0.45) displayEmojis.push(safeEmoji(pick(BABIES)));
   }
 
   area.innerHTML = '';
@@ -1634,6 +2169,8 @@ function customerVisit() {
     person.className = 'customer';
     person.style.animationDelay = (idx * 0.1) + 's';
     person.textContent = em;
+    // Fuente emoji multiplataforma
+    person.style.fontFamily = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji","Twemoji Mozilla","Android Emoji",sans-serif';
     area.appendChild(person);
   });
 
@@ -1647,17 +2184,17 @@ function customerVisit() {
   const soldNames = [];
   let anySale = false;
   for (let i = 0; i < buyCount; i++) {
-    // Candidatos fabricables; se eligen con peso = buyChance
     const makeable = recipes.filter(r => canMake(r));
     if (!makeable.length) break;
-    // Filtrar por probabilidad de aceptación del precio
-    const accepted = makeable.filter(r => Math.random() < buyChance(r));
-    const pool = accepted.length ? accepted : (Math.random() < 0.08 ? makeable : []);
-    if (!pool.length) {
-      // Cliente se va sin comprar este pedido por precio alto
-      continue;
-    }
-    const r = pool[Math.floor(Math.random() * pool.length)];
+    const accepted = makeable.filter(r => Math.random() < buyChance(r) * seasonDemandBoost(r.id));
+    let pool = accepted.length ? accepted : (Math.random() < 0.08 ? makeable : []);
+    if (!pool.length) continue;
+    // peso extra por estación
+    const weights = pool.map(r => Math.max(0.1, seasonDemandBoost(r.id)));
+    const sumW = weights.reduce((a,b)=>a+b,0);
+    let rnd = Math.random() * sumW;
+    let r = pool[0];
+    for (let j = 0; j < pool.length; j++) { rnd -= weights[j]; if (rnd <= 0) { r = pool[j]; break; } }
     const sale = makeSale(r);
     if (!sale) break;
 
@@ -1682,7 +2219,7 @@ function customerVisit() {
     return;
   }
 
-  const faceStr = displayEmojis.join('');
+  const faceStr = displayEmojis.join(' ');
   if (soldNames.length === 1) {
     el('liveMessage').textContent = faceStr + ' ha comprado ' + soldNames[0] + '.';
   } else {
@@ -1716,7 +2253,7 @@ function finishDay() {
   area.classList.add('hidden');
   stage.classList.remove('hidden', 'open');
   stage.classList.add('open'); // start open
-  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🌙</div><strong>Cerrando… 21:00</strong>';
+  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🌙</div><strong>Cerrando… '+(game.activeVenue==='restaurant'?'00:00':'21:00')+'</strong>';
   sfx('close');
 
   requestAnimationFrame(() => {
@@ -1742,9 +2279,30 @@ function finishDay() {
 
     // Generate bills for this day
     generateDayBills(game.day);
+    processStaffAfterDay();
+    processUpkeepAfterDay();
+    processLoanAfterDay();
+    // Reputación
+    const stockUnits = Object.values(game.stock).reduce((a,b)=>a+b,0);
+    let repDelta = staffBonus().rep;
+    if (d.customers >= 8) repDelta += 2;
+    if (d.customers === 0) repDelta -= 4;
+    if (stockUnits < 5) repDelta -= 3;
+    if (d.net > 0) repDelta += 1;
+    const overpriced = recipes.filter(r => Number(game.prices[r.id]??r.price) > r.price * 1.5).length;
+    if (overpriced >= 3) repDelta -= 2;
+    clampRep(game.reputation + repDelta);
+    const prevLv = game._lastLevel || 1;
+    const lv = cafeLevel();
+    if (lv.level > prevLv) {
+      toast(lv.unlockMsg + ' (Nivel ' + lv.level + ': ' + lv.name + ')');
+      clampRep(game.reputation + 3);
+    }
+    game._lastLevel = lv.level;
+    checkBankruptcy();
 
     el('dayLabel').textContent = 'Día ' + game.day + ' · Jornada cerrada';
-    el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · 21:00';
+    el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · ' + (game.activeVenue === 'restaurant' ? '00:00' : '21:00');
     el('reportDetails').innerHTML = `
       <div class="lineitem"><span>Ingresos por ventas</span><strong>${euro(d.income)}</strong></div>
       <div class="lineitem"><span>Coste de ingredientes</span><strong>−${euro(d.ingredients)}</strong></div>
