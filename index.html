@@ -3,21 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#75452f">
+<meta name="theme-color" content="#121418">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Café de Barrio">
-<meta name="description" content="Simulador de gestión de cafetería. Compra, prepara, vende y haz crecer tu negocio.">
+<meta name="apple-mobile-web-app-title" content="EMPIRE CITY">
+<meta name="description" content="De una cafetería de barrio hasta lo más alto. Gestiona negocios y escala tu imperio.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Café de Barrio</title>
+<title>EMPIRE CITY</title>
 <style>
 :root{
-  --bg:#f5f0e8;--card:#fffdf8;--ink:#35251e;--muted:#88796e;
-  --brown:#75452f;--accent:#c68b55;--green:#347452;--red:#b94e42;
-  --line:#e8ddd0;--shadow:0 4px 18px rgba(53,37,30,.08);
+  /* Empire / hub default = dark */
+  --bg:#121418;--card:#1c1f26;--ink:#e8eaef;--muted:#9aa3b2;
+  --brown:#3d4450;--accent:#6b7280;--green:#3d9b6a;--red:#d4544a;
+  --line:#2a2f3a;--shadow:0 4px 18px rgba(0,0,0,.35);
+  --hub-accent:#c9a227;
+  --footer-bg:#1c1f26;--footer-ink:#e8eaef;--footer-muted:#9aa3b2;
 }
+/* Cafetería: tema cálido original */
+
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{
@@ -32,15 +37,16 @@ button{
 }
 button:active:not(:disabled){transform:scale(.97)}
 button:disabled{opacity:.42;cursor:not-allowed}
-.primary{background:var(--brown);color:#fff}
-.primary:hover:not(:disabled){background:#5e3725}
-.secondary{background:#f0e5d7;color:var(--brown)}
-.secondary:hover:not(:disabled){background:#e8d9c6}
-.danger{background:#f9e4df;color:#92382d}
-.danger:hover:not(:disabled){background:#f3d4cc}
+.primary{background:#3d4450;color:#fff;border:1px solid #555c6a}
+.primary:hover:not(:disabled){background:#4a5260}
+.secondary{background:#2a2f3a;color:#e8eaef}
+.secondary:hover:not(:disabled){background:#343b48}
+.danger{background:#3a2220;color:#f0a8a0}
+.danger:hover:not(:disabled){background:#4a2c28}
 header{
-  background:linear-gradient(145deg,#5e3725,#75452f 60%,#8a5538);
+  background:linear-gradient(145deg,#0d0f12,#1a1d24 55%,#252a33);
   color:#fff;padding:16px 16px 14px;position:relative;overflow:hidden;
+  border-bottom:1px solid #2a2f3a;
 }
 header::after{
   content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;
@@ -59,19 +65,19 @@ header p{margin:0;font-size:13px;opacity:.88}
 .icon-btn:hover{background:rgba(255,255,255,.25)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
 .stat,.panel,.product,.card-item{
-  background:var(--card);border:1px solid var(--line);border-radius:16px;
-  box-shadow:var(--shadow);
+  background:#1c1f26;border:1px solid #2a2f3a;border-radius:16px;
+  box-shadow:var(--shadow);color:#e8eaef;
 }
 .stat{padding:12px 8px;min-width:0;text-align:center}
 .stat small{display:block;color:var(--muted);font-size:11px}
 .stat strong{display:block;font-size:16px;margin-top:4px;overflow-wrap:anywhere}
 main{padding:0 12px 100px;max-width:860px;margin:auto}
-.tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:2px 0 14px}
+.tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:12px 0 16px}
 .tab{
-  padding:9px 1px;background:#e9dfd2;color:#665246;font-size:9px;
+  padding:9px 1px;background:#2a2f3a;color:#9aa3b2;font-size:9px;
   border-radius:10px;font-weight:650;
 }
-.tab.active{background:var(--brown);color:#fff;box-shadow:0 2px 8px rgba(117,69,47,.3)}
+.tab.active{background:#3d4450;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.4);border:1px solid #555c6a}
 .panel{padding:16px;margin-bottom:12px}
 h2{font-size:18px;margin:0 0 8px}
 h3{font-size:15px;margin:0 0 8px}
@@ -79,7 +85,7 @@ h3{font-size:15px;margin:0 0 8px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .row+.row{margin-top:10px}
 .field{
-  display:block;width:100%;border:1px solid var(--line);background:#fff;
+  display:block;width:100%;border:1px solid var(--line);background:#121418;color:#e8eaef;
   border-radius:10px;padding:12px;color:var(--ink);margin:6px 0 12px;
 }
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
@@ -94,33 +100,34 @@ h3{font-size:15px;margin:0 0 8px}
 .product strong{display:block;margin:4px 0 2px;font-size:14px}
 .emoji{font-size:28px;line-height:1}
 .product .muted{min-height:32px;font-size:12px}
-.price{font-weight:800;font-size:14px;color:var(--brown)}
+.price{font-weight:800;font-size:14px;color:#ffffff}
 .qty{display:flex;align-items:center;gap:6px;margin-top:10px}
 .qty input{
-  width:56px;min-width:0;text-align:center;border:1px solid var(--line);
-  border-radius:8px;padding:9px;background:#fff;
+  width:78px;min-width:78px;text-align:center;border:1px solid var(--line);
+  border-radius:10px;padding:10px 6px;background:#121418;color:#e8eaef;
+  font-size:16px;font-weight:700;
 }
-.qty button{padding:8px 11px;background:#efe3d5;color:var(--brown)}
+.qty button{padding:8px 11px;background:#2a2f3a;color:#e8eaef}
 .wide{width:100%;margin-top:10px}
 .card-item{padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .card-item .top{display:flex;align-items:center;gap:10px}
 .card-item strong{font-size:14px}
-.card-item .qty-big{font-size:20px;font-weight:800;color:var(--brown)}
+.card-item .qty-big{font-size:20px;font-weight:800;color:#ffffff}
 .card-item .unit{font-size:11px;color:var(--muted)}
 .priceedit{
   width:100%;text-align:right;padding:10px;border:1px solid var(--line);
-  border-radius:9px;background:#fff;font-weight:700;
+  border-radius:9px;background:#121418;font-weight:700;color:#e8eaef;border:1px solid #2a2f3a;
 }
 .bar{
-  height:8px;background:#eee4d8;border-radius:8px;overflow:hidden;margin:9px 0;
+  height:8px;background:#2a2f3a;border-radius:8px;overflow:hidden;margin:9px 0;
 }
-.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#d4a574);width:0;transition:width .35s ease}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,#6b7280,#c9a227);width:0;transition:width .35s ease}
 .hidden{display:none!important}
 .notice{
-  padding:12px;background:#f4e9dc;border-radius:12px;font-size:13px;margin:10px 0;
+  padding:12px;background:#252a33;border-radius:12px;font-size:13px;margin:10px 0;border:1px solid #2a2f3a;
   border-left:4px solid var(--accent);
 }
-.notice.warn{border-left-color:var(--red);background:#f9e4df}
+.notice.warn{border-left-color:var(--red);background:#3a2220}
 .money{color:var(--green)}
 .loss{color:var(--red)}
 footer{
@@ -133,12 +140,15 @@ footer small{display:block;color:var(--muted);font-size:11px}
 footer button{flex:1;max-width:200px}
 .customer-area{
   min-height:210px;display:flex;align-items:center;justify-content:center;
-  gap:12px;flex-wrap:wrap;background:linear-gradient(180deg,#f2e7d9,#ebe0d0);
+  gap:12px;flex-wrap:wrap;
+  background:#d1d5db;
+  border:1px solid #9ca3af;
   border-radius:14px;padding:16px;overflow:hidden;position:relative;
+  color:#1f2937;
 }
 .customer-area::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 100%,rgba(198,139,85,.12),transparent 60%);
+  background:transparent;
   pointer-events:none;
 }
 .customer{font-size:42px;animation:arrive .7s cubic-bezier(.22,1.2,.36,1) both;filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));display:inline-block;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji","Twemoji Mozilla","Android Emoji",sans-serif;line-height:1}
@@ -153,39 +163,56 @@ footer button{flex:1;max-width:200px}
 }
 .open-stage{
   position:relative;min-height:220px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#2a1a14,#4a3024);border-radius:14px;overflow:hidden;
-  color:#fff;
+  background:#d1d5db;
+  border-radius:14px;overflow:hidden;color:#1a1d24;
+  border:1px solid #9ca3af;
 }
-.doors{position:absolute;inset:0;display:flex;z-index:2}
+.doors{position:absolute;inset:0;display:flex;z-index:2;pointer-events:none}
 .door{
-  flex:1;background:linear-gradient(90deg,#5c3a28,#7a4e36 40%,#5c3a28);
-  transition:transform 1.1s cubic-bezier(.4,0,.2,1);
-  box-shadow:inset 0 0 30px rgba(0,0,0,.35);
+  flex:1;
+  background:linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(200,210,220,.4) 50%, rgba(160,175,190,.5) 100%);
+  border:1px solid rgba(255,255,255,.45);
+  transition:transform 0.85s ease-in-out;
+  box-shadow:inset 0 0 24px rgba(255,255,255,.25);
 }
-.door.left{transform-origin:left;border-right:3px solid #3d261a}
-.door.right{transform-origin:right;border-left:3px solid #3d261a}
-.open-stage.open .door.left{transform:perspective(600px) rotateY(-78deg)}
-.open-stage.open .door.right{transform:perspective(600px) rotateY(78deg)}
-.open-stage.closing .door.left{transform:perspective(600px) rotateY(0)}
-.open-stage.closing .door.right{transform:perspective(600px) rotateY(0)}
+.door.left{
+  transform-origin:left center;
+  border-right:1px solid rgba(255,255,255,.5);
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.15), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(180,190,200,.35));
+}
+.door.right{
+  transform-origin:right center;
+  border-left:1px solid rgba(255,255,255,.5);
+  background-image:
+    linear-gradient(270deg, rgba(255,255,255,.15), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(180,190,200,.35));
+}
+.open-stage.open .door.left{transform:translateX(-102%)}
+.open-stage.open .door.right{transform:translateX(102%)}
+.open-stage.closing .door.left{transform:translateX(0)}
+.open-stage.closing .door.right{transform:translateX(0)}
 .open-light{
-  position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,220,160,.55),transparent 70%);
-  opacity:0;transition:opacity 1s .2s;z-index:1;
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.7), transparent 65%);
+  opacity:0;transition:opacity .8s .15s;z-index:1;
 }
 .open-stage.open .open-light{opacity:1}
-.open-stage.closing .open-light{opacity:0;transition:opacity .6s}
+.open-stage.closing .open-light{opacity:0;transition:opacity .5s}
 .open-msg{
   position:relative;z-index:3;text-align:center;padding:20px;
-  opacity:0;transform:translateY(12px);transition:opacity .5s .7s,transform .5s .7s;
+  opacity:0;transform:translateY(10px);transition:opacity .45s .55s,transform .45s .55s;
+  color:#1f2937;font-weight:700;
 }
 .open-stage.open .open-msg{opacity:1;transform:translateY(0)}
 .open-stage.closing .open-msg{opacity:1;transform:translateY(0);transition:none}
 .clock-display{
   font-variant-numeric:tabular-nums;font-weight:800;font-size:20px;
-  letter-spacing:1px;color:var(--brown);
+  letter-spacing:1px;color:#ffffff;
 }
 #intro{
-  position:fixed;inset:0;background:linear-gradient(155deg,#2a1810,#805239 70%,#a66b45);
+  position:fixed;inset:0;background:radial-gradient(ellipse at 50% 20%,#2a303c 0%,#121418 50%,#0a0c10 100%);
   display:flex;align-items:center;justify-content:center;padding:22px;z-index:40;color:#fff;
 }
 .introbox{width:100%;max-width:400px;text-align:center}
@@ -195,16 +222,12 @@ footer button{flex:1;max-width:200px}
   font-size:48px;animation:float 3s ease-in-out infinite;
 }
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.introbox h1{font-size:32px;margin:6px 0;font-weight:800}
-.introbox p{line-height:1.55;color:#f0dfd0;font-size:14px}
-.introbox input{background:#fffdf8;color:var(--ink)}
-#toast{
-  position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
-  background:#30231e;color:#fff;padding:12px 18px;border-radius:12px;z-index:80;
-  display:none;max-width:90%;text-align:center;font-size:14px;opacity:0;
-  transition:opacity .25s,transform .25s;pointer-events:none;
-}
-#toast.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+.introbox h1{font-size:32px;margin:6px 0;font-weight:800;color:#e8eaef}
+.introbox p{line-height:1.55;color:#9aa3b2;font-size:14px}
+.introbox label{color:#c8cdd6}
+.introbox input,.introbox .field{background:#121418;color:#e8eaef;border-color:#3a4150}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(12px);background:#000;color:#fff;padding:12px 18px;border-radius:12px;z-index:100;font-size:14px;max-width:90%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;border:1px solid #333}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .lineitem{
   display:flex;justify-content:space-between;gap:8px;padding:9px 0;
   border-bottom:1px solid var(--line);font-size:13px;align-items:center;
@@ -212,17 +235,19 @@ footer button{flex:1;max-width:200px}
 /* Modals */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(30,20,15,.55);z-index:60;
-  display:flex;align-items:flex-end;justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .25s;
 }
+.modal-overlay{padding:20px;box-sizing:border-box}
 .modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{margin:auto;max-height:85vh;box-shadow:0 12px 40px rgba(0,0,0,.25)}
 .modal{
   background:var(--card);width:100%;max-width:440px;border-radius:20px 20px 0 0;
   padding:20px 18px calc(20px + env(safe-area-inset-bottom));
   transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
   box-shadow:0 -8px 40px rgba(0,0,0,.2);max-height:85vh;overflow-y:auto;
 }
-.modal-overlay.show .modal{transform:translateY(0)}
+.modal-overlay.show .modal{transform:scale(1)}
 .modal h2{margin-bottom:14px}
 .setting-row{
   display:flex;align-items:center;justify-content:space-between;
@@ -244,16 +269,18 @@ footer button{flex:1;max-width:200px}
 }
 .install-banner.show{display:flex}
 .bill-card{
-  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;
+  background:#1c1f26 !important;border:1px solid #3a4150 !important;border-radius:12px;padding:12px;margin:8px 0;
+  color:#e8eaef !important;
 }
-.bill-card.overdue{border-color:var(--red);background:#fdf6f5}
-.bill-card .due{font-size:12px;color:var(--muted)}
-.bill-card.overdue .due{color:var(--red);font-weight:700}
+.bill-card.overdue{border-color:#ef4444 !important;background:#2a1a1a !important}
+.bill-card .due{font-size:12px;color:#9aa3b2 !important}
+.bill-card.overdue .due{color:#ef4444 !important;font-weight:700}
+.bill-card strong{color:#e8eaef}
 .badge{
   display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
-  background:#f0e5d7;color:var(--brown);
+  background:#2a2f3a !important;color:#e8eaef !important;
 }
-.badge.danger{background:#f9e4df;color:#92382d}
+.badge.danger{background:#3a2220 !important;color:#fca5a5 !important}
 @media(min-width:600px){
   .grid,.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
   .tab{font-size:11px}
@@ -266,7 +293,7 @@ footer button{flex:1;max-width:200px}
 .stars{color:#c9a227;letter-spacing:1px;font-size:14px}
 .staff-card{padding:14px;margin:8px 0}
 .staff-card .role{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.chart-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+.chart-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
 .chart-wrap canvas{width:100%;height:160px;display:block}
 .offline-banner{
   display:none;background:#3d2a20;color:#fff;text-align:center;padding:8px 12px;font-size:13px;
@@ -276,27 +303,568 @@ footer button{flex:1;max-width:200px}
 .rep-bar{height:10px;background:#eee4d8;border-radius:8px;overflow:hidden;margin:6px 0}
 .rep-bar span{display:block;height:100%;background:linear-gradient(90deg,#347452,#6bbf7a);transition:width .3s}
 .event-banner{
-  padding:12px;border-radius:12px;margin:10px 0;font-size:13px;border-left:4px solid var(--accent);
-  background:#f4e9dc;
+  padding:12px;border-radius:12px;margin:10px 0;font-size:13px;
+  border-left:4px solid #6b7280;
+  background:#252a33 !important;
+  color:#e8eaef !important;
 }
-.event-banner.bad{border-left-color:var(--red);background:#f9e4df}
-.event-banner.good{border-left-color:var(--green);background:#e8f5ec}
+.event-banner.bad{border-left-color:#ef4444 !important;background:#2a1a1a !important;color:#fecaca !important}
+.event-banner.good{border-left-color:#22c55e !important;background:#14241a !important;color:#bbf7d0 !important}
 
 .upgrade-card{padding:12px;margin:8px 0}
-.upgrade-card.owned{border-color:#347452;background:#f3faf5}
-.season-badge{
-  display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;
-  background:#f0e5d7;color:var(--brown);margin-left:6px;
-}
-.level-badge{font-size:13px;font-weight:800;color:var(--brown)}
+.upgrade-card.owned{border-color:#22c55e;background:#14241a}
+.season-badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:#2a2f3a;color:#e8eaef;margin-left:6px}
+.level-badge{font-size:13px;font-weight:800;color:#e8eaef}
 .shift-bar{display:flex;gap:6px;margin:8px 0}
 .shift-bar .shift{
-  flex:1;text-align:center;padding:8px;border-radius:10px;background:#efe3d5;font-size:12px;font-weight:700;
+  flex:1;text-align:center;padding:8px;border-radius:10px;background:#2a2f3a;color:#9aa3b2;font-size:12px;font-weight:700;
 }
-.shift-bar .shift.active{background:var(--brown);color:#fff}
+.shift-bar .shift.active{background:#3d4450;color:#fff;border:1px solid #555c6a}
 
 .venue-switch{display:flex!important;gap:8px;flex-wrap:wrap}
 .venue-switch button.active-venue{background:var(--brown)!important;color:#fff!important}
+
+.hub-screen{
+  position:fixed;inset:0;z-index:35;
+  background:radial-gradient(ellipse at 30% 0%,#2a303c 0%,#121418 45%,#0a0c10 100%);
+  color:#e8eaef;overflow:auto;padding:28px 16px 48px;
+}
+.hub-inner{max-width:520px;margin:0 auto}
+.hub-logo{font-size:48px;text-align:center;margin-bottom:4px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+.hub-brand{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a227;font-weight:700}
+.hub-inner h1{font-size:26px;margin:10px 0 4px;text-align:center;font-weight:800}
+.hub-tagline{text-align:center;font-size:13px;color:#9aa3b2;margin:0 0 8px}
+.hub-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+.hub-card{
+  background:linear-gradient(160deg,#252a33,#1c1f26);
+  border:1px solid #3a4150;border-radius:20px;padding:22px 14px;text-align:center;min-height:170px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent;
+  color:inherit;font:inherit;width:100%;
+}
+.hub-card:hover{border-color:#c9a227;box-shadow:0 8px 28px rgba(201,162,39,.15)}
+.hub-card:active{transform:scale(.97)}
+.hub-card.locked{opacity:.85}
+.hub-card .hub-emoji{font-size:44px;line-height:1}
+.hub-card strong{font-size:15px;font-weight:800}
+.hub-card .hub-meta{font-size:12px;color:#9aa3b2}
+.hub-card .hub-badge{
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:#c9a227;color:#1a1410;padding:3px 8px;border-radius:20px;margin-top:4px;
+}
+.hub-card.locked .hub-badge{background:#3a4150;color:#9aa3b2}
+.hub-bank{
+  margin-top:22px;background:linear-gradient(160deg,#1c1f26,#161920);
+  border-radius:18px;padding:18px;border:1px solid #3a4150;
+}
+.hub-bank .bank-title{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a227;font-weight:700}
+
+
+
+.stats{background:#1c1f26;border-bottom:1px solid #2a2f3a}
+.stat{background:#121418;border:1px solid #2a2f3a}
+.panel{background:var(--card);border:1px solid var(--line)}
+.tab{background:#2a2f3a;color:#9aa3b2}
+.field{background:#121418;border:1px solid #2a2f3a;color:var(--ink)}
+.modal-overlay .modal{background:#1c1f26;color:#e8eaef}
+.introbox{background:#1c1f26;color:#e8eaef;border:1px solid #2a2f3a}
+.introbox .field{background:#121418}
+
+
+.name-overlay{
+  position:fixed;inset:0;z-index:60;
+  background:radial-gradient(ellipse at 50% 20%,#2a303c 0%,#121418 50%,#0a0c10 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;pointer-events:auto;
+}
+.name-overlay.hidden{display:none!important}
+.biz-intro{
+  width:100%;max-width:400px;text-align:center;
+  background:#1c1f26;border:1px solid #2a2f3a;border-radius:20px;
+  padding:28px 22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);
+  color:#e8eaef;
+}
+.biz-intro .logo{font-size:48px;margin-bottom:6px}
+.biz-intro .brand{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:#c9a227;opacity:.9}
+.biz-intro h1{font-size:26px;margin:8px 0;color:#e8eaef}
+.biz-intro p{color:#9aa3b2;font-size:14px;line-height:1.5}
+.biz-intro label{display:block;text-align:left;margin:14px 0 6px;font-size:13px;color:#c8cdd6}
+.biz-intro .field{background:#121418;border-color:#3a4150;color:#e8eaef}
+
+
+
+
+.footer-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:var(--footer-bg,#1c1f26);color:var(--footer-ink,#e8eaef);
+  border-top:1px solid var(--line);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 -4px 20px rgba(0,0,0,.15);
+}
+.footer-bar .footer-cash{font-weight:800;font-size:16px;color:var(--footer-ink)}
+.footer-bar .footer-label{font-size:11px;color:var(--footer-muted,#9aa3b2)}
+.footer-bar .primary{flex:1;max-width:200px}
+
+footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:var(--footer-bg,#1c1f26);color:var(--footer-ink,#e8eaef);
+  border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 -4px 20px rgba(0,0,0,.2);
+}
+footer strong{font-size:17px;font-weight:800;color:var(--footer-ink,#e8eaef);display:block}
+footer small{font-size:11px;color:var(--footer-muted,#9aa3b2)}
+footer .primary{min-width:140px}
+main{padding-bottom:88px}
+
+
+
+
+
+
+
+
+
+
+.name-overlay.cafe-bg,.name-overlay.rest-bg,.name-overlay{
+  background:radial-gradient(ellipse at 50% 20%,#2a303c 0%,#121418 50%,#0a0c10 100%) !important;
+}
+
+
+
+
+
+
+
+
+
+/* === EMPIRE CITY unified dark theme === */
+:root{
+  --bg:#121418;
+  --card:#1c1f26;
+  --ink:#e8eaef;
+  --muted:#9aa3b2;
+  --brown:#3d4450;
+  --accent:#6b7280;
+  --green:#22c55e;
+  --red:#ef4444;
+  --line:#2a2f3a;
+  --shadow:0 4px 18px rgba(0,0,0,.35);
+  --hub-accent:#c9a227;
+  --footer-bg:#1c1f26;
+  --footer-ink:#ffffff;
+  --footer-muted:#9aa3b2;
+  --num:#ffffff;
+}
+html,body{background:var(--bg);color:var(--ink)}
+.money,.profit,strong.money{color:#22c55e!important}
+.loss,strong.loss{color:#ef4444!important}
+.qty-big,.clock-display{
+  color:#ffffff!important;
+}
+.stat strong.neutral, #cash.neutral, #footerCash.neutral, #finCash.neutral, #shopCash.neutral, #hubBank.neutral {
+  color:#ffffff !important;
+}
+.stat strong.money, #cash.money, #footerCash.money, #finCash.money, #shopCash.money, #hubBank.money {
+  color:#22c55e !important;
+}
+.stat strong.loss, #cash.loss, #footerCash.loss, #finCash.loss, #shopCash.loss, #hubBank.loss {
+  color:#ef4444 !important;
+}
+
+#finIncome.money, #finNet.money, #profit.money, #liveIncome.money { color:#22c55e !important; }
+#finIncome.loss, #finNet.loss, #profit.loss, #liveIncome.loss,
+#finSpend.loss, #finBills.loss, #finPayroll.loss, #liveExpenses.loss { color:#ef4444 !important; }
+#finIncome.neutral, #finNet.neutral, #profit.neutral, #liveIncome.neutral,
+#finSpend.neutral, #finBills.neutral, #finPayroll.neutral, #liveExpenses.neutral { color:#ffffff !important; }
+
+.stat small,footer small{color:var(--muted)!important}
+.panel,.stat,.card-item,.product,.bill-card,.grid-item{
+  background:var(--card)!important;border:1px solid var(--line)!important;color:var(--ink)!important;
+}
+.field,input.field,input[type="number"],.qty input,.priceedit,
+.modal-overlay{
+  align-items:center!important;justify-content:center!important;
+  padding:24px 16px calc(24px + env(safe-area-inset-bottom))!important;
+  background:rgba(0,0,0,.65)!important;
+}
+.modal-overlay .modal,
+.modal-overlay .modal .field,
+.modal-overlay .modal .secondary,
+.modal-overlay .modal .primary{
+  background:#3d4450!important;color:#fff!important;
+}
+.modal-overlay .modal h2{color:#fff!important}
+#toast,.toast{
+  background:#000000!important;color:#ffffff!important;
+  border:1px solid #333!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.5)!important;
+}
+.shift{background:#2a2f3a!important;color:#9aa3b2!important}
+.shift.active{background:#3d4450!important;color:#fff!important}
+.biz-intro,.biz-intro.cafe-style,
+.biz-intro h1,
+.biz-intro p,.biz-intro label,
+.biz-intro .brand{color:#c9a227!important}
+.biz-intro .field,
+.biz-intro .primary,
+.biz-intro .secondary,
+.name-overlay,.name-overlay.cafe-bg,.name-overlay.rest-bg{
+  background:radial-gradient(ellipse at 50% 20%,#2a303c 0%,#121418 50%,#0a0c10 100%)!important;
+}
+.rep-bar{background:#2a2f3a!important}
+.lineitem{border-color:#2a2f3a!important;color:#e8eaef!important}
+.introbox{background:#1c1f26!important;color:#e8eaef!important;border:1px solid #2a2f3a!important}
+.introbox h1{color:#fff!important}
+.introbox p,.introbox label{color:#9aa3b2!important}
+.introbox .field{background:#121418!important;color:#fff!important}
+
+
+/* ========== FORCE DARK HUD EVERYWHERE ========== */
+.card-item, .product, .grid-item, .bill-card, .stat, .panel {
+  background:#1c1f26 !important;
+  border:1px solid #2a2f3a !important;
+  color:#e8eaef !important;
+}
+.card-item strong, .product strong, h2, h3 {
+  color:#e8eaef !important;
+}
+.qty input, .priceedit, .field, input[type="number"], input.field {
+  background:#121418 !important;
+  color:#ffffff !important;
+  border:1px solid #3a4150 !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+.qty button {
+  background:#2a2f3a !important;
+  color:#e8eaef !important;
+}
+.primary {
+  background:#3d4450 !important;
+  color:#ffffff !important;
+  border:1px solid #555c6a !important;
+}
+.secondary {
+  background:#2a2f3a !important;
+  color:#e8eaef !important;
+}
+.price, .qty-big, .level-badge, .badge {
+  color:#ffffff !important;
+}
+.modal-overlay .modal {
+  background:#1c1f26 !important;
+  color:#e8eaef !important;
+  border:1px solid #3a4150 !important;
+}
+.modal-overlay .modal h2,
+.modal h2 {
+  color:#ffffff !important;
+}
+.modal-overlay .modal strong {
+  color:#e8eaef !important;
+}
+.modal-overlay .modal .muted {
+  color:#9aa3b2 !important;
+}
+footer {
+  background:#1c1f26 !important;
+  color:#ffffff !important;
+  border-top-color:#2a2f3a !important;
+}
+footer strong { color:#ffffff !important; }
+footer small { color:#9aa3b2 !important; }
+.money { color:#22c55e !important; }
+.loss { color:#ef4444 !important; }
+.lineitem { color:#e8eaef !important; border-color:#2a2f3a !important; }
+.biz-intro.cafe-style, .biz-intro.restaurant-style, .biz-intro {
+  background:#1c1f26 !important;
+  color:#e8eaef !important;
+  border-color:#3a4150 !important;
+}
+.biz-intro.cafe-style h1, .biz-intro h1 { color:#ffffff !important; }
+.biz-intro.cafe-style .field, .biz-intro .field {
+  background:#121418 !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+
+
+/* iOS autofill white fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow:0 0 0 1000px #121418 inset !important;
+  -webkit-text-fill-color:#ffffff !important;
+  caret-color:#ffffff !important;
+}
+
+
+/* ===== ULTIMATE HUD DARK — no brown, no wine, no cream ===== */
+button.primary, .primary,
+button.secondary, .secondary,
+button.danger, .danger {
+  background:#3a2220 !important;
+  color:#fca5a5 !important;
+}
+.panel, .stat, .card-item, .product, .bill-card,
+.field, input, .qty input, .priceedit,
+.modal-overlay .modal h2 { color:#ffffff !important; }
+.money { color:#22c55e !important; }
+.loss { color:#ef4444 !important; }
+.biz-intro, .biz-intro.cafe-style, .biz-intro.restaurant-style {
+  background:#1c1f26 !important; color:#e8eaef !important; border-color:#3a4150 !important;
+}
+.biz-intro .primary, .biz-intro.cafe-style .primary {
+  background:#3d4450 !important; color:#fff !important;
+}
+.biz-intro .secondary, .biz-intro.cafe-style .secondary {
+  background:#2a2f3a !important; color:#e8eaef !important;
+}
+.biz-intro h1, .biz-intro.cafe-style h1 { color:#fff !important; }
+.biz-intro .field, .biz-intro.cafe-style .field {
+  background:#121418 !important; color:#fff !important;
+}
+
+
+/* final gray buttons — no wine tint */
+.secondary, button.secondary, .modal .secondary {
+  background:#2a2f3a !important;
+  color:#e8eaef !important;
+  filter:none !important;
+}
+.primary, button.primary {
+  background:#3d4450 !important;
+  color:#fff !important;
+  filter:none !important;
+}
+.danger, button.danger {
+  background:#3a2220 !important;
+  color:#fca5a5 !important;
+}
+
+.modal-overlay{
+  position:fixed;inset:0;z-index:50;
+  background:rgba(0,0,0,.65);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  box-sizing:border-box;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-overlay .modal,
+.modal{
+  background:#1c1f26 !important;
+  color:#e8eaef !important;
+  width:100%;
+  max-width:400px;
+  max-height:min(82vh, 620px);
+  overflow:auto;
+  border-radius:20px !important;
+  border:1px solid #3a4150 !important;
+  padding:20px 18px 22px !important;
+  margin:0 auto;
+  box-shadow:0 16px 48px rgba(0,0,0,.45);
+  transform:none !important;
+}
+
+
+.chart-wrap{
+  background:#d1d5db !important;
+  border:1px solid #9ca3af !important;
+  border-radius:14px !important;
+  padding:12px !important;
+  min-height:140px;
+}
+#profitChart{width:100%!important;max-width:100%;display:block;border-radius:8px}
+
+
+.neutral, strong.neutral { color:#ffffff !important; }
+.money, strong.money { color:#22c55e !important; }
+.loss, strong.loss { color:#ef4444 !important; }
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+  margin:12px 0 16px;
+  padding:0 2px;
+  align-items:center;
+}
+.tab{
+  text-align:center;
+  padding:10px 2px !important;
+  font-size:10px !important;
+  line-height:1.2;
+}
+
+
+.lineitem strong.money,
+.lineitem .money,
+strong.money {
+  color:#22c55e !important;
+}
+.lineitem strong.loss,
+.lineitem .loss,
+strong.loss {
+  color:#ef4444 !important;
+}
+.lineitem strong.neutral,
+strong.neutral {
+  color:#ffffff !important;
+}
+
+
+/* INTRO UNIFICADA — sin marrón ni vino */
+.biz-intro,
+.biz-intro.cafe-style,
+.biz-intro.restaurant-style {
+  background:#1c1f26 !important;
+  color:#e8eaef !important;
+  border:1px solid #3a4150 !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.45) !important;
+}
+.biz-intro .brand,
+.biz-intro.cafe-style .brand,
+.biz-intro.restaurant-style .brand {
+  color:#c9a227 !important;
+}
+.biz-intro h1,
+.biz-intro.cafe-style h1,
+.biz-intro.restaurant-style h1 {
+  color:#ffffff !important;
+}
+.biz-intro p,
+.biz-intro label,
+.biz-intro.cafe-style p,
+.biz-intro.cafe-style label,
+.biz-intro.restaurant-style p,
+.biz-intro.restaurant-style label {
+  color:#9aa3b2 !important;
+}
+.biz-intro .field,
+.biz-intro.cafe-style .field,
+.biz-intro.restaurant-style .field,
+.biz-intro input {
+  background:#121418 !important;
+  color:#ffffff !important;
+  border:1px solid #3a4150 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+.biz-intro .primary,
+.biz-intro.cafe-style .primary,
+.biz-intro.restaurant-style .primary,
+.biz-intro button.primary {
+  background:#3d4450 !important;
+  color:#ffffff !important;
+  border:1px solid #555c6a !important;
+  box-shadow:none !important;
+}
+.biz-intro .secondary,
+.biz-intro.cafe-style .secondary,
+.biz-intro.restaurant-style .secondary,
+.biz-intro button.secondary {
+  background:#2a2f3a !important;
+  color:#e8eaef !important;
+  border:1px solid #3a4150 !important;
+}
+
+
+.name-overlay .biz-intro, .name-overlay .panel {
+  border:1px solid #3a4150 !important;
+  background:#1c1f26 !important;
+}
+.name-overlay input, .name-overlay .field {
+  border:1px solid #3a4150 !important;
+  background:#121418 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  outline:none !important;
+}
+.name-overlay .primary {
+  background:#3d4450 !important;
+  border:1px solid #555c6a !important;
+  color:#fff !important;
+}
+.name-overlay .secondary {
+  background:#2a2f3a !important;
+  border:1px solid #3a4150 !important;
+  color:#e8eaef !important;
+}
+
+
+.event-banner, .event-banner.bad, .event-banner.good {
+  background:#252a33 !important;
+  color:#e8eaef !important;
+}
+.event-banner.bad { border-left-color:#ef4444 !important; background:#2a1a1a !important; color:#fecaca !important; }
+.event-banner.good { border-left-color:#22c55e !important; background:#14241a !important; color:#bbf7d0 !important; }
+.bill-card { background:#1c1f26 !important; border-color:#3a4150 !important; color:#e8eaef !important; }
+.bill-card.overdue { border-color:#ef4444 !important; background:#2a1a1a !important; }
+.badge { background:#2a2f3a !important; color:#e8eaef !important; }
+
+
+#confirmModal.modal-overlay { z-index: 9999 !important; }
+#settingsModal.modal-overlay { z-index: 80 !important; }
+.modal-overlay { z-index: 70 !important; }
+.badge {
+  background:#2a2f3a !important;
+  color:#e8eaef !important;
+  padding:4px 10px !important;
+  border-radius:20px !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  display:inline-block !important;
+}
+
+.qty input{
+  width:78px !important;
+  min-width:78px !important;
+  max-width:90px;
+  text-align:center;
+  font-size:16px !important;
+  font-weight:700;
+  letter-spacing:0.5px;
+  padding:10px 6px !important;
+  border-radius:10px !important;
+  box-sizing:border-box;
+}
+.qty{gap:8px}
+.numpad-overlay{
+  position:fixed;inset:0;z-index:100001;
+  background:rgba(0,0,0,.72);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  box-sizing:border-box;
+}
+.numpad-overlay.show{opacity:1;pointer-events:auto}
+.numpad{
+  width:100%;max-width:360px;
+  background:#1c1f26;border:1px solid #3a4150;border-radius:18px 18px 14px 14px;
+  padding:14px;box-shadow:0 -8px 40px rgba(0,0,0,.5);
+}
+.numpad-title{font-size:13px;color:#9aa3b2;margin-bottom:8px;text-align:center}
+.numpad-display{
+  background:#121418;border:1px solid #3a4150;border-radius:12px;
+  padding:14px;text-align:right;font-size:28px;font-weight:800;color:#fff;
+  margin-bottom:12px;letter-spacing:1px;min-height:48px;
+  font-variant-numeric:tabular-nums;
+}
+.numpad-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+}
+.numpad-grid button{
+  padding:16px 0;font-size:22px;font-weight:700;border-radius:12px;
+  background:#2a2f3a;color:#e8eaef;border:1px solid #3a4150;
+}
+.numpad-grid button:active{background:#3d4450}
+.numpad-grid .np-ok{background:#3d4450;color:#fff;grid-column:span 1}
+.numpad-grid .np-del{background:#3a2220;color:#fca5a5}
+.numpad-actions{display:flex;gap:8px;margin-top:10px}
+.numpad-actions button{flex:1;padding:12px;border-radius:12px;font-weight:700}
+
 </style>
 </head>
 <body>
@@ -304,26 +872,117 @@ footer button{flex:1;max-width:200px}
 
 <div id="intro">
   <div class="introbox">
-    <div class="logo">☕</div>
-    <div class="brand">Tu nueva aventura</div>
-    <h1>Café de Barrio</h1>
-    <p>Empieza con una cafetería y expande tu empresa abriendo un restaurante. Misma gestión, mayor escala.</p>
-    <label for="cafeName">¿Cómo se llamará tu empresa?</label>
-    <input id="cafeName" class="field" maxlength="30" placeholder="Ej. Grupo Rincón" autocomplete="off">
-    <button class="primary wide" onclick="startGame()">Abrir mi cafetería →</button>
+    <div class="logo">🏢</div>
+    <div class="brand">Build Your Empire</div>
+    <h1>EMPIRE CITY</h1>
+    <p>Empiezas desde cero. Gestiona locales, mueve capital en el banco y construye tu imperio de negocios.</p>
+    <label for="charName">¿Cómo se llama tu personaje?</label>
+    <input id="charName" class="field" maxlength="24" placeholder="Ej. Alex Ruiz" autocomplete="off">
+    <button class="primary wide" onclick="startGame()">Comenzar el ascenso →</button>
     <p style="font-size:11px;margin-top:14px;opacity:.7">Tu progreso se guarda automáticamente en este dispositivo.</p>
   </div>
 </div>
 
-<header>
-  <div class="brand">Simulador de gestión · <span id="venueTypeLabel">Cafetería</span></div>
-  <h1 id="headerName">Café de Barrio</h1>
-  <p id="dayLabel">Día 1 · Preparando la apertura</p>
-  <div id="venueSwitcher" class="venue-switch hidden" style="margin-top:10px;display:none;gap:8px">
-    <button type="button" class="secondary" id="btnVenueCafe" onclick="switchVenue('cafe')" style="padding:8px 12px;font-size:12px">☕ Cafetería</button>
-    <button type="button" class="secondary" id="btnVenueRest" onclick="switchVenue('restaurant')" style="padding:8px 12px;font-size:12px">🍽️ Restaurante</button>
+<div id="hub" class="hub-screen hidden">
+  <div class="hub-inner">
+    <div class="hub-logo">🏢</div>
+    <div class="hub-brand">EMPIRE CITY</div>
+    <p class="hub-tagline">Build Your Empire</p>
+    <h1 id="hubTitle">Tu imperio</h1>
+    <p id="hubSubtitle" style="text-align:center;color:#9aa3b2;font-size:13px;line-height:1.5;margin:0 8px">Elige un negocio. Usa el banco para expandirte y mover capital.</p>
+    <div class="hub-bank">
+      <div class="bank-title">Banco corporativo</div>
+      <div class="row" style="justify-content:space-between;margin-top:10px">
+        <span>Saldo disponible</span>
+        <strong id="hubBank" style="color:#c9a227;font-size:18px">0,00 €</strong>
+      </div>
+      <p style="font-size:12px;color:#9aa3b2;margin:10px 0 0">Ingresa dinero desde Finanzas de cada local. Usa el banco para desbloquear nuevos negocios.</p>
+    </div>
+    <div style="height:8px"></div>
+    <div class="hub-cards">
+      <button type="button" class="hub-card" id="hubCafe">
+        <div class="hub-emoji">☕</div>
+        <strong>Cafetería</strong>
+        <div class="hub-meta" id="hubCafeMeta">Disponible</div>
+        <span class="hub-badge" id="hubCafeBadge">Abrir</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubRest">
+        <div class="hub-emoji">🍽️</div>
+        <strong>Restaurante</strong>
+        <div class="hub-meta" id="hubRestMeta">1.500 €</div>
+        <span class="hub-badge" id="hubRestBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubBook">
+        <div class="hub-emoji">📚</div>
+        <strong>Librería</strong>
+        <div class="hub-meta" id="hubBookMeta">1.500 €</div>
+        <span class="hub-badge" id="hubBookBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubDisco">
+        <div class="hub-emoji">🪩</div>
+        <strong>Discoteca</strong>
+        <div class="hub-meta" id="hubDiscoMeta">2.500 €</div>
+        <span class="hub-badge" id="hubDiscoBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubVideo">
+        <div class="hub-emoji">🎬</div>
+        <strong>Videoclub</strong>
+        <div class="hub-meta" id="hubVideoMeta">2.500 €</div>
+        <span class="hub-badge" id="hubVideoBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubGame">
+        <div class="hub-emoji">🎮</div>
+        <strong>Game</strong>
+        <div class="hub-meta" id="hubGameMeta">4.000 €</div>
+        <span class="hub-badge" id="hubGameBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubBoutique">
+        <div class="hub-emoji">👗</div>
+        <strong>Boutique</strong>
+        <div class="hub-meta" id="hubBoutiqueMeta">4.000 €</div>
+        <span class="hub-badge" id="hubBoutiqueBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubGas">
+        <div class="hub-emoji">⛽</div>
+        <strong>Gasolinera</strong>
+        <div class="hub-meta" id="hubGasMeta">8.000 €</div>
+        <span class="hub-badge" id="hubGasBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubMarket">
+        <div class="hub-emoji">🛒</div>
+        <strong>Supermercado</strong>
+        <div class="hub-meta" id="hubMarketMeta">5.000 €</div>
+        <span class="hub-badge" id="hubMarketBadge">Bloqueado</span>
+      </button>
+      <button type="button" class="hub-card locked" id="hubGold">
+        <div class="hub-emoji">💎</div>
+        <strong>Joyería</strong>
+        <div class="hub-meta" id="hubGoldMeta">6.000 €</div>
+        <span class="hub-badge" id="hubGoldBadge">Bloqueado</span>
+      </button>
+    </div>
   </div>
+</div>
+
+<div id="nameOverlay" class="name-overlay hidden">
+  <div class="biz-intro" id="bizIntroCard">
+    <div class="logo" id="bizIntroEmoji">☕</div>
+    <div class="brand" id="bizIntroBrand">Nuevo local</div>
+    <h1 id="nameOverlayTitle">Tu cafetería</h1>
+    <p id="nameOverlayDesc">Ponle un nombre y empieza a gestionar el día a día.</p>
+    <label for="bizNameInput" id="bizNameLabel">¿Cómo se llamará?</label>
+    <input id="bizNameInput" class="field" maxlength="30" placeholder="Ej. El Rincón" autocomplete="off">
+    <button class="primary wide" type="button" id="bizConfirmBtn">Abrir local →</button>
+    <button class="secondary wide" type="button" id="bizCancelBtn">Volver al mapa</button>
+  </div>
+</div>
+
+<header>
+  <div class="brand">EMPIRE CITY · <span id="venueTypeLabel">Cafetería</span></div>
+  <h1 id="headerName">Local</h1>
+  <p id="dayLabel">Día 1 · Preparando la apertura</p>
   <div class="header-actions">
+    <button class="icon-btn" onclick="goHub()" title="Mapa" aria-label="Mapa">🗺️</button>
     <button class="icon-btn" id="soundBtn" onclick="toggleSound()" title="Sonido" aria-label="Sonido">🔊</button>
     <button class="icon-btn" onclick="openSettings()" title="Ajustes" aria-label="Ajustes">⚙</button>
   </div>
@@ -348,10 +1007,9 @@ footer button{flex:1;max-width:200px}
 
   <section id="home">
     <div class="panel">
-      <h2>¡Bienvenido a tu cafetería!</h2>
-      <p class="muted">Prepara el almacén, ajusta precios y abre. Cada jornada dura 60 s (horario 9:00–21:00).</p>
+      <h2>¡Bienvenido!</h2>
+      <p class="muted">Prepara el almacén, ajusta precios y abre. Usa el mapa 🗺️ para volver a tus negocios.</p>
       <div class="row"><span>Jornada actual</span><strong id="dayNumber">Día 1</strong></div>
-      <div class="row"><span>Estación</span><strong id="seasonLabel">🌸 Primavera</strong></div>
       <div class="row"><span>Nivel del local</span><strong class="level-badge" id="levelLabel">Nv.1 Rincón</strong></div>
       <div class="row"><span>Clientes atendidos</span><strong id="servedHome">0</strong></div>
       <div class="row"><span>Productos en almacén</span><strong id="stockCount">0 uds</strong></div>
@@ -361,7 +1019,7 @@ footer button{flex:1;max-width:200px}
       <div class="row"><span>Clima de hoy</span><strong id="weatherLabel">—</strong></div>
       <div id="homeWeather" class="event-banner hidden"></div>
       <div id="homeEvent" class="event-banner hidden"></div>
-      <div class="notice" id="homeTip">Consejo: compra ingredientes antes de abrir. Sin existencias no podrás vender.</div>
+      <div class="notice" id="homeTip">Consejo: revisa el almacén y los precios antes de abrir. Sin stock no podrás vender.</div>
       <button class="primary wide" id="startDay" onclick="beginDay()">Abrir y empezar el día · 60 s</button>
       <button class="secondary wide" onclick="showTab('shop')">Ir a comprar productos</button>
     </div>
@@ -383,15 +1041,16 @@ footer button{flex:1;max-width:200px}
   <section id="stock" class="hidden">
     <div class="panel">
       <h2>Tu almacén</h2>
-      <p class="muted">Ingredientes comprados. Cada venta consume existencias (redondeo a 1 decimal si hace falta).</p>
+      <p class="muted">Ingredientes comprados. Cada venta consume existencias.</p>
       <div id="stockList" class="grid-3"></div>
     </div>
   </section>
 
   <section id="prices" class="hidden">
     <div class="panel">
-      <h2>Carta y precios</h2>
+      <h2>Lista de precios</h2>
       <p class="muted">El precio de referencia (Ref.) es el precio medio del mercado. Si subes mucho, la mayoría no compra (pero algunos sí).</p>
+      <div id="priceMarketNote" style="display:none"></div>
       <div id="priceList" class="grid-3"></div>
       <button class="primary wide" onclick="savePrices()">Guardar precios</button>
     </div>
@@ -424,28 +1083,13 @@ footer button{flex:1;max-width:200px}
   <section id="finance" class="hidden">
     <div class="panel">
       <h2>Finanzas</h2>
-      <div class="row"><span>Dinero actual</span><strong id="finCash">0 €</strong></div>
+      <div class="row"><span>Dinero actual (caja local)</span><strong id="finCash">0 €</strong></div>
       <div class="row"><span>Ingresos acumulados</span><strong id="finIncome">0 €</strong></div>
       <div class="row"><span>Compras de stock</span><strong id="finSpend">0 €</strong></div>
       <div class="row"><span>Gastos pagados (luz/alquiler)</span><strong id="finBills">0 €</strong></div>
       <div class="row"><span>Nóminas pagadas</span><strong id="finPayroll">0 €</strong></div>
       <div class="row"><span>Resultado acumulado</span><strong id="finNet">0 €</strong></div>
-      <p class="muted">Resultado = ingresos − compras − operativos − facturas − nóminas. Evita la quiebra.</p>
-    </div>
-    <div class="panel" id="expandPanel">
-      <h2>Expansión de la empresa</h2>
-      <p class="muted">Abre un restaurante (12:00–00:00) cuando la cafetería sea sólida. La caja es compartida.</p>
-      <div id="expandBox"></div>
-    </div>
-    <div class="panel">
-      <h2>Préstamo bancario</h2>
-      <p class="muted">Dinero rápido con intereses. Si no lo devuelves a tiempo, la deuda crece y puedes quebrar.</p>
-      <div id="loanBox"></div>
-    </div>
-    <div class="panel">
-      <h2>Nóminas del personal</h2>
-      <p class="muted">Debes pagar tras cada jornada. Si acumulas retraso, pueden marcharse y reclamar. Sin pagar no puedes despedir.</p>
-      <div id="payrollBox"></div>
+      <p class="muted">Resultado = ingresos − compras − operativos − facturas − nóminas.</p>
     </div>
     <div class="panel">
       <h2>Evolución de beneficios</h2>
@@ -453,20 +1097,37 @@ footer button{flex:1;max-width:200px}
       <p class="muted" id="chartHint">Completa jornadas para ver el gráfico.</p>
     </div>
     <div class="panel">
+      <h2>Registro de jornadas</h2>
+      <div id="lastDaySummary" class="notice">Aún no has cerrado ninguna jornada.</div>
+      <button type="button" class="secondary wide" id="btnOpenHistory" onclick="openHistoryModal()">Ver historial de días</button>
+      <div id="history" class="hidden"></div>
+    </div>
+    <div class="panel">
       <h2>Facturas pendientes</h2>
-      <p class="muted">Luz y alquiler se generan cada día. Debes pagarlas en el plazo indicado. Si se retrasan, no podrás abrir.</p>
+      <p class="muted">Luz y alquiler se generan cada día. Págales a tiempo o no podrás abrir.</p>
       <div id="billsList"></div>
     </div>
     <div class="panel">
-      <h2>Registro de jornadas</h2>
-      <div id="history">Completa tu primera jornada para ver el registro.</div>
+      <h2>Nóminas del personal</h2>
+      <p class="muted">Paga tras cada jornada. Con retraso pueden marcharse. Sin pagar no puedes despedir.</p>
+      <div id="payrollBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Préstamo</h2>
+      <p class="muted">Hasta 1.000 €. El importe lo eliges tú; a más cantidad, más intereses. El dinero va al banco.</p>
+      <div id="loanBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Banco de la empresa</h2>
+      <p class="muted">Ingresa o retira fondos. Sirve para expandirte (restaurante 1.500 €) y mover dinero entre negocios.</p>
+      <div id="bankBox"></div>
     </div>
   </section>
 
   <section id="running" class="hidden">
     <div class="panel">
-      <h2>La cafetería está abierta</h2>
-      <p class="muted">Los clientes llegan. Sigue el ritmo de la jornada.</p>
+      <h2 id="runningTitle">Local abierto</h2>
+      <p class="muted"><span id="runningSub">Los clientes llegan. Sigue el ritmo de la jornada.</span></p>
       <div class="row">
         <span>Hora</span>
         <strong class="clock-display" id="clock">09:00</strong>
@@ -474,6 +1135,7 @@ footer button{flex:1;max-width:200px}
       <div class="shift-bar">
         <div class="shift active" id="shiftMorning">🌅 Mañana</div>
         <div class="shift" id="shiftAfternoon">🌇 Tarde</div>
+        <div class="shift" id="shiftNight" style="display:none">🌙 Noche</div>
       </div>
       <div class="row"><span>Tiempo restante</span><strong id="timer">60 s</strong></div>
       <div class="bar"><span id="dayProgress"></span></div>
@@ -529,9 +1191,70 @@ footer button{flex:1;max-width:200px}
 </div>
 
 <!-- Settings modal -->
+
+<div class="modal-overlay" id="historyModal" onclick="if(event.target===this)closeHistoryModal()">
+  <div class="modal" style="max-height:80vh;overflow:auto">
+    <h2>Historial de jornadas</h2>
+    <div id="historyModalList"></div>
+    <button class="secondary wide" onclick="closeHistoryModal()">Cerrar</button>
+  </div>
+</div>
+<div class="modal-overlay" id="ledgerModal" onclick="if(event.target===this)closeLedgerModal()">
+  <div class="modal" style="max-height:80vh;overflow:auto">
+    <h2>Extracto bancario</h2>
+    <div id="ledgerModalList"></div>
+    <button class="secondary wide" onclick="closeLedgerModal()">Cerrar</button>
+  </div>
+</div>
+
+
+
+<div class="numpad-overlay" id="numpadOverlay" onclick="if(event.target===this)closeNumpad(false)">
+  <div class="numpad" onclick="event.stopPropagation()">
+    <div class="numpad-title" id="numpadTitle">Cantidad</div>
+    <div class="numpad-display" id="numpadDisplay">0</div>
+    <div class="numpad-grid">
+      <button type="button" onclick="npDigit('1')">1</button>
+      <button type="button" onclick="npDigit('2')">2</button>
+      <button type="button" onclick="npDigit('3')">3</button>
+      <button type="button" onclick="npDigit('4')">4</button>
+      <button type="button" onclick="npDigit('5')">5</button>
+      <button type="button" onclick="npDigit('6')">6</button>
+      <button type="button" onclick="npDigit('7')">7</button>
+      <button type="button" onclick="npDigit('8')">8</button>
+      <button type="button" onclick="npDigit('9')">9</button>
+      <button type="button" class="np-del" onclick="npDigit('.')">·</button>
+      <button type="button" onclick="npDigit('0')">0</button>
+      <button type="button" class="np-del" onclick="npBack()">⌫</button>
+    </div>
+    <div class="numpad-actions">
+      <button type="button" class="secondary" onclick="closeNumpad(false)">Cancelar</button>
+      <button type="button" class="primary" onclick="closeNumpad(true)">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal" style="z-index:9999" onclick="if(event.target===this)closeConfirm(false)">
+  <div class="modal" style="max-width:360px">
+    <h2 id="confirmTitle">Confirmar</h2>
+    <p class="muted" id="confirmMsg" style="margin:12px 0 18px;line-height:1.5"></p>
+    <button class="primary wide" id="confirmOk" onclick="closeConfirm(true)">Aceptar</button>
+    <button class="secondary wide" onclick="closeConfirm(false)">Cancelar</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
     <h2>Ajustes</h2>
+
+    <h3 style="margin-top:4px;color:#c9a227;font-size:13px;letter-spacing:1px;text-transform:uppercase">Partida</h3>
+    <button class="secondary wide" onclick="saveGame(false);closeSettings()">Guardar partida ahora</button>
+    <button class="secondary wide" onclick="exportSave()">Exportar partida</button>
+    <button class="secondary wide" onclick="document.getElementById('importFile').click()">Importar partida</button>
+    <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importSave(event)">
+    <button class="danger wide" onclick="resetGame()">Borrar partida y empezar de cero</button>
+
+    <h3 style="margin-top:20px;color:#c9a227;font-size:13px;letter-spacing:1px;text-transform:uppercase">Audio</h3>
     <div class="setting-row">
       <div>
         <strong>Efectos de sonido</strong>
@@ -542,7 +1265,7 @@ footer button{flex:1;max-width:200px}
     <div class="setting-row">
       <div>
         <strong>Música de fondo</strong>
-        <div class="muted" style="font-size:12px">Ambiente de cafetería (bucle)</div>
+        <div class="muted" style="font-size:12px">Cafe.mp3 · bucle de ambiente</div>
       </div>
       <div class="switch" id="musicSwitch" onclick="toggleMusic()"></div>
     </div>
@@ -553,6 +1276,8 @@ footer button{flex:1;max-width:200px}
       </div>
       <div class="switch on" id="vibSwitch" onclick="toggleVib()"></div>
     </div>
+
+    <h3 style="margin-top:20px;color:#c9a227;font-size:13px;letter-spacing:1px;text-transform:uppercase">Adaptabilidad</h3>
     <div class="setting-row">
       <div>
         <strong>Pantalla completa</strong>
@@ -567,22 +1292,27 @@ footer button{flex:1;max-width:200px}
       </div>
       <button class="primary" style="padding:8px 12px;font-size:13px" onclick="promptInstall()">Instalar</button>
     </div>
-    <h3 style="margin-top:20px">Ayuda</h3>
+
+    <h3 style="margin-top:20px;color:#c9a227;font-size:13px;letter-spacing:1px;text-transform:uppercase">Ayuda</h3>
     <div class="muted" style="font-size:13px;line-height:1.5;text-align:left">
-      <p><strong>Estaciones</strong> (Primavera, Verano, Otoño, Invierno): cambian cada 5 días. Suben o bajan la demanda de ciertos productos (helados en verano, chocolate en invierno, etc.).</p>
-      <p><strong>Clima</strong> (Soleado, Nublado, Lluvia, Tormenta, Niebla, Viento): se sortea al abrir el día y afecta a cuánta clientela llega. Independiente de los eventos.</p>
-      <p><strong>Eventos</strong>: noticias o imprevistos (feria, quejas, subida de luz, crítica positiva…). No son el clima; pueden sumar o restar clientes, reputación o facturas.</p>
-      <p><strong>Empresa</strong>: misma caja para cafetería y restaurante. Cambia de local en el encabezado cuando desbloquees el restaurante.</p>
+      <p><strong>Clima</strong> (Soleado, Nublado, Lluvia, Tormenta, Niebla, Viento): al abrir el día afecta a la clientela.</p>
+      <p><strong>Eventos</strong>: imprevistos del barrio y del tipo de negocio. Independientes del clima.</p>
+      <p><strong>Banco</strong>: ingresa desde Finanzas de cada local. Con el banco desbloqueas negocios y mueves capital.</p>
+      <p><strong>Mapa</strong>: botón 🗺️ para volver a la vista de negocios.</p>
       <p><strong>Personal y nóminas</strong>: paga a tiempo o pueden marcharse. Sin pagar no puedes despedir.</p>
       <p><strong>Quiebra</strong>: deudas, préstamo impagado o fondos hundidos terminan la partida.</p>
     </div>
-    <h3 style="margin-top:20px">Partida</h3>
-    <button class="secondary wide" onclick="saveGame(false);closeSettings()">Guardar partida ahora</button>
-    <button class="secondary wide" onclick="exportSave()">Exportar partida</button>
-    <button class="secondary wide" onclick="document.getElementById('importFile').click()">Importar partida</button>
-    <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importSave(event)">
-    <button class="danger wide" onclick="resetGame()">Borrar partida y empezar de cero</button>
-    <button class="secondary wide" style="margin-top:12px" onclick="closeSettings()">Cerrar</button>
+
+    <button class="secondary wide" style="margin-top:16px" onclick="closeSettings()">Cerrar</button>
+    <p id="appVersion" class="muted" style="text-align:center;font-size:11px;margin:16px 0 4px;cursor:pointer;user-select:none;opacity:.7" onclick="onVersionTap()">EMPIRE CITY · v1.0.20</p>
+    <div id="secretDev" class="hidden" style="margin-top:10px;padding:12px;border:1px dashed #3a4150;border-radius:12px;background:#121418">
+      <strong style="color:#c9a227;font-size:12px">Menú de pruebas</strong>
+      <p class="muted" style="font-size:11px;margin:6px 0">Solo para testing. Añade dinero a la caja del local actual.</p>
+      <input id="cheatAmount" class="field" type="text" inputmode="none" readonly value="500" placeholder="Cantidad €"
+        onclick="openNumpad({targetId:'cheatAmount', title:'Cantidad de prueba', min:1, max:999999, decimals:0, integer:true})">
+      <button class="primary wide" style="margin-top:8px" onclick="cheatAddMoney()">Añadir dinero</button>
+      <button class="secondary wide" onclick="cheatAddBank()">Añadir al banco</button>
+    </div>
   </div>
 </div>
 
@@ -747,80 +1477,497 @@ const STAFF_NAMES = {
 };
 
 
-const SEASONS = [
-  {id:'spring', name:'Primavera', emoji:'🌸', days:5,
-    customerMult:1.05,
-    prefer:['fruit','juice','pastry','tea'],
-    avoid:['icecream']},
-  {id:'summer', name:'Verano', emoji:'☀️', days:5,
-    customerMult:1.12,
-    prefer:['juice','icecream','fruit','donut'],
-    avoid:['choco','tea']},
-  {id:'autumn', name:'Otoño', emoji:'🍂', days:5,
-    customerMult:1.0,
-    prefer:['pastry','cake','coffee','latte','espresso'],
-    avoid:['icecream']},
-  {id:'winter', name:'Invierno', emoji:'❄️', days:5,
-    customerMult:0.95,
-    prefer:['choco','tea','espresso','latte','cake'],
-    avoid:['icecream','juice']}
-];
+const VENUE_LEVELS = {
+  cafe: [
+    {level:1, name:'Rincón', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Tu pequeño rincón abre sus puertas.'},
+    {level:2, name:'Café de barrio', minIncome:120, minRep:40, customerBonus:1.12, unlockMsg:'El barrio ya te conoce.'},
+    {level:3, name:'Favorito local', minIncome:350, minRep:60, customerBonus:1.25, unlockMsg:'Eres el favorito de la zona.'},
+    {level:4, name:'De moda', minIncome:800, minRep:80, customerBonus:1.4, unlockMsg:'¡Tu cafetería está de moda!'}
+  ],
+  restaurant: [
+    {level:1, name:'Mesa sencilla', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Tu restaurante abre la cocina.'},
+    {level:2, name:'Barrio gourmet', minIncome:200, minRep:40, customerBonus:1.12, unlockMsg:'La gente del barrio reserva mesa.'},
+    {level:3, name:'Recomendado', minIncome:500, minRep:60, customerBonus:1.25, unlockMsg:'Las reseñas hablan de ti.'},
+    {level:4, name:'Estrella local', minIncome:1200, minRep:80, customerBonus:1.4, unlockMsg:'¡Restaurante de referencia!'}
+  ],
+  disco: [
+    {level:1, name:'Sala pequeña', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Las luces se encienden.'},
+    {level:2, name:'Pista conocida', minIncome:250, minRep:40, customerBonus:1.15, unlockMsg:'La gente ya pregunta por tu disco.'},
+    {level:3, name:'Noche top', minIncome:700, minRep:60, customerBonus:1.28, unlockMsg:'Cola en la puerta casi cada noche.'},
+    {level:4, name:'Club de moda', minIncome:1500, minRep:80, customerBonus:1.45, unlockMsg:'¡El club de la ciudad!'}
+  ],
+  book: [
+    {level:1, name:'Estantería', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Abren las páginas.'},
+    {level:2, name:'Rincón lector', minIncome:150, minRep:40, customerBonus:1.12, unlockMsg:'Los lectores del barrio vuelven.'},
+    {level:3, name:'Librería de culto', minIncome:400, minRep:60, customerBonus:1.25, unlockMsg:'Firmas y clubes de lectura.'},
+    {level:4, name:'Referencia cultural', minIncome:900, minRep:80, customerBonus:1.4, unlockMsg:'¡Templo de los libros!'}
+  ],
+  video: [
+    {level:1, name:'Club de cine', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'El cine en casa empieza aquí.'},
+    {level:2, name:'Fans del barrio', minIncome:180, minRep:40, customerBonus:1.12, unlockMsg:'Los cinéfilos te conocen.'},
+    {level:3, name:'Videoclub de culto', minIncome:450, minRep:60, customerBonus:1.25, unlockMsg:'Rarezas y estrenos a tope.'},
+    {level:4, name:'Templo del cine', minIncome:1000, minRep:80, customerBonus:1.4, unlockMsg:'¡El videoclub de la ciudad!'}
+  ],
+  game: [
+    {level:1, name:'Rincón gamer', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Game on.'},
+    {level:2, name:'Tienda del barrio', minIncome:300, minRep:40, customerBonus:1.12, unlockMsg:'Los gamers locales vuelven.'},
+    {level:3, name:'Level Up', minIncome:800, minRep:60, customerBonus:1.28, unlockMsg:'Reservas y demos a tope.'},
+    {level:4, name:'Mega Store', minIncome:1800, minRep:80, customerBonus:1.45, unlockMsg:'¡La tienda gaming de referencia!'}
+  ],
+  gas: [
+    {level:1, name:'Surtidor', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Primera manguera lista.'},
+    {level:2, name:'Estación de paso', minIncome:400, minRep:40, customerBonus:1.12, unlockMsg:'Conductores fijos te eligen.'},
+    {level:3, name:'Área de servicio', minIncome:1000, minRep:60, customerBonus:1.25, unlockMsg:'Cola en horas punta.'},
+    {level:4, name:'Hub de carretera', minIncome:2200, minRep:80, customerBonus:1.4, unlockMsg:'¡La gasolinera de la zona!'}
+  ],
+  boutique: [
+    {level:1, name:'Escaparate', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Primera colección en el escaparate.'},
+    {level:2, name:'Moda de barrio', minIncome:250, minRep:40, customerBonus:1.12, unlockMsg:'Clientes fijos de estilo.'},
+    {level:3, name:'Boutique top', minIncome:700, minRep:60, customerBonus:1.28, unlockMsg:'Looks que se copian.'},
+    {level:4, name:'Icono de estilo', minIncome:1600, minRep:80, customerBonus:1.45, unlockMsg:'¡Referencia de moda!'}
+  ],
+  market: [
+    {level:1, name:'Ultramarinos', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'El carrito empieza a llenarse.'},
+    {level:2, name:'Súper de barrio', minIncome:350, minRep:40, customerBonus:1.12, unlockMsg:'La compra semanal pasa por aquí.'},
+    {level:3, name:'Súper completo', minIncome:900, minRep:60, customerBonus:1.28, unlockMsg:'Pasillos llenos cada día.'},
+    {level:4, name:'Hiper local', minIncome:2000, minRep:80, customerBonus:1.45, unlockMsg:'¡El súper de la ciudad!'}
+  ],
+  gold: [
+    {level:1, name:'Vitrina', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Primer brillo en el escaparate.'},
+    {level:2, name:'Joyería de confianza', minIncome:400, minRep:45, customerBonus:1.12, unlockMsg:'Clientes que confían en tu oro.'},
+    {level:3, name:'Casa de metales', minIncome:1100, minRep:65, customerBonus:1.28, unlockMsg:'Cotización y piezas exclusivas.'},
+    {level:4, name:'Templo del oro', minIncome:2500, minRep:85, customerBonus:1.45, unlockMsg:'¡La referencia en metales preciosos!'}
+  ]
+};
+const CAFE_LEVELS = VENUE_LEVELS.cafe;
 
-const CAFE_LEVELS = [
-  {level:1, name:'Rincón', minIncome:0, minRep:0, customerBonus:1.0, unlockMsg:'Tu pequeño rincón abre sus puertas.'},
-  {level:2, name:'Café de barrio', minIncome:120, minRep:40, customerBonus:1.12, unlockMsg:'El barrio ya te conoce.'},
-  {level:3, name:'Favorito local', minIncome:350, minRep:60, customerBonus:1.25, unlockMsg:'Eres el favorito de la zona.'},
-  {level:4, name:'De moda', minIncome:800, minRep:80, customerBonus:1.4, unlockMsg:'¡Tu cafetería está de moda!'}
-];
 
-const UPGRADES = [
+const CAFE_UPGRADES = [
   {id:'terrace', name:'Terraza', emoji:'🪑', cost:80, upkeep:3,
-    desc:'Más asientos al aire libre (+18% clientes).', bonus:{customers:0.18}},
+    desc:'Mesas al sol: +18% clientes.', bonus:{customers:0.18}},
   {id:'espresso', name:'Máquina espresso pro', emoji:'☕', cost:120, upkeep:4,
-    desc:'Mejor café: +reputación y +8% ticket.', bonus:{rep:0.5, priceMult:1.08}},
-  {id:'vitrine', name:'Vitrina refrigerada', emoji:'🧊', cost:70, upkeep:2,
-    desc:'Dulces más atractivos (+demanda bollería/tartas).', bonus:{sweetBoost:0.25}},
-  {id:'wifi', name:'WiFi para clientes', emoji:'📶', cost:45, upkeep:1,
-    desc:'La gente se queda más (+12% clientes tarde).', bonus:{afternoon:0.12}},
-  {id:'sign', name:'Rótulo luminoso', emoji:'💡', cost:55, upkeep:2,
+    desc:'Café de especialidad: +rep y +8% ticket.', bonus:{rep:0.5, priceMult:1.08}},
+  {id:'vitrine', name:'Vitrina de bollería', emoji:'🍪', cost:70, upkeep:2,
+    desc:'Dulces más visibles (+demanda dulce).', bonus:{sweetBoost:0.25}},
+  {id:'wifi', name:'WiFi gratis', emoji:'📶', cost:45, upkeep:1,
+    desc:'Clientes se quedan más rato (+12% tarde).', bonus:{afternoon:0.12}},
+  {id:'sign', name:'Rótulo de calle', emoji:'🪧', cost:55, upkeep:2,
     desc:'Más visibilidad (+10% clientes).', bonus:{customers:0.10}},
-  {id:'training', name:'Zona de formación', emoji:'📚', cost:90, upkeep:0,
-    desc:'El personal rinde un 15% más.', bonus:{staffBoost:0.15}},
-  {id:'loyalty', name:'Tarjeta de fidelización', emoji:'💳', cost:40, upkeep:1,
-    desc:'Clientes recurrentes (+10% clientela).', bonus:{customers:0.10}},
-  {id:'delivery', name:'Servicio a domicilio', emoji:'🛵', cost:110, upkeep:5,
-    desc:'Pedidos a casa (+20% clientes, ideal con lluvia).', bonus:{customers:0.20, rainGuard:0.15}},
-  {id:'ac', name:'Climatización', emoji:'🌡️', cost:75, upkeep:3,
-    desc:'Confort en calor o frío (+8% clientes).', bonus:{customers:0.08}}
+  {id:'loyalty', name:'Tarjeta sello café', emoji:'💳', cost:40, upkeep:1,
+    desc:'Fidelización (+10% clientela).', bonus:{customers:0.10}},
+  {id:'delivery', name:'Reparto en bici', emoji:'🛵', cost:110, upkeep:5,
+    desc:'Pedidos a domicilio (+20%, mitiga lluvia).', bonus:{customers:0.20, rainGuard:0.15}},
+  {id:'beans_store', name:'Tostadero propio', emoji:'🔥', cost:95, upkeep:3,
+    desc:'Grano propio: +reputación.', bonus:{rep:0.6}}
 ];
-
-const LOAN_OFFERS = [
-  {id:'s', amount:50, interest:0.12, days:3, label:'50 € (12% · 3 días)'},
-  {id:'m', amount:100, interest:0.15, days:4, label:'100 € (15% · 4 días)'},
-  {id:'l', amount:200, interest:0.18, days:5, label:'200 € (18% · 5 días)'}
+const REST_UPGRADES = [
+  {id:'terrace_r', name:'Terraza gourmet', emoji:'🌿', cost:140, upkeep:5,
+    desc:'Terraza elegante (+20% clientes).', bonus:{customers:0.20}},
+  {id:'kitchen', name:'Cocina industrial', emoji:'👨‍🍳', cost:180, upkeep:6,
+    desc:'Más ritmo y calidad (+rep, +10% ticket).', bonus:{rep:0.7, priceMult:1.10}},
+  {id:'wine_cellar', name:'Bodega', emoji:'🍷', cost:130, upkeep:4,
+    desc:'Carta de vinos atractiva (+12% ticket).', bonus:{priceMult:1.12}},
+  {id:'reservation', name:'Sistema de reservas', emoji:'📅', cost:90, upkeep:2,
+    desc:'Mesas ocupadas con antelación (+15% clientes).', bonus:{customers:0.15}},
+  {id:'chef_table', name:'Mesa del chef', emoji:'⭐', cost:160, upkeep:3,
+    desc:'Experiencia premium (+rep fuerte).', bonus:{rep:1.0, priceMult:1.06}},
+  {id:'delivery_r', name:'Reparto premium', emoji:'🚗', cost:150, upkeep:7,
+    desc:'Delivery de platos (+18%, ayuda con lluvia).', bonus:{customers:0.18, rainGuard:0.2}},
+  {id:'decor', name:'Interiorismo', emoji:'🖼️', cost:110, upkeep:2,
+    desc:'Ambiente de revista (+8% clientes).', bonus:{customers:0.08}},
+  {id:'training_r', name:'Formación de sala', emoji:'📚', cost:100, upkeep:0,
+    desc:'Personal más efectivo (+15%).', bonus:{staffBoost:0.15}}
 ];
-
-function currentSeason(day) {
-  const cycle = SEASONS.reduce((s,x)=>s+x.days, 0);
-  let d = ((day - 1) % cycle);
-  for (const s of SEASONS) {
-    if (d < s.days) return s;
-    d -= s.days;
-  }
-  return SEASONS[0];
-}
+let UPGRADES = CAFE_UPGRADES;
 
 function cafeLevel() {
-  let lv = CAFE_LEVELS[0];
-  for (const L of CAFE_LEVELS) {
+  const key = game.activeVenue || 'cafe';
+  const list = (typeof VENUE_LEVELS !== 'undefined' && VENUE_LEVELS[key]) ? VENUE_LEVELS[key] : CAFE_LEVELS;
+  let lv = list[0];
+  for (const L of list) {
     if (game.income >= L.minIncome && game.reputation >= L.minRep) lv = L;
   }
   return lv;
 }
 
+
+/* ========== DISCOTECA ========== */
+const DISCO_SUPPLIES = [
+  {id:'beer',name:'Cerveza',emoji:'🍺',cost:0.80,unit:'uds',desc:'Barril y botella'},
+  {id:'spirit',name:'Destilados',emoji:'🥃',cost:1.20,unit:'dosis',desc:'Ron, gin, vodka'},
+  {id:'mixer',name:'Refrescos',emoji:'🥤',cost:0.35,unit:'uds',desc:'Cola, tónica, limón'},
+  {id:'wine',name:'Vino',emoji:'🍷',cost:1.00,unit:'copas',desc:'Tinto y blanco'},
+  {id:'energy',name:'Energética',emoji:'⚡',cost:0.90,unit:'uds',desc:'Para la madrugada'},
+  {id:'shot',name:'Chupitos',emoji:'🍸',cost:0.60,unit:'uds',desc:'Servicio rápido'},
+  {id:'ice',name:'Hielo',emoji:'🧊',cost:0.08,unit:'dosis',desc:'Imprescindible'},
+  {id:'snack',name:'Snacks',emoji:'🥨',cost:0.40,unit:'uds',desc:'Para picar'},
+  {id:'champagne',name:'Champagne',emoji:'🥂',cost:8.00,unit:'botellas',desc:'Brindis VIP'},
+  {id:'water',name:'Agua',emoji:'💧',cost:0.25,unit:'uds',desc:'Hidratación'},
+  {id:'fruit',name:'Fruta bar',emoji:'🍋',cost:0.50,unit:'uds',desc:'Decoración cócteles'},
+  {id:'soft',name:'Sin alcohol',emoji:'🧃',cost:0.55,unit:'uds',desc:'Cócteles mocktail'}
+];
+const DISCO_RECIPES = [
+  {id:'beer',name:'Cerveza',emoji:'🍺',price:3.50,parts:{beer:1},desc:'Caña o botellín'},
+  {id:'cubata',name:'Cubata',emoji:'🍹',price:7.00,parts:{spirit:1,mixer:1,ice:1},desc:'Combinado clásico'},
+  {id:'shot',name:'Chupito',emoji:'🍸',price:3.00,parts:{shot:1},desc:'Disparo rápido'},
+  {id:'wine',name:'Copa de vino',emoji:'🍷',price:4.50,parts:{wine:1},desc:'Copa de la casa'},
+  {id:'energy',name:'Energética',emoji:'⚡',price:4.00,parts:{energy:1},desc:'Hasta el amanecer'},
+  {id:'snack',name:'Ración snacks',emoji:'🥨',price:3.20,parts:{snack:1},desc:'Para compartir'},
+  {id:'champagne',name:'Botella champagne',emoji:'🥂',price:45.00,parts:{champagne:1,ice:1},desc:'Mesa VIP'},
+  {id:'water',name:'Agua',emoji:'💧',price:2.00,parts:{water:1},desc:'Botella'},
+  {id:'mocktail',name:'Mocktail',emoji:'🧃',price:5.50,parts:{soft:1,fruit:1,ice:1},desc:'Sin alcohol'},
+  {id:'cocktail',name:'Cóctel firma',emoji:'🍸',price:9.50,parts:{spirit:1,fruit:1,ice:1,mixer:1},desc:'Especial de la casa'}
+];
+const DISCO_STAFF_ROLES = {
+  dj: {id:'dj',title:'DJ',emoji:'🎧',desc:'Música: más gente en pista.',
+    ranks:[{rank:1,hire:50,salary:12,bonus:{customers:0.16}},{rank:2,hire:100,salary:20,bonus:{customers:0.28}},{rank:3,hire:170,salary:30,bonus:{customers:0.42}}]},
+  bartender: {id:'bartender',title:'Bartender',emoji:'🍸',desc:'Barra rápida: menos overhead.',
+    ranks:[{rank:1,hire:35,salary:9,bonus:{overhead:0.30}},{rank:2,hire:75,salary:15,bonus:{overhead:0.50}},{rank:3,hire:130,salary:24,bonus:{overhead:0.70}}]},
+  seguridad: {id:'seguridad',title:'Seguridad',emoji:'🛡️',desc:'Ambiente seguro: +reputación.',
+    ranks:[{rank:1,hire:40,salary:10,bonus:{rep:0.5}},{rank:2,hire:85,salary:18,bonus:{rep:0.9}},{rank:3,hire:150,salary:28,bonus:{rep:1.4}}]}
+};
+const DISCO_UPGRADES = [
+  {id:'lights',name:'Luces LED',emoji:'💡',cost:150,upkeep:5,desc:'Ambiente pro: +20% clientes.',bonus:{customers:0.20}},
+  {id:'sound',name:'Equipo de sonido',emoji:'🔊',cost:200,upkeep:6,desc:'Mejor pista: +rep y ticket.',bonus:{rep:0.6,priceMult:1.08}},
+  {id:'vip',name:'Zona VIP',emoji:'✨',cost:180,upkeep:4,desc:'Clientes premium (+ticket).',bonus:{priceMult:1.12}},
+  {id:'bar',name:'Barra doble',emoji:'🍹',cost:120,upkeep:3,desc:'Más servicio, menos colas.',bonus:{customers:0.12,overhead:0.15}}
+];
+
+/* ========== LIBRERÍA ========== */
+const BOOK_SUPPLIES = [
+  {id:'novel',name:'Novelas',emoji:'📖',cost:4.50,unit:'uds',desc:'Ficción contemporánea'},
+  {id:'manga',name:'Mangas',emoji:'📕',cost:3.20,unit:'uds',desc:'Series y tomos'},
+  {id:'comic',name:'Cómics',emoji:'💬',cost:3.80,unit:'uds',desc:'Superhéroes y autor'},
+  {id:'board',name:'Juegos de mesa',emoji:'🎲',cost:12.00,unit:'uds',desc:'Familiares y strategy'},
+  {id:'kids',name:'Infantil',emoji:'📚',cost:5.00,unit:'uds',desc:'Cuentos ilustrados'},
+  {id:'essay',name:'Ensayo',emoji:'📰',cost:6.50,unit:'uds',desc:'No ficción'},
+  {id:'stationery',name:'Papelería',emoji:'✏️',cost:1.20,unit:'uds',desc:'Libretas y lápices'},
+  {id:'poster',name:'Pósters',emoji:'🖼️',cost:2.50,unit:'uds',desc:'Láminas decorativas'},
+  {id:'poetry',name:'Poesía',emoji:'✍️',cost:5.50,unit:'uds',desc:'Clásicos y modernos'},
+  {id:'cookbook',name:'Cocina',emoji:'🍳',cost:7.00,unit:'uds',desc:'Recetarios'},
+  {id:'travel',name:'Viajes',emoji:'🗺️',cost:8.00,unit:'uds',desc:'Guías y mapas'},
+  {id:'gift',name:'Pack regalo',emoji:'🎁',cost:9.00,unit:'uds',desc:'Libro + marcapáginas'}
+];
+const BOOK_RECIPES = [
+  {id:'novel',name:'Novela',emoji:'📖',price:12.90,parts:{novel:1},desc:'Bestsellers y clásicos'},
+  {id:'manga',name:'Tomo de manga',emoji:'📕',price:8.50,parts:{manga:1},desc:'Últimos lanzamientos'},
+  {id:'comic',name:'Cómic',emoji:'💬',price:9.90,parts:{comic:1},desc:'Coleccionables'},
+  {id:'board',name:'Juego de mesa',emoji:'🎲',price:29.90,parts:{board:1},desc:'Para la sobremesa'},
+  {id:'kids',name:'Libro infantil',emoji:'📚',price:11.50,parts:{kids:1},desc:'Para los peques'},
+  {id:'essay',name:'Ensayo',emoji:'📰',price:15.90,parts:{essay:1},desc:'Ideas y actualidad'},
+  {id:'stationery',name:'Pack papelería',emoji:'✏️',price:4.50,parts:{stationery:1},desc:'Libreta + boli'},
+  {id:'poster',name:'Póster',emoji:'🖼️',price:6.90,parts:{poster:1},desc:'Decoración'},
+  {id:'poetry',name:'Libro de poesía',emoji:'✍️',price:11.90,parts:{poetry:1},desc:'Versos'},
+  {id:'cookbook',name:'Libro de cocina',emoji:'🍳',price:16.90,parts:{cookbook:1},desc:'Recetas'},
+  {id:'travel',name:'Guía de viajes',emoji:'🗺️',price:18.90,parts:{travel:1},desc:'Destinos'},
+  {id:'gift',name:'Pack regalo',emoji:'🎁',price:22.90,parts:{gift:1},desc:'Ideal para regalar'}
+];
+const BOOK_STAFF_ROLES = {
+  librero: {id:'librero',title:'Librero/a',emoji:'📖',desc:'Recomienda y vende más.',
+    ranks:[{rank:1,hire:30,salary:8,bonus:{customers:0.12}},{rank:2,hire:65,salary:14,bonus:{customers:0.22}},{rank:3,hire:110,salary:22,bonus:{customers:0.34}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Agiliza la caja.',
+    ranks:[{rank:1,hire:22,salary:6,bonus:{overhead:0.25}},{rank:2,hire:48,salary:10,bonus:{overhead:0.45}},{rank:3,hire:85,salary:16,bonus:{overhead:0.65}}]},
+  escaparate: {id:'escaparate',title:'Escaparate',emoji:'🪟',desc:'Vitrina atractiva: +rep.',
+    ranks:[{rank:1,hire:28,salary:7,bonus:{rep:0.4}},{rank:2,hire:60,salary:12,bonus:{rep:0.8}},{rank:3,hire:100,salary:18,bonus:{rep:1.2}}]}
+};
+const BOOK_UPGRADES = [
+  {id:'corner',name:'Rincón de lectura',emoji:'🪑',cost:90,upkeep:2,desc:'Clientes se quedan (+15%).',bonus:{customers:0.15}},
+  {id:'club',name:'Club de lectura',emoji:'☕',cost:70,upkeep:2,desc:'Fideliza: +reputación.',bonus:{rep:0.7}},
+  {id:'shelves',name:'Estanterías nuevas',emoji:'🗄️',cost:110,upkeep:1,desc:'Más stock visible.',bonus:{customers:0.10}},
+  {id:'events',name:'Firmas de autores',emoji:'✍️',cost:130,upkeep:3,desc:'Picos de afluencia.',bonus:{customers:0.18,rep:0.4}}
+];
+
+/* ========== VIDEOCLUB ========== */
+const VIDEO_SUPPLIES = [
+  {id:'dvd',name:'DVDs',emoji:'💿',cost:3.50,unit:'uds',desc:'Películas clásicas'},
+  {id:'bluray',name:'Blu-ray',emoji:'📀',cost:6.00,unit:'uds',desc:'Alta definición'},
+  {id:'vinyl',name:'Vinilos',emoji:'🎵',cost:8.00,unit:'uds',desc:'Música en vinilo'},
+  {id:'cd',name:'CDs',emoji:'💿',cost:4.00,unit:'uds',desc:'Álbumes musicales'},
+  {id:'series',name:'Series',emoji:'📺',cost:5.50,unit:'uds',desc:'Packs de temporadas'},
+  {id:'merch',name:'Merchandising',emoji:'🧢',cost:3.00,unit:'uds',desc:'Camisetas y posters'},
+  {id:'used',name:'Segunda mano',emoji:'♻️',cost:2.00,unit:'uds',desc:'Oportunidades'},
+  {id:'uhd4k',name:'UHD 4K',emoji:'📽️',cost:9.00,unit:'uds',desc:'Máxima calidad'},
+  {id:'anime',name:'Anime',emoji:'🌸',cost:5.00,unit:'uds',desc:'Series y películas'},
+  {id:'docu',name:'Documentales',emoji:'🌍',cost:4.50,unit:'uds',desc:'Naturaleza y ciencia'},
+  {id:'soundtrack',name:'Bandas sonoras',emoji:'🎼',cost:6.50,unit:'uds',desc:'OSTs de cine'}
+];
+const VIDEO_RECIPES = [
+  {id:'dvd',name:'DVD película',emoji:'💿',price:9.90,parts:{dvd:1},desc:'Estrenos y clásicos'},
+  {id:'bluray',name:'Blu-ray',emoji:'📀',price:14.90,parts:{bluray:1},desc:'Calidad cine'},
+  {id:'vinyl',name:'Vinilo',emoji:'🎵',price:22.90,parts:{vinyl:1},desc:'Edición especial'},
+  {id:'cd',name:'CD álbum',emoji:'💿',price:11.90,parts:{cd:1},desc:'Tu banda favorita'},
+  {id:'series',name:'Pack serie',emoji:'📺',price:19.90,parts:{series:1},desc:'Temporada completa'},
+  {id:'merch',name:'Merch cine',emoji:'🧢',price:12.90,parts:{merch:1},desc:'Fan art'},
+  {id:'used',name:'Oportunidad',emoji:'♻️',price:5.90,parts:{used:1},desc:'Segunda mano'},
+  {id:'uhd4k',name:'UHD 4K',emoji:'📽️',price:19.90,parts:{uhd4k:1},desc:'Ultra HD'},
+  {id:'anime',name:'Anime',emoji:'🌸',price:14.90,parts:{anime:1},desc:'Edición coleccionista'},
+  {id:'docu',name:'Documental',emoji:'🌍',price:11.90,parts:{docu:1},desc:'Descubre el mundo'},
+  {id:'soundtrack',name:'Banda sonora',emoji:'🎼',price:15.90,parts:{soundtrack:1},desc:'Música de cine'}
+];
+const VIDEO_STAFF_ROLES = {
+  dependiente: {id:'dependiente',title:'Dependiente',emoji:'🎬',desc:'Conoce el catálogo.',
+    ranks:[{rank:1,hire:28,salary:7,bonus:{customers:0.12}},{rank:2,hire:60,salary:13,bonus:{customers:0.22}},{rank:3,hire:105,salary:20,bonus:{customers:0.34}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cobros rápidos.',
+    ranks:[{rank:1,hire:20,salary:5,bonus:{overhead:0.25}},{rank:2,hire:45,salary:9,bonus:{overhead:0.45}},{rank:3,hire:80,salary:15,bonus:{overhead:0.65}}]},
+  curator: {id:'curator',title:'Curador',emoji:'🎞️',desc:'Recomendaciones: +rep y ticket.',
+    ranks:[{rank:1,hire:35,salary:8,bonus:{rep:0.5,priceMult:1.05}},{rank:2,hire:75,salary:14,bonus:{rep:0.9,priceMult:1.09}},{rank:3,hire:125,salary:22,bonus:{rep:1.3,priceMult:1.14}}]}
+};
+const VIDEO_UPGRADES = [
+  {id:'screen',name:'Pantalla de trailers',emoji:'📺',cost:100,upkeep:3,desc:'Engancha clientes (+16%).',bonus:{customers:0.16}},
+  {id:'rare',name:'Sección rarezas',emoji:'💎',cost:120,upkeep:2,desc:'Coleccionistas: +ticket.',bonus:{priceMult:1.10}},
+  {id:'listening',name:'Cabinas de audio',emoji:'🎧',cost:90,upkeep:2,desc:'Prueba antes de comprar.',bonus:{customers:0.12,rep:0.4}},
+  {id:'loyalty',name:'Tarjeta socio',emoji:'💳',cost:60,upkeep:1,desc:'Clientes recurrentes.',bonus:{customers:0.10,rep:0.5}}
+];
+
+/* ========== GAME STORE ========== */
+const GAME_SUPPLIES = [
+  {id:'ps5',name:'PS5',emoji:'🕹️',cost:420,unit:'uds',desc:'PlayStation 5'},
+  {id:'ps4',name:'PS4',emoji:'🎮',cost:180,unit:'uds',desc:'PlayStation 4'},
+  {id:'switch1',name:'Switch',emoji:'🕹️',cost:220,unit:'uds',desc:'Nintendo Switch'},
+  {id:'switch2',name:'Switch 2',emoji:'🆕',cost:380,unit:'uds',desc:'Nueva generación Nintendo'},
+  {id:'x360',name:'Xbox 360',emoji:'🎯',cost:90,unit:'uds',desc:'Clásico retro'},
+  {id:'xone',name:'Xbox One',emoji:'🎮',cost:150,unit:'uds',desc:'Xbox One'},
+  {id:'xsx',name:'Xbox Series X',emoji:'⬛',cost:420,unit:'uds',desc:'Series X potencia'},
+  {id:'gps5',name:'Juegos PS5',emoji:'📀',cost:38,unit:'uds',desc:'Títulos exclusivos y multi'},
+  {id:'gps4',name:'Juegos PS4',emoji:'💿',cost:22,unit:'uds',desc:'Catálogo PlayStation 4'},
+  {id:'gnswitch',name:'Juegos Switch',emoji:'🃏',cost:32,unit:'uds',desc:'Nintendo Switch'},
+  {id:'gnswitch2',name:'Juegos Switch 2',emoji:'🆕',cost:40,unit:'uds',desc:'Nueva generación'},
+  {id:'gx360',name:'Juegos Xbox 360',emoji:'🎯',cost:10,unit:'uds',desc:'Clásicos 360'},
+  {id:'gxone',name:'Juegos Xbox One',emoji:'🎮',cost:20,unit:'uds',desc:'Catálogo One'},
+  {id:'gxsx',name:'Juegos Series X',emoji:'⬛',cost:36,unit:'uds',desc:'Xbox Series X'},
+  {id:'gused',name:'Juegos 2ª mano',emoji:'♻️',cost:12,unit:'uds',desc:'Oportunidades'},
+  {id:'accessory',name:'Accesorios',emoji:'🎧',cost:18,unit:'uds',desc:'Mandos y auriculares'},
+  {id:'merch',name:'Merchandising',emoji:'👕',cost:8,unit:'uds',desc:'Camisetas y figuras'},
+  {id:'pcpart',name:'Componentes PC',emoji:'💻',cost:45,unit:'uds',desc:'Para gamers PC'},
+  {id:'card',name:'Cartas / TCG',emoji:'🃏',cost:4,unit:'uds',desc:'Sobres y mazos'}
+];
+const GAME_RECIPES = [
+  {id:'ps5',name:'PS5',emoji:'🕹️',price:499,parts:{ps5:1},desc:'Consola PlayStation 5'},
+  {id:'ps4',name:'PS4',emoji:'🎮',price:229,parts:{ps4:1},desc:'Consola PlayStation 4'},
+  {id:'switch1',name:'Nintendo Switch',emoji:'🕹️',price:279,parts:{switch1:1},desc:'Switch estándar'},
+  {id:'switch2',name:'Switch 2',emoji:'🆕',price:449,parts:{switch2:1},desc:'Nueva generación'},
+  {id:'x360',name:'Xbox 360',emoji:'🎯',price:119,parts:{x360:1},desc:'Retro gaming'},
+  {id:'xone',name:'Xbox One',emoji:'🎮',price:189,parts:{xone:1},desc:'Xbox One'},
+  {id:'xsx',name:'Xbox Series X',emoji:'⬛',price:499,parts:{xsx:1},desc:'Máxima potencia'},
+  {id:'gps5',name:'Juego PS5',emoji:'📀',price:69.90,parts:{gps5:1},desc:'Estreno / catálogo PS5'},
+  {id:'gps4',name:'Juego PS4',emoji:'💿',price:39.90,parts:{gps4:1},desc:'Catálogo PS4'},
+  {id:'gnswitch',name:'Juego Switch',emoji:'🃏',price:59.90,parts:{gnswitch:1},desc:'Nintendo Switch'},
+  {id:'gnswitch2',name:'Juego Switch 2',emoji:'🆕',price:69.90,parts:{gnswitch2:1},desc:'Nueva generación'},
+  {id:'gx360',name:'Juego Xbox 360',emoji:'🎯',price:14.90,parts:{gx360:1},desc:'Clásico 360'},
+  {id:'gxone',name:'Juego Xbox One',emoji:'🎮',price:29.90,parts:{gxone:1},desc:'Catálogo One'},
+  {id:'gxsx',name:'Juego Series X',emoji:'⬛',price:69.90,parts:{gxsx:1},desc:'Xbox Series X'},
+  {id:'gused',name:'Juego 2ª mano',emoji:'♻️',price:24.90,parts:{gused:1},desc:'Buen estado'},
+  {id:'accessory',name:'Accesorio',emoji:'🎧',price:39.90,parts:{accessory:1},desc:'Mando / headset'},
+  {id:'merch',name:'Merch gamer',emoji:'👕',price:19.90,parts:{merch:1},desc:'Figura o camiseta'},
+  {id:'pcpart',name:'Componente PC',emoji:'💻',price:89.90,parts:{pcpart:1},desc:'Upgrade'},
+  {id:'card',name:'Sobre TCG',emoji:'🃏',price:4.50,parts:{card:1},desc:'Abre y colecciona'}
+];
+const GAME_STAFF_ROLES = {
+  gamer: {id:'gamer',title:'Experto gaming',emoji:'🎮',desc:'Asesora y vende más.',
+    ranks:[{rank:1,hire:40,salary:10,bonus:{customers:0.14}},{rank:2,hire:85,salary:18,bonus:{customers:0.26}},{rank:3,hire:150,salary:28,bonus:{customers:0.40}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cobros ágiles.',
+    ranks:[{rank:1,hire:25,salary:6,bonus:{overhead:0.25}},{rank:2,hire:55,salary:11,bonus:{overhead:0.45}},{rank:3,hire:95,salary:18,bonus:{overhead:0.65}}]},
+  tech: {id:'tech',title:'Técnico',emoji:'🔧',desc:'Demo y setup: +rep y ticket.',
+    ranks:[{rank:1,hire:45,salary:11,bonus:{rep:0.5,priceMult:1.06}},{rank:2,hire:95,salary:18,bonus:{rep:0.9,priceMult:1.10}},{rank:3,hire:160,salary:28,bonus:{rep:1.4,priceMult:1.15}}]}
+};
+const GAME_UPGRADES = [
+  {id:'demo',name:'Zona demo',emoji:'🖥️',cost:200,upkeep:5,desc:'Prueba juegos: +22% clientes.',bonus:{customers:0.22}},
+  {id:'tourney',name:'Torneos',emoji:'🏆',cost:150,upkeep:4,desc:'Eventos: +rep y afluencia.',bonus:{customers:0.15,rep:0.8}},
+  {id:'preorder',name:'Reservas',emoji:'📅',cost:80,upkeep:1,desc:'Fideliza lanzamientos.',bonus:{customers:0.10,priceMult:1.05}},
+  {id:'vr',name:'Rincón VR',emoji:'🕶️',cost:250,upkeep:6,desc:'Experiencia premium.',bonus:{customers:0.18,priceMult:1.12}}
+];
+
+
+/* ========== GASOLINERA ========== */
+const GAS_SUPPLIES = [
+  {id:'sp95',name:'Gasolina 95',emoji:'⛽',cost:1.15,unit:'L',desc:'Sin plomo 95'},
+  {id:'sp98',name:'Gasolina 98',emoji:'⛽',cost:1.28,unit:'L',desc:'Sin plomo 98'},
+  {id:'diesel',name:'Diésel',emoji:'🛢️',cost:1.10,unit:'L',desc:'Gasóleo A'},
+  {id:'dieselplus',name:'Diésel +',emoji:'🛢️',cost:1.22,unit:'L',desc:'Premium aditivado'},
+  {id:'adblue',name:'AdBlue',emoji:'💧',cost:0.55,unit:'L',desc:'Para SCR'},
+  {id:'lpg',name:'Autogas GLP',emoji:'🔥',cost:0.75,unit:'L',desc:'Gas licuado'},
+  {id:'oil',name:'Aceite motor',emoji:'🧴',cost:4.50,unit:'uds',desc:'1L lubricante'},
+  {id:'wash',name:'Lavado',emoji:'💦',cost:2.00,unit:'uds',desc:'Servicio exterior'}
+];
+const GAS_RECIPES = [
+  {id:'sp95',name:'Gasolina 95',emoji:'⛽',price:1.59,parts:{sp95:1},desc:'1 litro SP95',unitLabel:'€/L'},
+  {id:'sp98',name:'Gasolina 98',emoji:'⛽',price:1.72,parts:{sp98:1},desc:'1 litro SP98',unitLabel:'€/L'},
+  {id:'diesel',name:'Diésel',emoji:'🛢️',price:1.49,parts:{diesel:1},desc:'1 litro diésel',unitLabel:'€/L'},
+  {id:'dieselplus',name:'Diésel +',emoji:'🛢️',price:1.65,parts:{dieselplus:1},desc:'1 litro premium',unitLabel:'€/L'},
+  {id:'adblue',name:'AdBlue',emoji:'💧',price:0.89,parts:{adblue:1},desc:'1 litro AdBlue',unitLabel:'€/L'},
+  {id:'lpg',name:'Autogas GLP',emoji:'🔥',price:0.99,parts:{lpg:1},desc:'1 litro GLP',unitLabel:'€/L'},
+  {id:'oil',name:'Aceite motor 1L',emoji:'🧴',price:12.90,parts:{oil:1},desc:'Lubricante'},
+  {id:'wash',name:'Lavado coche',emoji:'💦',price:8.50,parts:{wash:1},desc:'Exterior rápido'}
+];
+const GAS_STAFF_ROLES = {
+  empleado: {id:'empleado',title:'Empleado/a',emoji:'👷',desc:'Atiende surtidores: +clientes.',
+    ranks:[{rank:1,hire:35,salary:9,bonus:{customers:0.12}},{rank:2,hire:70,salary:15,bonus:{customers:0.22}},{rank:3,hire:120,salary:24,bonus:{customers:0.34}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cobros rápidos en tienda.',
+    ranks:[{rank:1,hire:25,salary:7,bonus:{overhead:0.25}},{rank:2,hire:55,salary:12,bonus:{overhead:0.45}},{rank:3,hire:95,salary:18,bonus:{overhead:0.65}}]},
+  mecanico: {id:'mecanico',title:'Técnico',emoji:'🔧',desc:'Mantenimiento: +rep.',
+    ranks:[{rank:1,hire:40,salary:10,bonus:{rep:0.5}},{rank:2,hire:85,salary:17,bonus:{rep:0.9}},{rank:3,hire:140,salary:26,bonus:{rep:1.3}}]}
+};
+const GAS_UPGRADES = [
+  {id:'pumps',name:'Surtidores extra',emoji:'⛽',cost:300,upkeep:8,desc:'Más capacidad: +25% clientes.',bonus:{customers:0.25}},
+  {id:'shop',name:'Tienda 24h',emoji:'🏪',cost:180,upkeep:4,desc:'Productos extra: +ticket.',bonus:{priceMult:1.08,customers:0.10}},
+  {id:'carwash',name:'Túnel de lavado',emoji:'🚗',cost:250,upkeep:6,desc:'Servicio premium.',bonus:{customers:0.15,rep:0.6}},
+  {id:'loyalty',name:'Tarjeta flota',emoji:'💳',cost:90,upkeep:2,desc:'Clientes recurrentes.',bonus:{customers:0.12,rep:0.4}}
+];
+
+/* ========== BOUTIQUE ========== */
+const BOUTIQUE_SUPPLIES = [
+  {id:'shirt',name:'Camisas',emoji:'👔',cost:12,unit:'uds',desc:'Formal y casual'},
+  {id:'pants',name:'Pantalones',emoji:'👖',cost:15,unit:'uds',desc:'Vaqueros y chinos'},
+  {id:'shoes',name:'Zapatos',emoji:'👟',cost:22,unit:'uds',desc:'Calzado diario'},
+  {id:'suit',name:'Trajes',emoji:'🤵',cost:55,unit:'uds',desc:'Completos'},
+  {id:'dress',name:'Vestidos',emoji:'👗',cost:28,unit:'uds',desc:'Fiesta y día'},
+  {id:'jacket',name:'Chaquetas',emoji:'🧥',cost:35,unit:'uds',desc:'Abrigo ligero'},
+  {id:'bag',name:'Bolsos',emoji:'👜',cost:18,unit:'uds',desc:'Accesorio'},
+  {id:'scarf',name:'Bufandas',emoji:'🧣',cost:6,unit:'uds',desc:'Complementos'},
+  {id:'kidswear',name:'Ropa infantil',emoji:'👶',cost:10,unit:'uds',desc:'Para peques'},
+  {id:'hat',name:'Gorras / sombreros',emoji:'🧢',cost:8,unit:'uds',desc:'Accesorios cabeza'},
+  {id:'belt',name:'Cinturones',emoji:'🪢',cost:7,unit:'uds',desc:'Cuero y tela'},
+  {id:'socks',name:'Calcetines pack',emoji:'🧦',cost:3,unit:'uds',desc:'Pack de 3'}
+];
+const BOUTIQUE_RECIPES = [
+  {id:'shirt',name:'Camisa',emoji:'👔',price:34.90,parts:{shirt:1},desc:'Corte clásico'},
+  {id:'pants',name:'Pantalón',emoji:'👖',price:39.90,parts:{pants:1},desc:'Ajuste perfecto'},
+  {id:'shoes',name:'Zapatos',emoji:'👟',price:59.90,parts:{shoes:1},desc:'Cómodos y estilosos'},
+  {id:'suit',name:'Traje',emoji:'🤵',price:149.90,parts:{suit:1},desc:'Para ocasiones'},
+  {id:'dress',name:'Vestido',emoji:'👗',price:69.90,parts:{dress:1},desc:'Elegante'},
+  {id:'jacket',name:'Chaqueta',emoji:'🧥',price:79.90,parts:{jacket:1},desc:'Media estación'},
+  {id:'bag',name:'Bolso',emoji:'👜',price:49.90,parts:{bag:1},desc:'Complemento'},
+  {id:'scarf',name:'Bufanda',emoji:'🧣',price:19.90,parts:{scarf:1},desc:'Abrigo suave'},
+  {id:'kidswear',name:'Ropa infantil',emoji:'👶',price:24.90,parts:{kidswear:1},desc:'Tallas peques'},
+  {id:'hat',name:'Gorra / sombrero',emoji:'🧢',price:18.90,parts:{hat:1},desc:'Estilo'},
+  {id:'belt',name:'Cinturón',emoji:'🪢',price:22.90,parts:{belt:1},desc:'Acabado premium'},
+  {id:'socks',name:'Pack calcetines',emoji:'🧦',price:9.90,parts:{socks:1},desc:'Pack de 3'}
+];
+const BOUTIQUE_STAFF_ROLES = {
+  dependiente: {id:'dependiente',title:'Dependiente/a',emoji:'👗',desc:'Asesora y vende más.',
+    ranks:[{rank:1,hire:30,salary:8,bonus:{customers:0.14}},{rank:2,hire:65,salary:14,bonus:{customers:0.26}},{rank:3,hire:110,salary:22,bonus:{customers:0.38}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cobros ágiles.',
+    ranks:[{rank:1,hire:22,salary:6,bonus:{overhead:0.25}},{rank:2,hire:48,salary:10,bonus:{overhead:0.45}},{rank:3,hire:85,salary:16,bonus:{overhead:0.65}}]},
+  stylist: {id:'stylist',title:'Estilista',emoji:'✨',desc:'Looks: +rep y ticket.',
+    ranks:[{rank:1,hire:40,salary:10,bonus:{rep:0.5,priceMult:1.06}},{rank:2,hire:85,salary:17,bonus:{rep:0.9,priceMult:1.10}},{rank:3,hire:145,salary:26,bonus:{rep:1.4,priceMult:1.15}}]}
+};
+const BOUTIQUE_UPGRADES = [
+  {id:'fitting',name:'Probadores XL',emoji:'🪞',cost:120,upkeep:2,desc:'Más comodidad: +15% clientes.',bonus:{customers:0.15}},
+  {id:'window',name:'Escaparate LED',emoji:'💡',cost:100,upkeep:3,desc:'Atrae miradas: +rep.',bonus:{rep:0.7,customers:0.10}},
+  {id:'season',name:'Colección temporada',emoji:'🍂',cost:150,upkeep:4,desc:'Rotación de stock: +ticket.',bonus:{priceMult:1.10}},
+  {id:'loyalty',name:'Club de clientes',emoji:'💳',cost:70,upkeep:1,desc:'Fideliza.',bonus:{customers:0.12,rep:0.4}}
+];
+
+
+/* ========== SUPERMERCADO ========== */
+const MARKET_SUPPLIES = [
+  {id:'bread',name:'Pan',emoji:'🍞',cost:0.60,unit:'uds',desc:'Barra del día'},
+  {id:'milk',name:'Leche',emoji:'🥛',cost:0.70,unit:'uds',desc:'1L enteros'},
+  {id:'eggs',name:'Huevos',emoji:'🥚',cost:1.20,unit:'uds',desc:'Docena'},
+  {id:'fruit',name:'Fruta',emoji:'🍎',cost:1.50,unit:'uds',desc:'Kg variado'},
+  {id:'veg',name:'Verdura',emoji:'🥦',cost:1.30,unit:'uds',desc:'Kg de temporada'},
+  {id:'meat',name:'Carne',emoji:'🥩',cost:4.50,unit:'uds',desc:'Bandeja'},
+  {id:'fish',name:'Pescado',emoji:'🐟',cost:5.00,unit:'uds',desc:'Fresco'},
+  {id:'pasta',name:'Pasta',emoji:'🍝',cost:0.80,unit:'uds',desc:'Paquete'},
+  {id:'rice',name:'Arroz',emoji:'🍚',cost:0.90,unit:'uds',desc:'1kg'},
+  {id:'oil',name:'Aceite',emoji:'🫒',cost:2.50,unit:'uds',desc:'1L oliva'},
+  {id:'soda',name:'Refrescos',emoji:'🥤',cost:0.55,unit:'uds',desc:'Lata / botella'},
+  {id:'snacks',name:'Snacks',emoji:'🍪',cost:1.10,unit:'uds',desc:'Bolsas'},
+  {id:'cleaning',name:'Limpieza',emoji:'🧹',cost:1.80,unit:'uds',desc:'Productos hogar'},
+  {id:'frozen',name:'Congelados',emoji:'🧊',cost:2.20,unit:'uds',desc:'Platos listos'},
+  {id:'pet',name:'Mascotas',emoji:'🐶',cost:2.00,unit:'uds',desc:'Pienso / snacks'}
+];
+const MARKET_RECIPES = [
+  {id:'bread',name:'Pan',emoji:'🍞',price:1.20,parts:{bread:1},desc:'Barra fresca'},
+  {id:'milk',name:'Leche 1L',emoji:'🥛',price:1.15,parts:{milk:1},desc:'Entera'},
+  {id:'eggs',name:'Huevos (docena)',emoji:'🥚',price:2.40,parts:{eggs:1},desc:'Camperos'},
+  {id:'fruit',name:'Fruta (kg)',emoji:'🍎',price:2.90,parts:{fruit:1},desc:'De temporada'},
+  {id:'veg',name:'Verdura (kg)',emoji:'🥦',price:2.50,parts:{veg:1},desc:'Fresca'},
+  {id:'meat',name:'Carne',emoji:'🥩',price:8.90,parts:{meat:1},desc:'Bandeja'},
+  {id:'fish',name:'Pescado',emoji:'🐟',price:9.90,parts:{fish:1},desc:'Del día'},
+  {id:'pasta',name:'Pasta',emoji:'🍝',price:1.40,parts:{pasta:1},desc:'Paquete'},
+  {id:'rice',name:'Arroz 1kg',emoji:'🍚',price:1.60,parts:{rice:1},desc:'Largo'},
+  {id:'oil',name:'Aceite 1L',emoji:'🫒',price:4.90,parts:{oil:1},desc:'Oliva'},
+  {id:'soda',name:'Refresco',emoji:'🥤',price:1.20,parts:{soda:1},desc:'Frío'},
+  {id:'snacks',name:'Snacks',emoji:'🍪',price:2.20,parts:{snacks:1},desc:'Para picar'},
+  {id:'cleaning',name:'Limpieza',emoji:'🧹',price:3.50,parts:{cleaning:1},desc:'Hogar'},
+  {id:'frozen',name:'Congelado',emoji:'🧊',price:4.50,parts:{frozen:1},desc:'Listo en minutos'},
+  {id:'pet',name:'Mascotas',emoji:'🐶',price:3.90,parts:{pet:1},desc:'Para tu compañero'}
+];
+const MARKET_STAFF_ROLES = {
+  reponedor: {id:'reponedor',title:'Reponedor/a',emoji:'📦',desc:'Pasillos llenos: +clientes.',
+    ranks:[{rank:1,hire:28,salary:7,bonus:{customers:0.12}},{rank:2,hire:60,salary:13,bonus:{customers:0.22}},{rank:3,hire:100,salary:20,bonus:{customers:0.34}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cajas rápidas.',
+    ranks:[{rank:1,hire:25,salary:6,bonus:{overhead:0.25}},{rank:2,hire:55,salary:11,bonus:{overhead:0.45}},{rank:3,hire:90,salary:17,bonus:{overhead:0.65}}]},
+  carnicero: {id:'carnicero',title:'Especialista',emoji:'🥩',desc:'Secciones frescas: +rep y ticket.',
+    ranks:[{rank:1,hire:40,salary:10,bonus:{rep:0.5,priceMult:1.05}},{rank:2,hire:85,salary:17,bonus:{rep:0.9,priceMult:1.09}},{rank:3,hire:140,salary:26,bonus:{rep:1.3,priceMult:1.14}}]}
+};
+const MARKET_UPGRADES = [
+  {id:'aisles',name:'Más pasillos',emoji:'🛒',cost:200,upkeep:5,desc:'Más capacidad: +20% clientes.',bonus:{customers:0.20}},
+  {id:'fresh',name:'Zona frescos',emoji:'🥬',cost:150,upkeep:4,desc:'Fruta y carne top: +rep.',bonus:{rep:0.7,customers:0.10}},
+  {id:'self',name:'Cajas auto',emoji:'🖥️',cost:180,upkeep:3,desc:'Menos colas.',bonus:{overhead:0.20,customers:0.12}},
+  {id:'app',name:'App de ofertas',emoji:'📱',cost:90,upkeep:2,desc:'Fideliza.',bonus:{customers:0.12,rep:0.4}}
+];
+
+/* ========== ORO / JOYERÍA ========== */
+const GOLD_SUPPLIES = [
+  {id:'goldring',name:'Anillos de oro',emoji:'💍',cost:80,unit:'uds',desc:'18k'},
+  {id:'necklace',name:'Collares',emoji:'📿',cost:120,unit:'uds',desc:'Oro y plata'},
+  {id:'bracelet',name:'Pulseras',emoji:'🔗',cost:60,unit:'uds',desc:'Oro / plata'},
+  {id:'earrings',name:'Pendientes',emoji:'✨',cost:45,unit:'uds',desc:'Pareja'},
+  {id:'watch',name:'Relojes',emoji:'⌚',cost:150,unit:'uds',desc:'Clásicos'},
+  {id:'silver',name:'Plata labrada',emoji:'🥈',cost:35,unit:'uds',desc:'Piezas de plata'},
+  {id:'coin',name:'Monedas de oro',emoji:'🪙',cost:200,unit:'uds',desc:'Inversión'},
+  {id:'ingot',name:'Lingotes',emoji:'⬛',cost:350,unit:'uds',desc:'Oro de inversión'},
+  {id:'gem',name:'Piedras',emoji:'💎',cost:90,unit:'uds',desc:'Engaste'},
+  {id:'repair',name:'Reparación',emoji:'🔧',cost:15,unit:'uds',desc:'Servicio taller'}
+];
+const GOLD_RECIPES = [
+  {id:'goldring',name:'Anillo de oro',emoji:'💍',price:199,parts:{goldring:1},desc:'18 quilates'},
+  {id:'necklace',name:'Collar',emoji:'📿',price:289,parts:{necklace:1},desc:'Pieza firma'},
+  {id:'bracelet',name:'Pulsera',emoji:'🔗',price:149,parts:{bracelet:1},desc:'Oro o plata'},
+  {id:'earrings',name:'Pendientes',emoji:'✨',price:119,parts:{earrings:1},desc:'Pareja'},
+  {id:'watch',name:'Reloj',emoji:'⌚',price:349,parts:{watch:1},desc:'Clásico'},
+  {id:'silver',name:'Plata labrada',emoji:'🥈',price:89,parts:{silver:1},desc:'Artesanal'},
+  {id:'coin',name:'Moneda de oro',emoji:'🪙',price:420,parts:{coin:1},desc:'Inversión'},
+  {id:'ingot',name:'Lingote',emoji:'⬛',price:699,parts:{ingot:1},desc:'Oro puro'},
+  {id:'gem',name:'Piedra preciosa',emoji:'💎',price:220,parts:{gem:1},desc:'Para engaste'},
+  {id:'repair',name:'Reparación',emoji:'🔧',price:39,parts:{repair:1},desc:'Taller'}
+];
+const GOLD_STAFF_ROLES = {
+  joyero: {id:'joyero',title:'Joyero/a',emoji:'💍',desc:'Asesora y vende más.',
+    ranks:[{rank:1,hire:45,salary:11,bonus:{customers:0.14}},{rank:2,hire:95,salary:19,bonus:{customers:0.26}},{rank:3,hire:160,salary:30,bonus:{customers:0.40}}]},
+  cajero: {id:'cajero',title:'Cajero/a',emoji:'🧾',desc:'Cobros seguros.',
+    ranks:[{rank:1,hire:28,salary:7,bonus:{overhead:0.25}},{rank:2,hire:60,salary:12,bonus:{overhead:0.45}},{rank:3,hire:100,salary:18,bonus:{overhead:0.65}}]},
+  tasador: {id:'tasador',title:'Tasador/a',emoji:'🔍',desc:'Confianza: +rep y ticket.',
+    ranks:[{rank:1,hire:50,salary:12,bonus:{rep:0.6,priceMult:1.06}},{rank:2,hire:100,salary:20,bonus:{rep:1.0,priceMult:1.10}},{rank:3,hire:170,salary:30,bonus:{rep:1.5,priceMult:1.15}}]}
+};
+const GOLD_UPGRADES = [
+  {id:'vault',name:'Caja fuerte',emoji:'🔐',cost:250,upkeep:4,desc:'Seguridad: +rep.',bonus:{rep:0.8}},
+  {id:'vitrine',name:'Vitrinas LED',emoji:'💡',cost:150,upkeep:3,desc:'Brillo: +15% clientes.',bonus:{customers:0.15}},
+  {id:'appraise',name:'Servicio tasación',emoji:'📜',cost:120,upkeep:2,desc:'Atrae inversores.',bonus:{customers:0.12,priceMult:1.08}},
+  {id:'security',name:'Seguridad 24h',emoji:'🛡️',cost:200,upkeep:6,desc:'Tranquilidad premium.',bonus:{rep:0.6,customers:0.08}}
+];
+
+const VENUE_META = {
+  cafe: {label:'Cafetería',emoji:'☕',cost:0,hours:'9:00–21:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:9,durationH:12,clients:'all'},
+  restaurant: {label:'Restaurante',emoji:'🍽️',cost:1500,hours:'12:00–00:00',shifts:['morning','afternoon'],shiftLabels:['🍽️ Comida','🌙 Cena'],startH:12,durationH:12,clients:'all'},
+  disco: {label:'Discoteca',emoji:'🪩',cost:2500,hours:'22:00–06:00',shifts:['night'],shiftLabels:['🌙 Noche'],startH:22,durationH:8,clients:'young'},
+  book: {label:'Librería',emoji:'📚',cost:1500,hours:'10:00–22:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:10,durationH:12,clients:'adult',market:true},
+  video: {label:'Videoclub',emoji:'🎬',cost:2500,hours:'10:00–22:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:10,durationH:12,clients:'adult',market:true},
+  game: {label:'Game',emoji:'🎮',cost:4000,hours:'10:00–22:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:10,durationH:12,clients:'adult',market:true},
+  gas: {label:'Gasolinera',emoji:'⛽',cost:8000,hours:'6:00–6:00',shifts:['morning','afternoon','night'],shiftLabels:['🌅 Mañana','🌇 Tarde','🌙 Noche'],startH:6,durationH:24,clients:'solo',market:true,liters:true},
+  boutique: {label:'Boutique',emoji:'👗',cost:4000,hours:'10:00–22:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:10,durationH:12,clients:'all'},
+  market: {label:'Supermercado',emoji:'🛒',cost:5000,hours:'9:00–22:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:9,durationH:13,clients:'adult',multiBuy:true},
+  gold: {label:'Joyería',emoji:'💎',cost:6000,hours:'10:00–20:00',shifts:['morning','afternoon'],shiftLabels:['🌅 Mañana','🌇 Tarde'],startH:10,durationH:10,clients:'adult',market:true}
+};
+
 function emptyVenue(kind) {
   return {
     kind,
+    name: '',
+    named: false,
+    cash: kind === 'cafe' ? 50 : 0,
     stock: {},
     prices: {},
     staff: [],
@@ -829,12 +1976,49 @@ function emptyVenue(kind) {
     history: [],
     last: null,
     payrollOwed: 0,
-    unlocked: kind === 'cafe'
+    income: 0,
+    spend: 0,
+    operating: 0,
+    bills: [],
+    billsPaid: 0,
+    payrollPaid: 0,
+    day: 1,
+    unlocked: kind === 'cafe',
+    marketMult: 1
   };
 }
 
 const initial = () => ({
-  name: 'Café de Barrio',
+  characterName: '',
+  name: 'EMPIRE CITY',
+  bank: 0,
+  bankLedger: [],
+  loan: null,
+  started: false,
+  sound: true,
+  music: true,
+  vibrate: true,
+  event: null,
+  weather: null,
+  bankrupt: false,
+  shift: 'morning',
+  activeVenue: 'cafe',
+  restaurantUnlocked: false,
+  discoUnlocked: false,
+  bookUnlocked: false,
+  videoUnlocked: false,
+  gameUnlocked: false,
+  gasUnlocked: false,
+  boutiqueUnlocked: false,
+  marketUnlocked: false,
+  goldUnlocked: false,
+  inHub: true,
+  pendingBizName: null,
+  venues: {
+    cafe: emptyVenue('cafe'),
+    restaurant: emptyVenue('restaurant')
+  },
+  // bound aliases
   day: 1,
   cash: 50,
   income: 0,
@@ -843,21 +2027,6 @@ const initial = () => ({
   billsPaid: 0,
   payrollPaid: 0,
   bills: [],
-  started: false,
-  sound: true,
-  music: true,
-  vibrate: true,
-  event: null,
-  weather: null,
-  bankrupt: false,
-  loan: null,
-  shift: 'morning',
-  activeVenue: 'cafe',
-  restaurantUnlocked: false,
-  venues: {
-    cafe: emptyVenue('cafe'),
-    restaurant: emptyVenue('restaurant')
-  },
   stock: {},
   prices: {},
   staff: [],
@@ -869,15 +2038,26 @@ const initial = () => ({
 });
 
 
+
 let game = initial();
+
 function bindActiveVenue() {
-  if (!game.venues) game.venues = { cafe: emptyVenue('cafe'), restaurant: emptyVenue('restaurant') };
-  if (!game.venues.cafe) game.venues.cafe = emptyVenue('cafe');
-  if (!game.venues.restaurant) game.venues.restaurant = emptyVenue('restaurant');
-  const id = (game.activeVenue === 'restaurant' && game.restaurantUnlocked) ? 'restaurant' : 'cafe';
+  if (!game.venues) game.venues = {};
+  ['cafe','restaurant','disco','book','video','game','gas','boutique','market','gold'].forEach(k => {
+    if (!game.venues[k]) game.venues[k] = emptyVenue(k);
+  });
+  let id = game.activeVenue || 'cafe';
+  if (id === 'restaurant' && !game.restaurantUnlocked) id = 'cafe';
+  if (id === 'disco' && !game.discoUnlocked) id = 'cafe';
+  if (id === 'book' && !game.bookUnlocked) id = 'cafe';
+  if (id === 'video' && !game.videoUnlocked) id = 'cafe';
+  if (id === 'game' && !game.gameUnlocked) id = 'cafe';
+  if (id === 'gas' && !game.gasUnlocked) id = 'cafe';
+  if (id === 'boutique' && !game.boutiqueUnlocked) id = 'cafe';
+  if (id === 'market' && !game.marketUnlocked) id = 'cafe';
+  if (id === 'gold' && !game.goldUnlocked) id = 'cafe';
   game.activeVenue = id;
   const v = game.venues[id];
-  // keep object identity: assign venue fields onto game aliases
   game.stock = v.stock;
   game.prices = v.prices;
   game.staff = v.staff;
@@ -886,76 +2066,279 @@ function bindActiveVenue() {
   game.history = v.history;
   game.last = v.last;
   game.payrollOwed = v.payrollOwed || 0;
-  if (id === 'restaurant') {
-    supplies = REST_SUPPLIES;
-    recipes = REST_RECIPES;
-    STAFF_ROLES = REST_STAFF_ROLES;
-  } else {
-    supplies = CAFE_SUPPLIES;
-    recipes = CAFE_RECIPES;
-    STAFF_ROLES = CAFE_STAFF_ROLES;
-  }
+  game.cash = v.cash || 0;
+  game.day = v.day || 1;
+  game.income = v.income || 0;
+  game.spend = v.spend || 0;
+  game.operating = v.operating || 0;
+  game.bills = v.bills || [];
+  game.billsPaid = v.billsPaid || 0;
+  game.payrollPaid = v.payrollPaid || 0;
+  game.marketMult = v.marketMult || 1;
+  document.body.classList.remove('theme-cafe', 'theme-restaurant');
+  const map = {
+    cafe: [CAFE_SUPPLIES, CAFE_RECIPES, CAFE_STAFF_ROLES, CAFE_UPGRADES],
+    restaurant: [REST_SUPPLIES, REST_RECIPES, REST_STAFF_ROLES, REST_UPGRADES],
+    disco: [DISCO_SUPPLIES, DISCO_RECIPES, DISCO_STAFF_ROLES, DISCO_UPGRADES],
+    book: [BOOK_SUPPLIES, BOOK_RECIPES, BOOK_STAFF_ROLES, BOOK_UPGRADES],
+    video: [VIDEO_SUPPLIES, VIDEO_RECIPES, VIDEO_STAFF_ROLES, VIDEO_UPGRADES],
+    game: [GAME_SUPPLIES, GAME_RECIPES, GAME_STAFF_ROLES, GAME_UPGRADES],
+    gas: [GAS_SUPPLIES, GAS_RECIPES, GAS_STAFF_ROLES, GAS_UPGRADES],
+    boutique: [BOUTIQUE_SUPPLIES, BOUTIQUE_RECIPES, BOUTIQUE_STAFF_ROLES, BOUTIQUE_UPGRADES],
+    market: [MARKET_SUPPLIES, MARKET_RECIPES, MARKET_STAFF_ROLES, MARKET_UPGRADES],
+    gold: [GOLD_SUPPLIES, GOLD_RECIPES, GOLD_STAFF_ROLES, GOLD_UPGRADES]
+  };
+  const pack = map[id] || map.cafe;
+  supplies = pack[0];
+  recipes = pack[1];
+  STAFF_ROLES = pack[2];
+  UPGRADES = pack[3];
 }
+
 function syncVenueFromGame() {
   const v = game.venues && game.venues[game.activeVenue];
   if (!v) return;
   v.reputation = game.reputation;
   v.payrollOwed = game.payrollOwed;
   v.last = game.last;
-  // stock/prices/staff/upgrades/history already same refs
+  v.cash = game.cash;
+  v.day = game.day;
+  v.income = game.income;
+  v.spend = game.spend;
+  v.operating = game.operating;
+  v.bills = game.bills;
+  v.billsPaid = game.billsPaid;
+  v.payrollPaid = game.payrollPaid;
+  // NO tocar v.name / v.named: son del local, no del imperio
+  v.history = game.history;
+  v.marketMult = game.marketMult || 1;
 }
-function switchVenue(id) {
-  if (dayRunning) { toast('No puedes cambiar de local con el servicio abierto.'); sfx('error'); return; }
-  if (id === 'restaurant' && !game.restaurantUnlocked) {
-    toast('Aún no has abierto el restaurante.'); sfx('error'); return;
-  }
+function goHub() {
+  if (dayRunning) { toast('Cierra el servicio antes de salir.'); sfx('error'); return; }
   syncVenueFromGame();
-  game.activeVenue = id;
-  bindActiveVenue();
-  cart = {};
-  renderAll();
-  saveGame(true);
+  game.inHub = true;
+  el('hub').classList.remove('hidden');
+  wireHubButtons();
+  renderHub();
   sfx('click');
-  toast(id === 'restaurant' ? 'Gestionando el restaurante' : 'Gestionando la cafetería');
 }
-function canUnlockRestaurant() {
-  if (game.restaurantUnlocked || game.bankrupt) return false;
+function renderHub() {
+  const cn = game.characterName || 'Emprendedor';
+  if (el('hubTitle')) el('hubTitle').textContent = cn;
+  if (el('hubBank')) el('hubBank').textContent = euro(game.bank || 0);
+  if (!game.venues) game.venues = {};
+  ['cafe','restaurant','disco','book','video','game','gas','boutique','market','gold'].forEach(k => {
+    if (!game.venues[k]) game.venues[k] = emptyVenue(k);
+  });
+  const unlockMap = {
+    cafe: true,
+    restaurant: !!game.restaurantUnlocked,
+    disco: !!game.discoUnlocked,
+    book: !!game.bookUnlocked,
+    video: !!game.videoUnlocked,
+    game: !!game.gameUnlocked,
+    gas: !!game.gasUnlocked,
+    boutique: !!game.boutiqueUnlocked,
+    market: !!game.marketUnlocked,
+    gold: !!game.goldUnlocked
+  };
+  const idMap = {cafe:'Cafe',restaurant:'Rest',disco:'Disco',book:'Book',video:'Video',game:'Game',gas:'Gas',boutique:'Boutique',market:'Market',gold:'Gold'};
+  Object.keys(idMap).forEach(k => {
+    const v = game.venues[k];
+    const meta = VENUE_META[k];
+    const unlocked = unlockMap[k];
+    const btn = el('hub' + idMap[k]);
+    if (btn) {
+      if (unlocked) btn.classList.remove('locked');
+      else btn.classList.add('locked');
+    }
+    const metaEl = el('hub' + idMap[k] + 'Meta');
+    const badgeEl = el('hub' + idMap[k] + 'Badge');
+    if (!unlocked) {
+      if (metaEl) metaEl.textContent = euro(meta.cost);
+      if (badgeEl) badgeEl.textContent = 'Bloqueado';
+    } else {
+      if (metaEl) metaEl.textContent = v.named ? (v.name || meta.label) : 'Pendiente de nombre';
+      if (badgeEl) badgeEl.textContent = v.named ? 'Gestionar' : 'Empezar';
+    }
+  });
+}
+
+async function enterBusiness(id) {
+  try {
+    if (!game.venues) game.venues = { cafe: emptyVenue('cafe'), restaurant: emptyVenue('restaurant') };
+    if (!game.venues.cafe) game.venues.cafe = emptyVenue('cafe');
+    if (!game.venues.restaurant) game.venues.restaurant = emptyVenue('restaurant');
+
+    const unlockKey = {restaurant:'restaurantUnlocked',disco:'discoUnlocked',book:'bookUnlocked',video:'videoUnlocked',game:'gameUnlocked',gas:'gasUnlocked',boutique:'boutiqueUnlocked',market:'marketUnlocked',gold:'goldUnlocked'}[id];
+    const unlockCost = (VENUE_META[id] && VENUE_META[id].cost) || 0;
+    if (unlockKey && !game[unlockKey]) {
+      if ((game.bank || 0) < unlockCost) {
+        toast('Necesitas ' + euro(unlockCost) + ' en el banco para abrir ' + ((VENUE_META[id]&&VENUE_META[id].label)||id) + '.');
+        sfx('error');
+        return;
+      }
+      const ok = await gameConfirm('¿Gastar ' + euro(unlockCost) + ' del banco para abrir ' + ((VENUE_META[id]&&VENUE_META[id].label)||id) + '?', 'Abrir negocio');
+      if (!ok) return;
+      game.bank -= unlockCost;
+      addLedger('compra', unlockCost, 'hub', 'Apertura: ' + ((VENUE_META[id]&&VENUE_META[id].label)||id));
+      game[unlockKey] = true;
+      if (!game.venues[id]) game.venues[id] = emptyVenue(id);
+      game.venues[id].unlocked = true;
+      game.venues[id].cash = 0;
+      game.venues[id].reputation = 45;
+      toast('¡' + ((VENUE_META[id]&&VENUE_META[id].label)||id) + ' desbloqueado!');
+      sfx('buy');
+      renderHub();
+      saveGame(true);
+    }
+
+    const v = game.venues[id];
+    if (!v) { toast('Negocio no disponible'); return; }
+
+    if (!v.named) {
+      game.pendingBizName = id;
+      const meta = VENUE_META[id] || {label:id, emoji:'🏪', hours:''};
+      const card = el('bizIntroCard');
+      if (card) {
+        card.classList.remove('restaurant-style', 'cafe-style');
+        card.classList.add(id === 'restaurant' ? 'restaurant-style' : 'cafe-style');
+      }
+      const ov = el('nameOverlay');
+      if (ov) {
+        ov.classList.remove('rest-bg', 'cafe-bg');
+        ov.classList.add(id === 'restaurant' ? 'rest-bg' : 'cafe-bg');
+      }
+      const examples = {
+        cafe: 'Ej. El Rincón del Café',
+        restaurant: 'Ej. La Mesa del Barrio',
+        disco: 'Ej. Neon Nights',
+        book: 'Ej. Páginas del Centro',
+        video: 'Ej. Cine en Casa',
+        game: 'Ej. Level Up Store',
+        gas: 'Ej. Estación Norte',
+        boutique: 'Ej. Moda Urbana',
+        market: 'Ej. Súper del Barrio',
+        gold: 'Ej. Joyería del Centro'
+      };
+      if (el('bizIntroEmoji')) el('bizIntroEmoji').textContent = meta.emoji || '🏪';
+      if (el('bizIntroBrand')) el('bizIntroBrand').textContent = meta.label || id;
+      if (el('nameOverlayTitle')) el('nameOverlayTitle').textContent = 'Tu ' + (meta.label || id).toLowerCase();
+      if (el('nameOverlayDesc')) el('nameOverlayDesc').textContent =
+        'Horario ' + (meta.hours || '') + '. Ponle nombre y empieza a gestionar el negocio.';
+      if (el('bizNameLabel')) el('bizNameLabel').textContent = '¿Cómo se llamará ' + (meta.label || 'el local') + '?';
+      const inp = el('bizNameInput');
+      if (inp) {
+        inp.value = '';
+        inp.placeholder = examples[id] || 'Nombre del negocio';
+      }
+      if (ov) ov.classList.remove('hidden');
+      setTimeout(() => { if (inp) inp.focus(); }, 150);
+      return;
+    }
+    openBusiness(id);
+  } catch (err) {
+    console.error(err);
+    toast('Error al abrir el negocio');
+  }
+}
+function confirmBizName() {
+  try {
+    const id = game.pendingBizName;
+    if (!id) { el('nameOverlay').classList.add('hidden'); return; }
+    const n = ((el('bizNameInput') && el('bizNameInput').value) || '').trim();
+    if (!n) { toast('Pon un nombre al local.'); return; }
+    if (!game.venues[id]) game.venues[id] = emptyVenue(id);
+    game.venues[id].name = n;
+    game.venues[id].named = true;
+    game.venues[id]._nameLocked = true;
+    el('nameOverlay').classList.add('hidden');
+    game.pendingBizName = null;
+    openBusiness(id);
+    saveGame(true);
+  } catch (err) {
+    console.error(err);
+    toast('Error al guardar el nombre');
+  }
+}
+function cancelBizName() {
+  game.pendingBizName = null;
+  const ov = el('nameOverlay');
+  if (ov) ov.classList.add('hidden');
+}
+function openBusiness(id) {
+  try {
+    game.activeVenue = id;
+    game.inHub = false;
+    bindActiveVenue();
+    const hub = el('hub');
+    if (hub) hub.classList.add('hidden');
+    const intro = el('intro');
+    if (intro) intro.classList.add('hidden');
+    const ov = el('nameOverlay');
+    if (ov) ov.classList.add('hidden');
+    cart = {};
+    renderAll();
+    sfx('click');
+  } catch (err) {
+    console.error(err);
+    toast('Error al cargar el local');
+  }
+}
+function addLedger(type, amount, from, message) {
+  if (!game.bankLedger) game.bankLedger = [];
+  game.bankLedger.unshift({
+    type, amount, from: from || game.activeVenue, message: message || '',
+    day: game.day, venue: game.activeVenue, at: Date.now()
+  });
+  if (game.bankLedger.length > 80) game.bankLedger.length = 80;
+}
+function bankDeposit() {
+  const amount = Number(el('bankAmount').value);
+  const msg = (el('bankMsg').value || '').trim();
+  if (!Number.isFinite(amount) || amount <= 0) { toast('Indica un importe válido.'); return; }
+  if (amount > game.cash) { toast('No tienes tanto en la caja del local.'); sfx('error'); return; }
+  game.cash -= amount;
+  game.bank = (game.bank || 0) + amount;
+  addLedger('ingreso', amount, game.activeVenue, msg || 'Ingreso al banco');
+  toast('Ingresados ' + euro(amount) + ' en el banco');
+  sfx('pay');
   syncVenueFromGame();
-  const cafe = game.venues.cafe;
-  let lv = CAFE_LEVELS[0];
-  for (const L of CAFE_LEVELS) {
-    if (game.income >= L.minIncome && (cafe.reputation||0) >= L.minRep) lv = L;
-  }
-  return lv.level >= 3 && (cafe.reputation||0) >= 55 && game.cash >= 250 && !game.loan && !(cafe.payrollOwed > 0);
-}
-function unlockRestaurant() {
-  if (!canUnlockRestaurant()) {
-    toast('Requisitos: nivel cafetería ≥3, rep.≥55, 250€, sin préstamo ni nóminas.');
-    sfx('error'); return;
-  }
-  if (!confirm('¿Invertir 250 € para abrir el restaurante? Horario 12:00–00:00.')) return;
-  game.cash -= 250;
-  game.spend += 250;
-  game.restaurantUnlocked = true;
-  game.venues.restaurant.unlocked = true;
-  game.venues.restaurant.reputation = 45;
-  toast('¡Restaurante inaugurado!');
-  sfx('buy');
   renderAll();
   saveGame(true);
 }
-function renderExpand() {
-  const box = el('expandBox');
-  if (!box) return;
-  if (game.restaurantUnlocked) {
-    box.innerHTML = '<p class="muted">Restaurante de <strong>'+game.name+'</strong> operativo. Cambia de local en el encabezado. Caja compartida.</p>';
-    return;
-  }
-  const ok = canUnlockRestaurant();
-  box.innerHTML = '<p class="muted">Requisitos: nivel ≥3, reputación café ≥55, 250 €, sin préstamo/nóminas pendientes.</p>'
-    + '<button class="primary wide" '+(ok?'':'disabled')+' onclick="unlockRestaurant()">Abrir restaurante · 250 €</button>';
+function bankWithdraw() {
+  const amount = Number(el('bankAmount').value);
+  const msg = (el('bankMsg').value || '').trim();
+  if (!Number.isFinite(amount) || amount <= 0) { toast('Indica un importe válido.'); return; }
+  if (amount > (game.bank || 0)) { toast('No hay tanto en el banco.'); sfx('error'); return; }
+  game.bank -= amount;
+  game.cash += amount;
+  addLedger('retiro', amount, game.activeVenue, msg || 'Retiro del banco');
+  toast('Retirados ' + euro(amount) + ' a la caja del local');
+  sfx('pay');
+  syncVenueFromGame();
+  renderAll();
+  saveGame(true);
 }
-bindActiveVenue();
+function takeCustomLoan() {
+  if (game.loan) { toast('Ya tienes un préstamo activo.'); sfx('error'); return; }
+  let amount = Number(el('loanAmount').value);
+  if (!Number.isFinite(amount) || amount < 10) { toast('Mínimo 10 €'); return; }
+  if (amount > 1000) { toast('Máximo 1.000 €'); return; }
+  amount = Math.round(amount * 100) / 100;
+  const interest = 0.10 + (amount / 1000) * 0.12; // 10%–22%
+  const days = amount <= 300 ? 3 : amount <= 600 ? 4 : 5;
+  const total = Math.round(amount * (1 + interest) * 100) / 100;
+  game.bank = (game.bank || 0) + amount;
+  game.loan = { principal: amount, totalDue: total, dueDay: (game.venues[game.activeVenue].day || 1) + days, days, interest };
+  addLedger('prestamo', amount, 'banco', 'Préstamo recibido');
+  toast('Préstamo ' + euro(amount) + ' → banco. Debes ' + euro(total) + ' en ' + days + ' días');
+  sfx('pay');
+  renderAll();
+  saveGame(true);
+}
+
 
 let cart = {};
 let dayRunning = false;
@@ -970,8 +2353,26 @@ let footerMode = 'shop'; // shop | cart
 const euro = n => Number(n || 0).toLocaleString('es-ES', {style: 'currency', currency: 'EUR'});
 const el = id => document.getElementById(id);
 
+function setMoneyEl(idOrEl, value, mode) {
+  const node = typeof idOrEl === 'string' ? el(idOrEl) : idOrEl;
+  if (!node) return;
+  const n = Number(value) || 0;
+  const show = Math.abs(n) < 1e-9 ? 0 : Math.abs(n);
+  node.textContent = euro(show);
+  node.classList.remove('money', 'loss', 'neutral');
+  if (mode === 'expense') {
+    node.classList.add(n > 0.0001 ? 'loss' : 'neutral');
+    node.style.color = n > 0.0001 ? '#ef4444' : '#ffffff';
+  } else {
+    if (n > 0.0001) { node.classList.add('money'); node.style.color = '#22c55e'; }
+    else if (n < -0.0001) { node.classList.add('loss'); node.style.color = '#ef4444'; }
+    else { node.classList.add('neutral'); node.style.color = '#ffffff'; }
+  }
+}
+
+
 function iconHTML(id, size = 44) {
-  const bg = COLORS[id] || '#75452f';
+  const bg = COLORS[id] || '#3d4450';
   const lab = LABELS[id] || '??';
   return `<div class="icon-circle" style="background:${bg};width:${size}px;height:${size}px;font-size:${size>40?13:11}px">${lab}</div>`;
 }
@@ -1074,7 +2475,7 @@ function sfx(name) {
 function saveGame(silent = false) {
   try {
     syncVenueFromGame();
-    localStorage.setItem('cafebarrio-save', JSON.stringify(game));
+    localStorage.setItem('empire-city-save', JSON.stringify(game));
     if (!silent) { toast('Partida guardada.'); sfx('click'); }
   } catch (e) {
     if (!silent) toast('No se pudo guardar.');
@@ -1083,7 +2484,7 @@ function saveGame(silent = false) {
 
 function loadGame() {
   try {
-    const d = JSON.parse(localStorage.getItem('cafebarrio-save'));
+    const d = JSON.parse(localStorage.getItem('empire-city-save'));
     if (d && d.name) {
       const base = initial();
       game = {...base, ...d};
@@ -1109,12 +2510,43 @@ function loadGame() {
         game.venues.cafe.payrollOwed = d.payrollOwed || 0;
         game.restaurantUnlocked = false;
         game.activeVenue = 'cafe';
+        game.bank = typeof d.cash === 'number' ? Math.max(0, d.cash * 0.3) : 0;
+        game.bankLedger = [];
+        game.characterName = d.characterName || d.name || 'Emprendedor';
+        game.inHub = true;
+        if (game.venues.cafe) { game.venues.cafe.cash = typeof d.cash === 'number' ? d.cash : 50; game.venues.cafe.named = true; game.venues.cafe.name = d.name || 'Cafetería'; }
       } else {
         game.venues = d.venues;
-        if (!game.venues.cafe) game.venues.cafe = emptyVenue('cafe');
-        if (!game.venues.restaurant) game.venues.restaurant = emptyVenue('restaurant');
+        ['cafe','restaurant','disco','book','video','game','gas','boutique','market','gold'].forEach(k => {
+          if (!game.venues[k]) game.venues[k] = emptyVenue(k);
+          if (game.venues[k].marketMult == null) game.venues[k].marketMult = 1;
+        });
         game.restaurantUnlocked = !!d.restaurantUnlocked;
+        game.discoUnlocked = !!d.discoUnlocked;
+        game.bookUnlocked = !!d.bookUnlocked;
+        game.videoUnlocked = !!d.videoUnlocked;
+        game.gameUnlocked = !!d.gameUnlocked;
+        game.gasUnlocked = !!d.gasUnlocked;
+        game.boutiqueUnlocked = !!d.boutiqueUnlocked;
+        game.marketUnlocked = !!d.marketUnlocked;
+        game.goldUnlocked = !!d.goldUnlocked;
         game.activeVenue = d.activeVenue || 'cafe';
+        game.bank = typeof d.bank === 'number' ? d.bank : 0;
+        game.bankLedger = d.bankLedger || [];
+        game.characterName = d.characterName || 'Emprendedor';
+        game.inHub = d.inHub !== false;
+        // Reparar nombres: bug antiguo copiaba game.name a todos los locales
+        const cafeName = (game.venues.cafe && game.venues.cafe.name) || '';
+        Object.keys(game.venues).forEach(function(k) {
+          const vv = game.venues[k];
+          if (!vv) return;
+          if (k !== 'cafe' && vv.named && cafeName && vv.name === cafeName && !vv._nameLocked) {
+            // Si coincide exactamente con el de la cafetería y no se guardó flag, pedir de nuevo
+            vv.named = false;
+            vv.name = '';
+          }
+        });
+        if (game.venues.cafe && game.venues.cafe.named) game.venues.cafe._nameLocked = true;
       }
       bindActiveVenue();
     }
@@ -1124,14 +2556,26 @@ function loadGame() {
 
 /* ========== BILLS (Luz + Alquiler) ========== */
 function generateDayBills(day) {
-  const isRest = game.activeVenue === 'restaurant';
-  const rentBase = isRest ? 28 : 18;
-  const lightBase = isRest ? 12 : 8;
-  const rent = Math.round((rentBase + day * (isRest ? 4.2 : 3.5)) * 100) / 100;
-  const light = Math.round((lightBase + day * (isRest ? 2.2 : 1.8)) * 100) / 100;
+  const id = game.activeVenue || 'cafe';
+  const meta = (typeof VENUE_META !== 'undefined' && VENUE_META[id]) || {label:'Local'};
+  const billScale = {
+    cafe: {rent:18, light:8, rentG:3.5, lightG:1.8},
+    restaurant: {rent:28, light:12, rentG:4.2, lightG:2.2},
+    disco: {rent:45, light:22, rentG:5.5, lightG:3.5},
+    book: {rent:20, light:9, rentG:3.6, lightG:1.9},
+    video: {rent:22, light:10, rentG:3.8, lightG:2.0},
+    game: {rent:30, light:12, rentG:4.5, lightG:2.3},
+    gas: {rent:55, light:28, rentG:6.5, lightG:4.0},
+    boutique: {rent:32, light:12, rentG:4.6, lightG:2.2},
+    market: {rent:48, light:20, rentG:5.5, lightG:3.2},
+    gold: {rent:40, light:14, rentG:5.0, lightG:2.5}
+  };
+  const sc = billScale[id] || billScale.cafe;
+  const rent = Math.round((sc.rent + day * sc.rentG) * 100) / 100;
+  const light = Math.round((sc.light + day * sc.lightG) * 100) / 100;
   const due = day + BILL_DEADLINE_DAYS;
-  const idBase = 'b' + day + '-' + game.activeVenue + '-' + Date.now();
-  const tag = isRest ? 'restaurante' : 'cafetería';
+  const idBase = 'b' + day + '-' + id + '-' + Date.now();
+  const tag = (meta.label || id).toLowerCase();
   game.bills.push({
     id: idBase + '-r', type: 'alquiler', label: 'Alquiler ' + tag,
     amount: rent, dayCreated: day, dueDay: due, paid: false
@@ -1194,12 +2638,14 @@ function payAllBills() {
 
 /* ========== UI ========== */
 function startGame() {
-  const name = el('cafeName').value.trim();
-  game.name = name || 'Grupo Barrio';
-  bindActiveVenue();
+  const name = (el('charName') && el('charName').value || '').trim();
+  game.characterName = name || 'Emprendedor';
   game.started = true;
+  game.inHub = true;
   el('intro').classList.add('hidden');
-  renderAll();
+  el('hub').classList.remove('hidden');
+  wireHubButtons();
+  renderHub();
   updateSoundUI();
   saveGame(true);
   sfx('open');
@@ -1246,29 +2692,26 @@ function onFooterClick() {
 }
 
 function renderAll() {
-  const isRest = game.activeVenue === 'restaurant';
-  el('headerName').textContent = (isRest ? '🍽️ ' : '☕ ') + game.name;
+  const metaH = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {label:'Local', emoji:'🏪'};
+  const v = game.venues && game.venues[game.activeVenue];
+  const localName = (v && v.named && v.name) ? v.name : (metaH.label || 'Local');
+  el('headerName').textContent = (metaH.emoji || '🏪') + ' ' + localName;
   const vtl = el('venueTypeLabel');
-  if (vtl) vtl.textContent = isRest ? 'Restaurante' : 'Cafetería';
-  const vs = el('venueSwitcher');
-  if (vs) {
-    vs.style.display = game.restaurantUnlocked ? 'flex' : 'none';
-    const bc = el('btnVenueCafe'), br = el('btnVenueRest');
-    if (bc) bc.classList.toggle('active-venue', !isRest);
-    if (br) br.classList.toggle('active-venue', isRest);
-  }
-  if (typeof renderExpand === 'function') renderExpand();
+  if (vtl) vtl.textContent = metaH.label || 'Local';
+  document.body.classList.remove('theme-cafe', 'theme-restaurant');
   const wl = el('weatherLabel');
   if (wl) {
     if (game.weather) wl.textContent = (game.weather.emoji||'') + ' ' + game.weather.name;
     else wl.textContent = 'Se define al abrir';
   }
-  el('dayLabel').textContent = 'Día ' + game.day + ' · ' + (dayRunning ? 'Abierto' : 'Gestión de la cafetería');
+  const gest = dayRunning ? 'Abierto' : ('Gestión de ' + (metaH.label || 'local').toLowerCase());
+  el('dayLabel').textContent = 'Día ' + game.day + ' · ' + gest;
   el('dayNumber').textContent = 'Día ' + game.day;
-  const cashStr = euro(game.cash);
-  el('cash').textContent = el('shopCash').textContent = el('footerCash').textContent = cashStr;
-  el('profit').textContent = euro(game.last ? game.last.net : 0);
-  el('profit').className = game.last && game.last.net < 0 ? 'loss' : 'money';
+  setMoneyEl('profit', game.last ? game.last.net : 0);
+  setMoneyEl('cash', game.cash);
+  if (el('footerCash')) setMoneyEl('footerCash', game.cash);
+  if (el('shopCash')) setMoneyEl('shopCash', game.cash);
+
   el('customers').textContent = game.last ? game.last.customers : 0;
   el('servedHome').textContent = game.last ? game.last.customers : 0;
   const totalUnits = Object.values(game.stock).reduce((a, b) => a + b, 0);
@@ -1278,9 +2721,6 @@ function renderAll() {
   if (rl) rl.textContent = Math.round(game.reputation) + '/100';
   const rb = el('repBar');
   if (rb) rb.style.width = Math.max(0, Math.min(100, game.reputation)) + '%';
-  const sea = currentSeason(game.day);
-  const sl = el('seasonLabel');
-  if (sl) sl.textContent = sea.emoji + ' ' + sea.name;
   const lv = cafeLevel();
   const ll = el('levelLabel');
   if (ll) ll.textContent = 'Nv.' + lv.level + ' ' + lv.name;
@@ -1290,8 +2730,14 @@ function renderAll() {
   renderStock();
   renderPrices();
   renderFinance();
-  if (game.last) {
-    el('lastSummary').textContent = `Día ${game.last.day}: ventas ${euro(game.last.income)}, gastos ${euro(game.last.expenses)}, neto ${euro(game.last.net)}.`;
+  const ls = el('lastSummary');
+  if (ls) {
+    if (game.last && typeof game.last.day === 'number') {
+      const exp = (game.last.expenses != null) ? game.last.expenses : ((game.last.ingredients||0) + (game.last.operating||0));
+      ls.textContent = 'Día ' + game.last.day + ': ventas ' + euro(game.last.income) + ', gastos ' + euro(exp) + ', neto ' + euro(game.last.net) + '.';
+    } else {
+      ls.textContent = 'Todavía no has completado ninguna jornada en este local.';
+    }
   }
   updateSoundUI();
   updateFooterBtn();
@@ -1304,12 +2750,13 @@ function renderShop() {
       <div class="emoji">${s.emoji}</div>
       <strong>${s.name}</strong>
       <div class="muted">${s.desc}</div>
-      <div class="price">${euro(s.cost)} / ${s.unit}</div>
+      <div class="price">${euro(supplyUnitCost(s))} / ${s.unit}</div>
       <div class="muted">Almacén: ${fmtStock(game.stock[s.id] || 0)}</div>
       <div class="qty">
-        <button onclick="changeQty('${s.id}',-1)">−</button>
-        <input type="number" min="0" max="999" step="1" id="qty-${s.id}" value="${cart[s.id] || 0}" onchange="setQty('${s.id}',this.value)">
-        <button onclick="changeQty('${s.id}',1)">+</button>
+        <button type="button" onclick="changeQty('${s.id}',-1)">−</button>
+        <input type="text" inputmode="none" readonly id="qty-${s.id}" value="${cart[s.id] || 0}"
+          onclick="openNumpad({targetId:'qty-${s.id}', title:'Cantidad · ${s.name}', min:0, max:${(s.unit==='L')?5000:999}, decimals:0, integer:true})">
+        <button type="button" onclick="changeQty('${s.id}',1)">+</button>
       </div>
       <button class="secondary wide" onclick="addToCart('${s.id}')">Añadir</button>
     </div>`).join('');
@@ -1317,16 +2764,19 @@ function renderShop() {
 
 function changeQty(id, n) {
   const input = el('qty-' + id);
-  input.value = Math.max(0, Math.min(999, (parseInt(input.value) || 0) + n));
+  const maxQ = (supplies.find(x=>x.id===id)||{}).unit==='L' ? 5000 : 999;
+  input.value = Math.max(0, Math.min(maxQ, (parseInt(input.value) || 0) + n));
   sfx('click');
 }
 
 function setQty(id, val) {
-  el('qty-' + id).value = Math.max(0, Math.min(999, parseInt(val) || 0));
+  const maxQ2 = (supplies.find(x=>x.id===id)||{}).unit==='L' ? 5000 : 999;
+  el('qty-' + id).value = Math.max(0, Math.min(maxQ2, parseInt(val) || 0));
 }
 
 function addToCart(id) {
-  const q = Math.max(0, Math.min(999, parseInt(el('qty-' + id).value) || 0));
+  const maxQa = (supplies.find(x=>x.id===id)||{}).unit==='L' ? 5000 : 999;
+  const q = Math.max(0, Math.min(maxQa, parseInt(el('qty-' + id).value) || 0));
   if (q === 0) {
     toast('Elige una cantidad mayor que cero.');
     sfx('error');
@@ -1356,7 +2806,7 @@ function clearCart() {
 }
 
 function cartCost() {
-  return supplies.reduce((sum, s) => sum + s.cost * (cart[s.id] || 0), 0);
+  return supplies.reduce((sum, s) => sum + supplyUnitCost(s) * (cart[s.id] || 0), 0);
 }
 
 function renderCartModal() {
@@ -1365,7 +2815,7 @@ function renderCartModal() {
     ? items.map(s => `
       <div class="lineitem">
         <span>${s.emoji} ${s.name} × ${cart[s.id]}</span>
-        <span style="display:flex;align-items:center;gap:6px">${euro(s.cost * cart[s.id])}
+        <span style="display:flex;align-items:center;gap:6px">${euro(supplyUnitCost(s) * cart[s.id])}
           <button class="secondary" style="padding:4px 8px" onclick="changeCart('${s.id}',-1)">−</button>
         </span>
       </div>`).join('')
@@ -1425,18 +2875,36 @@ function renderStock() {
 }
 
 function renderPrices() {
+  const metaP = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+  const mktEl = el('priceMarketNote');
+  if (mktEl) {
+    if (metaP.market) {
+      const m = game.marketMult || 1;
+      const ml = marketLabel(m);
+      const col = ml.cls === 'good' ? '#22c55e' : ml.cls === 'bad' ? '#ef4444' : '#9aa3b2';
+      mktEl.style.display = 'block';
+      mktEl.style.cssText = 'display:block;margin:10px 0 14px;padding:10px 12px;border-radius:10px;background:#1a1f27;border-left:4px solid '+col;
+      mktEl.innerHTML = '<strong style="color:'+col+'">'+ml.text+'</strong>'
+        + '<div style="font-size:12px;color:#9aa3b2;margin-top:4px">Coste de compra y referencia de hoy ×'+Number(m).toFixed(2)+'. Ajusta tus precios de venta en consecuencia.</div>';
+    } else {
+      mktEl.style.display = 'none';
+      mktEl.innerHTML = '';
+    }
+  }
   el('priceList').innerHTML = recipes.map(r => {
     const d = demandLabel(r);
+    const ref = metaP.market ? (r.price * (game.marketMult || 1)) : r.price;
+    const unitHint = (r.unitLabel ? ' · ' + r.unitLabel : '');
     return `
     <div class="card-item">
       <div class="top"><span class="emoji" style="font-size:28px">${r.emoji}</span> <strong>${r.name}</strong></div>
       <div class="muted" style="font-size:12px">${r.desc}</div>
-      <div class="muted" style="font-size:11px">Coste ≈ ${euro(recipeCost(r))} · Ref. ${euro(r.price)}</div>
+      <div class="muted" style="font-size:11px">Coste ≈ ${euro(recipeCost(r))} · Ref. hoy ${euro(ref)}${unitHint}</div>
       <div class="muted" style="font-size:11px"><span class="${d.cls}">${d.text}</span> (~${Math.round(buyChance(r)*100)}% lo comprarían)</div>
       <label style="display:block;margin-top:4px">
-        <input class="priceedit" type="number" min=".1" max="100" step=".05" inputmode="decimal"
+        <input class="priceedit" type="text" inputmode="none" readonly
           id="price-${r.id}" value="${game.prices[r.id] ?? r.price}"
-          onchange="previewDemand('${r.id}', this.value)">
+          onclick="openNumpad({targetId:'price-${r.id}', title:'Precio · ${r.name}', min:0.1, max:500, decimals:2, onDone:function(v){previewDemand('${r.id}', v);}})">
       </label>
     </div>`;
   }).join('');
@@ -1446,7 +2914,7 @@ function previewDemand(id, val) {
   if (!r) return;
   let p = Number(val);
   if (!Number.isFinite(p) || p < 0.1) p = 0.1;
-  game.prices[r.id] = Math.min(100, Math.round(p * 100) / 100);
+  game.prices[r.id] = Math.min(500, Math.round(p * 100) / 100);
   renderPrices();
 }
 
@@ -1454,7 +2922,7 @@ function savePrices() {
   recipes.forEach(r => {
     let p = Number(el('price-' + r.id).value);
     if (!Number.isFinite(p) || p < 0.1) p = 0.1;
-    game.prices[r.id] = Math.min(100, Math.round(p * 100) / 100);
+    game.prices[r.id] = Math.min(500, Math.round(p * 100) / 100);
   });
   renderPrices();
   saveGame(true);
@@ -1462,10 +2930,16 @@ function savePrices() {
   sfx('click');
 }
 
+function supplyUnitCost(s) {
+  const mult = (typeof game !== 'undefined' && game.marketMult) ? game.marketMult : 1;
+  return (s && s.cost ? s.cost : 0) * mult;
+}
+
 function recipeCost(r) {
+  const mult = (typeof game !== 'undefined' && game.marketMult) ? game.marketMult : 1;
   return Object.entries(r.parts).reduce((sum, [id, q]) => {
     const s = supplies.find(x => x.id === id);
-    return sum + (s ? s.cost : 0) * q;
+    return sum + (s ? s.cost : 0) * q * mult;
   }, 0);
 }
 
@@ -1477,7 +2951,8 @@ function recipeCost(r) {
  *  >1.8x → pocos clientes (pero no cero)
  */
 function buyChance(r) {
-  const base = r.price;
+  const metaBC = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+  const base = metaBC.market ? (r.price * (game.marketMult || 1)) : r.price;
   const p = Number(game.prices[r.id] ?? r.price);
   if (!base || base <= 0) return 1;
   const ratio = p / base;
@@ -1500,13 +2975,13 @@ function demandLabel(r) {
 }
 
 function renderFinance() {
-  el('finCash').textContent = euro(game.cash);
-  el('finIncome').textContent = euro(game.income);
-  el('finSpend').textContent = euro(game.spend);
-  el('finBills').textContent = euro(game.billsPaid);
-  const fp = el('finPayroll');
-  if (fp) fp.textContent = euro(game.payrollPaid || 0);
-  el('finNet').textContent = euro(game.income - game.spend - game.operating - game.billsPaid - (game.payrollPaid||0));
+  setMoneyEl('finCash', game.cash);
+  setMoneyEl('finIncome', game.income);
+  setMoneyEl('finSpend', game.spend, 'expense');
+  setMoneyEl('finBills', game.billsPaid, 'expense');
+  setMoneyEl('finPayroll', game.payrollPaid || 0, 'expense');
+  const netVal = game.income - game.spend - game.operating - game.billsPaid - (game.payrollPaid||0);
+  setMoneyEl('finNet', netVal);
   const pb = el('payrollBox');
   if (pb) {
     if (game.payrollOwed > 0) {
@@ -1519,6 +2994,8 @@ function renderFinance() {
     }
   }
   drawProfitChart();
+  if (typeof renderBank === "function") renderBank();
+  if (typeof renderLoan === "function") renderLoan();
 
   const unpaid = unpaidBills();
   if (!unpaid.length) {
@@ -1530,13 +3007,13 @@ function renderFinance() {
       return `<div class="bill-card ${overdue ? 'overdue' : ''}">
         <div class="row">
           <strong>${b.label}</strong>
-          <strong>${euro(b.amount)}</strong>
+          <strong style="color:#ef4444!important">${euro(b.amount)}</strong>
         </div>
         <div class="due">${overdue
           ? 'VENCIDA (día ' + b.dueDay + ')'
           : 'Vence el día ' + b.dueDay + (daysLeft === 0 ? ' (hoy)' : ' · ' + daysLeft + ' día(s)')}</div>
         <div class="row" style="margin-top:8px">
-          <span class="badge ${overdue ? 'danger' : ''}">${b.type === 'luz' ? 'Luz' : 'Alquiler'}</span>
+          <span class="badge" style="background:${overdue?'#3a2220':'#2a2f3a'}!important;color:${overdue?'#fca5a5':'#e8eaef'}!important;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">${b.type === 'luz' ? 'Luz' : (b.type === 'alquiler' ? 'Alquiler' : (b.label||'Factura').split(' ')[0])}</span>
           <button class="primary" style="padding:8px 14px;font-size:13px" onclick="payBill('${b.id}')">Pagar</button>
         </div>
       </div>`;
@@ -1545,16 +3022,22 @@ function renderFinance() {
       : '');
   }
 
-  el('history').innerHTML = game.history.length
-    ? game.history.slice().reverse().map(h => `
-      <div class="bill-card">
-        <strong>Día ${h.day}</strong>
-        <div class="lineitem"><span>Ventas (${h.customers} clientes)</span><strong>${euro(h.income)}</strong></div>
-        <div class="lineitem"><span>Ingredientes</span><strong>${euro(h.ingredients)}</strong></div>
-        <div class="lineitem"><span>Gastos operativos</span><strong>${euro(h.operating)}</strong></div>
-        <div class="lineitem"><span>Resultado neto</span><strong class="${h.net < 0 ? 'loss' : 'money'}">${euro(h.net)}</strong></div>
-      </div>`).join('')
-    : 'Completa tu primera jornada para ver el registro.';
+  const lastBox = el('lastDaySummary');
+  if (lastBox) {
+    if (!game.history.length) {
+      lastBox.className = 'notice';
+      lastBox.textContent = 'Aún no has cerrado ninguna jornada.';
+    } else {
+      const h = game.history[game.history.length - 1];
+      const net = h.net != null ? h.net : (h.income || 0) - (h.ingredients || 0) - (h.operating || 0);
+      const cls = net >= 0 ? 'money' : 'loss';
+      lastBox.className = 'notice';
+      lastBox.innerHTML = `<strong>Último día (día ${h.day})</strong><br>
+        ${h.customers||0} clientes · Ingresos ${euro(h.income||0)} · Resultado <span class="${cls}">${euro(net)}</span>`;
+    }
+  }
+  const histEl = el('history');
+  if (histEl) histEl.innerHTML = '';
 }
 
 
@@ -1630,7 +3113,7 @@ function hireStaff(roleId, rank) {
   saveGame(true);
 }
 
-function fireStaff(id) {
+async function fireStaff(id) {
   const s = game.staff.find(x => x.id === id);
   if (!s) return;
   if (game.payrollOwed > 0 || s.daysUnpaid > 0) {
@@ -1638,7 +3121,7 @@ function fireStaff(id) {
     sfx('error');
     return;
   }
-  if (!confirm('¿Despedir a ' + s.name + '?')) return;
+  if (!(await gameConfirm('¿Despedir a ' + s.name + '?', 'Despedir'))) return;
   game.staff = game.staff.filter(x => x.id !== id);
   toast(s.name + ' ha dejado el equipo.');
   sfx('click');
@@ -1740,41 +3223,62 @@ const WEATHER_TYPES = [
 ];
 
 const DAY_EVENTS = [
-  {id:'fair', name:'Feria del barrio', kind:'good', weight:12,
+  {id:'fair', name:'Feria del barrio', kind:'good', weight:12, venues:'all',
     apply(){ return {customerMult:1.30, msg:'¡Feria en el barrio! Mucho más tránsito.'}; }},
-  {id:'power', name:'Subida de la luz', kind:'bad', weight:10,
+  {id:'power', name:'Subida de la luz', kind:'bad', weight:10, venues:'all',
     apply(){
       const extra = Math.round((4 + game.day * 0.6)*100)/100;
       game.bills.push({id:'evt-luz-'+Date.now(), type:'luz', label:'Extra luz (pico de tarifa)', amount:extra, dayCreated:game.day, dueDay:game.day+1, paid:false});
       return {customerMult:1, msg:'Subida imprevista de luz: +'+euro(extra)+' (vence mañana).'};
     }},
-  {id:'review', name:'Crítica positiva', kind:'good', weight:11,
+  {id:'review', name:'Crítica positiva', kind:'good', weight:11, venues:'all',
     apply(){ clampRep(game.reputation + 6); return {customerMult:1.08, msg:'Una reseña excelente (+6 reputación).'}; }},
-  {id:'complaint', name:'Queja en redes', kind:'bad', weight:10,
+  {id:'complaint', name:'Queja en redes', kind:'bad', weight:10, venues:'all',
     apply(){ clampRep(game.reputation - 5); return {customerMult:0.92, msg:'Una queja viral (−5 reputación).'}; }},
-  {id:'influencer', name:'Visita influencer', kind:'good', weight:7,
+  {id:'influencer', name:'Visita influencer', kind:'good', weight:7, venues:'all',
     apply(){ clampRep(game.reputation + 8); return {customerMult:1.2, msg:'Un influencer publica desde tu local (+8 rep.).'}; }},
-  {id:'inspection', name:'Inspección sanitaria', kind:'bad', weight:6,
+  {id:'inspection', name:'Inspección', kind:'bad', weight:6, venues:['cafe','restaurant','market','disco'],
     apply(){
       const fine = Math.round((8 + game.day * 0.5)*100)/100;
       if (game.cash >= fine) { game.cash -= fine; game.spend += fine; }
       else { game.cash -= fine; }
-      return {customerMult:0.95, msg:'Inspección: tasa de '+euro(fine)+'.'};
+      return {customerMult:0.95, msg:'Inspección oficial: tasa de '+euro(fine)+'.'};
     }},
-  {id:'supplier', name:'Oferta de proveedor', kind:'good', weight:8,
+  {id:'supplier', name:'Oferta de proveedor', kind:'good', weight:8, venues:'all',
     apply(){
       game.cash += 12;
       return {customerMult:1, msg:'El proveedor te devuelve 12 € por fidelidad.'};
     }},
-  {id:'strike', name:'Obras en la calle', kind:'bad', weight:9,
+  {id:'strike', name:'Obras en la calle', kind:'bad', weight:9, venues:'all',
     apply(){ return {customerMult:0.7, msg:'Obras delante del local: menos visibilidad (−30% clientes).'}; }},
-  {id:'holiday', name:'Puente festivo', kind:'good', weight:8,
+  {id:'holiday', name:'Puente festivo', kind:'good', weight:8, venues:'all',
     apply(){ return {customerMult:1.25, msg:'Puente festivo: el barrio se llena.'}; }},
-  {id:'rival', name:'Promo de la competencia', kind:'bad', weight:9,
+  {id:'rival', name:'Promo de la competencia', kind:'bad', weight:9, venues:'all',
     apply(){ return {customerMult:0.8, msg:'El local de enfrente hace 2x1: te quitan clientela.'}; }},
-  {id:'viral', name:'Plato/café viral', kind:'good', weight:6,
-    apply(){ clampRep(game.reputation + 4); return {customerMult:1.15, msg:'Algo de tu carta se hace viral (+4 rep.).'}; }},
-  {id:'calm', name:'Día sin noticias', kind:'neutral', weight:20,
+  {id:'viral', name:'Producto viral', kind:'good', weight:6, venues:'all',
+    apply(){
+      const meta = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+      const label = meta.label || 'local';
+      clampRep(game.reputation + 4);
+      return {customerMult:1.15, msg:'Algo de tu ' + label.toLowerCase() + ' se hace viral (+4 rep.).'};
+    }},
+  {id:'djset', name:'DJ invitado', kind:'good', weight:8, venues:['disco'],
+    apply(){ clampRep(game.reputation + 5); return {customerMult:1.35, msg:'DJ invitado: la pista se llena (+5 rep.).'}; }},
+  {id:'raid', name:'Control de aforo', kind:'bad', weight:5, venues:['disco'],
+    apply(){ return {customerMult:0.75, msg:'Control de aforo: menos entradas esta noche.'}; }},
+  {id:'booksign', name:'Firma de autor', kind:'good', weight:7, venues:['book'],
+    apply(){ clampRep(game.reputation + 6); return {customerMult:1.3, msg:'Firma de autor: cola de lectores (+6 rep.).'}; }},
+  {id:'release', name:'Lanzamiento AAA', kind:'good', weight:7, venues:['game'],
+    apply(){ return {customerMult:1.4, msg:'Lanzamiento AAA: gamers en masa.'}; }},
+  {id:'fuelup', name:'Cola en carretera', kind:'good', weight:8, venues:['gas'],
+    apply(){ return {customerMult:1.35, msg:'Tráfico intenso: más repostajes.'}; }},
+  {id:'fashion', name:'Desfile local', kind:'good', weight:7, venues:['boutique'],
+    apply(){ clampRep(game.reputation + 5); return {customerMult:1.3, msg:'Desfile local: boom de visitas (+5 rep.).'}; }},
+  {id:'cartfull', name:'Día de compra grande', kind:'good', weight:8, venues:['market'],
+    apply(){ return {customerMult:1.25, msg:'Fin de mes: carritos más llenos.'}; }},
+  {id:'goldrush', name:'Cotización al alza', kind:'good', weight:7, venues:['gold'],
+    apply(){ return {customerMult:1.2, msg:'El oro sube: más interés en piezas.'}; }},
+  {id:'calm', name:'Día sin noticias', kind:'neutral', weight:18, venues:'all',
     apply(){ return {customerMult:1, msg:'Nada especial en el barrio hoy.'}; }}
 ];
 
@@ -1796,7 +3300,12 @@ function rollWeather() {
 }
 
 function rollDayEvent() {
-  const e = pickWeighted(DAY_EVENTS);
+  const vid = game.activeVenue || 'cafe';
+  const pool = DAY_EVENTS.filter(e => {
+    if (!e.venues || e.venues === 'all') return true;
+    return Array.isArray(e.venues) && e.venues.indexOf(vid) >= 0;
+  });
+  const e = pickWeighted(pool.length ? pool : DAY_EVENTS);
   const result = e.apply();
   game.event = {id:e.id, name:e.name, kind:e.kind, ...result};
   return game.event;
@@ -1812,14 +3321,14 @@ function customerIntervalMs() {
   if (ub.rainGuard && game.weather && (game.weather.id === 'rain' || game.weather.id === 'storm')) {
     weatherM = Math.min(1.05, weatherM + ub.rainGuard);
   }
-  const season = currentSeason(game.day).customerMult;
+  const season = 1;
   let shiftMult = 1;
-  if (game.shift === 'afternoon') {
+  if (game.shift === 'night') {
+    shiftMult = 1.12; // noche de disco: pico
+  } else if (game.shift === 'afternoon') {
     shiftMult = 1.05 + (upgradeBonus().afternoon || 0);
-    // sin mesero, la tarde es algo más floja
     if (!game.staff.some(s => s.role === 'mesero')) shiftMult *= 0.9;
   } else {
-    // mañana: más familias si hay mesero
     if (game.staff.some(s => s.role === 'mesero')) shiftMult = 1.08;
   }
   const ms = 1500 / (bonus.customers * repFactor * evt * weatherM * season * shiftMult);
@@ -1884,10 +3393,10 @@ function drawProfitChart() {
   const maxV = Math.max(10, ...nets.map(Math.abs));
   const pad = 20;
   const mid = h/2;
-  ctx.strokeStyle = '#e8ddd0';
+  ctx.strokeStyle = '#9ca3af';
   ctx.beginPath(); ctx.moveTo(pad, mid); ctx.lineTo(w-pad, mid); ctx.stroke();
   const step = (w - pad*2) / Math.max(1, data.length-1);
-  ctx.strokeStyle = '#75452f';
+  ctx.strokeStyle = '#374151';
   ctx.lineWidth = 2;
   ctx.beginPath();
   data.forEach((d,i) => {
@@ -1941,35 +3450,19 @@ function buyUpgrade(id) {
   saveGame(true);
 }
 
-function takeLoan(offerId) {
-  if (game.loan) { toast('Ya tienes un préstamo activo.'); sfx('error'); return; }
-  const o = LOAN_OFFERS.find(x => x.id === offerId);
-  if (!o) return;
-  const total = Math.round(o.amount * (1 + o.interest) * 100) / 100;
-  game.cash += o.amount;
-  game.loan = {
-    offerId: o.id,
-    principal: o.amount,
-    totalDue: total,
-    dueDay: game.day + o.days,
-    days: o.days
-  };
-  toast('Préstamo recibido: ' + euro(o.amount) + '. Debes devolver ' + euro(total) + ' antes del día ' + game.loan.dueDay);
-  sfx('pay');
-  renderAll();
-  saveGame(true);
-}
+function takeLoan(){ takeCustomLoan(); }
+
 
 function repayLoan() {
   if (!game.loan) return;
-  if (game.cash < game.loan.totalDue) {
-    toast('No tienes suficiente para liquidar el préstamo.');
+  if ((game.bank || 0) < game.loan.totalDue) {
+    toast('Necesitas el importe en el banco para devolver el préstamo.');
     sfx('error');
     checkBankruptcy();
     return;
   }
-  game.cash -= game.loan.totalDue;
-  game.spend += game.loan.totalDue;
+  game.bank -= game.loan.totalDue;
+  addLedger('compra', game.loan.totalDue, 'banco', 'Devolución de préstamo');
   toast('Préstamo liquidado (' + euro(game.loan.totalDue) + ').');
   game.loan = null;
   sfx('pay');
@@ -2030,27 +3523,92 @@ function renderLoan() {
   if (game.loan) {
     const late = game.day > game.loan.dueDay;
     box.innerHTML = `<div class="row"><span>Deuda total</span><strong class="${late?'loss':''}">${euro(game.loan.totalDue)}</strong></div>
-      <div class="row"><span>Vence día</span><strong>${game.loan.dueDay}${late?' (¡atrasado!)':''}</strong></div>
-      <button class="primary wide" onclick="repayLoan()">Devolver préstamo</button>`;
+      <div class="row"><span>Vence (día del local)</span><strong>${game.loan.dueDay}${late?' (¡atrasado!)':''}</strong></div>
+      <button class="primary wide" onclick="repayLoan()">Devolver préstamo (desde banco)</button>`;
   } else {
-    box.innerHTML = LOAN_OFFERS.map(o =>
-      `<button class="secondary wide" style="margin-top:6px" onclick="takeLoan('${o.id}')">${o.label}</button>`
-    ).join('') + '<p class="muted" style="margin-top:8px">Solo un préstamo a la vez.</p>';
+    box.innerHTML = `<p class="muted">Pide entre 10 € y 1.000 €. A más importe, más interés y plazo. El dinero entra en el <strong>banco</strong>.</p>
+      <label class="muted">Importe (€)</label>
+      <input id="loanAmount" class="field" type="text" inputmode="none" readonly value="100"
+        onclick="openNumpad({targetId:'loanAmount', title:'Importe del préstamo', min:10, max:1000, decimals:0, integer:true})">
+      <button class="primary wide" onclick="takeCustomLoan()">Solicitar préstamo</button>`;
   }
 }
+function renderBank() {
+  const box = el('bankBox');
+  if (!box) return;
+  const n = (game.bankLedger || []).length;
+  box.innerHTML = `
+    <div class="row"><span>Saldo banco empresa</span><strong>${euro(game.bank||0)}</strong></div>
+    <div class="row"><span>Caja de este local</span><strong>${euro(game.cash)}</strong></div>
+    <label class="muted">Importe</label>
+    <input id="bankAmount" class="field" type="text" inputmode="none" readonly placeholder="0"
+      onclick="openNumpad({targetId:'bankAmount', title:'Importe', min:0, max:999999, decimals:2})">
+    <label class="muted">Motivo (opcional)</label>
+    <input id="bankMsg" class="field" maxlength="80" placeholder="Ej. Reserva para el restaurante">
+    <button class="primary wide" onclick="bankDeposit()">Ingresar al banco</button>
+    <button class="secondary wide" onclick="bankWithdraw()">Retirar al local</button>
+    <button class="secondary wide" style="margin-top:10px" onclick="openLedgerModal()">Ver extracto${n ? ' ('+n+')' : ''}</button>`;
+}
+function openLedgerModal() {
+  const list = game.bankLedger || [];
+  const box = el('ledgerModalList');
+  if (!box) return;
+  if (!list.length) box.innerHTML = '<p class="muted">Sin movimientos todavía.</p>';
+  else box.innerHTML = list.map(e => {
+    const isOut = e.type === 'retiro' || e.type === 'compra';
+    const color = isOut ? '#ef4444' : '#22c55e';
+    const label = e.type === 'ingreso' ? 'Ingreso' : e.type === 'retiro' ? 'Retiro' : e.type === 'prestamo' ? 'Préstamo' : e.type === 'compra' ? 'Compra' : e.type;
+    const where = e.from || e.venue || '';
+    return `<div class="lineitem"><span>${label}${where ? ' · '+where : ''}<br><span class="muted">${e.message||''}</span></span><strong style="color:${color}!important;font-weight:800">${euro(Math.abs(e.amount||0))}</strong></div>`;
+  }).join('');
+  el('ledgerModal').classList.add('show');
+}
+function closeLedgerModal() {
+  const m = el('ledgerModal');
+  if (m) m.classList.remove('show');
+}
+function openHistoryModal() {
+  const box = el('historyModalList');
+  if (!box) return;
+  const hist = game.history || [];
+  if (!hist.length) {
+    box.innerHTML = '<p class="muted">Aún no hay jornadas registradas.</p>';
+  } else {
+    box.innerHTML = hist.slice().reverse().map(h => {
+      const net = h.net != null ? h.net : (h.income || 0) - (h.ingredients || 0) - (h.operating || 0);
+      const cls = net >= 0 ? 'money' : 'loss';
+      return `<div class="panel" style="margin:8px 0">
+        <div class="row"><strong>Día ${h.day}</strong><strong class="${cls}">${euro(net)}</strong></div>
+        <div class="muted" style="font-size:12px">${h.customers||0} clientes · Ingresos ${euro(h.income||0)}</div>
+      </div>`;
+    }).join('');
+  }
+  el('historyModal').classList.add('show');
+}
+function closeHistoryModal() {
+  const m = el('historyModal');
+  if (m) m.classList.remove('show');
+}
+
+
 
 function seasonDemandBoost(recipeId) {
-  const s = currentSeason(game.day);
   let m = 1;
-  if (s.prefer.includes(recipeId)) m += 0.35;
-  if (s.avoid.includes(recipeId)) m -= 0.35;
   const ub = upgradeBonus();
-  if (ub.sweetBoost && ['pastry','cake','donut','cupcake','icecream'].includes(recipeId)) m += ub.sweetBoost;
+  if (ub.sweetBoost && ['pastry','cake','donut','cupcake','icecream','dessert','dessert_c'].includes(recipeId)) m += ub.sweetBoost;
   return Math.max(0.15, m);
 }
 
 function currentShift(elapsedSec) {
-  return elapsedSec < 30 ? 'morning' : 'afternoon';
+  const meta = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+  const shifts = meta.shifts || ['morning', 'afternoon'];
+  if (shifts.length === 1) return shifts[0];
+  if (shifts.length === 3) {
+    if (elapsedSec < 20) return shifts[0];
+    if (elapsedSec < 40) return shifts[1];
+    return shifts[2];
+  }
+  return elapsedSec < 30 ? shifts[0] : shifts[1];
 }
 
 /* ========== DAY LOGIC ========== */
@@ -2071,14 +3629,43 @@ function makeSale(r) {
 
 function formatClock(secondsIntoDay) {
   const progress = Math.min(1, Math.max(0, secondsIntoDay / 60));
-  // Café 9:00–21:00 (12h) · Restaurante 12:00–00:00 (12h)
-  const startH = game.activeVenue === 'restaurant' ? 12 : 9;
-  const totalMinutes = 12 * 60;
+  const meta = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {startH:9, durationH:12};
+  const startH = meta.startH || 9;
+  const totalMinutes = (meta.durationH || 12) * 60;
   const mins = Math.floor(progress * totalMinutes);
   let h = startH + Math.floor(mins / 60);
   const m = mins % 60;
   if (h >= 24) h -= 24;
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+function rollMarket() {
+  const meta = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+  if (!meta.market) {
+    if (game.venues && game.venues[game.activeVenue]) game.venues[game.activeVenue].marketMult = 1;
+    game.marketMult = 1;
+    return 1;
+  }
+  // Variación diaria: 0.78 – 1.28 (algunos días barato, otros caro)
+  const r = Math.random();
+  let m;
+  if (r < 0.18) m = 0.78 + Math.random() * 0.07;      // muy bajo
+  else if (r < 0.38) m = 0.88 + Math.random() * 0.07; // bajo
+  else if (r < 0.62) m = 0.96 + Math.random() * 0.08; // normal
+  else if (r < 0.82) m = 1.08 + Math.random() * 0.08; // alto
+  else m = 1.18 + Math.random() * 0.10;                // muy alto
+  m = Math.round(m * 100) / 100;
+  if (game.venues && game.venues[game.activeVenue]) game.venues[game.activeVenue].marketMult = m;
+  game.marketMult = m;
+  return m;
+}
+
+function marketLabel(m) {
+  if (m <= 0.85) return {text: 'Mercado bajo · buena compra', cls: 'good'};
+  if (m <= 0.95) return {text: 'Mercado suave · precios correctos', cls: 'good'};
+  if (m <= 1.05) return {text: 'Mercado estable', cls: ''};
+  if (m <= 1.15) return {text: 'Mercado alto · cuidado con el stock', cls: 'bad'};
+  return {text: 'Mercado caro · compra con cabeza', cls: 'bad'};
 }
 
 function beginDay() {
@@ -2112,16 +3699,30 @@ function beginDay() {
   const ev = rollDayEvent();
   const hw = el('homeWeather');
   if (hw) {
-    hw.className = 'event-banner ' + (w.customerMult < 0.9 ? 'bad' : w.customerMult > 1.05 ? 'good' : '');
+    const bad = w.customerMult < 0.9;
+    const good = w.customerMult > 1.05;
+    hw.className = 'event-banner ' + (bad ? 'bad' : good ? 'good' : '');
     hw.textContent = w.emoji + ' ' + w.name + ': ' + w.msg;
+    hw.style.cssText = bad
+      ? 'background:#2a1a1a!important;color:#fecaca!important;border-left:4px solid #ef4444!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px'
+      : good
+      ? 'background:#14241a!important;color:#bbf7d0!important;border-left:4px solid #22c55e!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px'
+      : 'background:#252a33!important;color:#e8eaef!important;border-left:4px solid #6b7280!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px';
     hw.classList.remove('hidden');
   }
   const wl = el('weatherLabel');
   if (wl) wl.textContent = w.emoji + ' ' + w.name;
   const he = el('homeEvent');
   if (he) {
-    he.className = 'event-banner ' + (ev.kind === 'bad' ? 'bad' : ev.kind === 'good' ? 'good' : '');
+    const bad = ev.kind === 'bad';
+    const good = ev.kind === 'good';
+    he.className = 'event-banner ' + (bad ? 'bad' : good ? 'good' : '');
     he.textContent = '📰 ' + ev.name + ': ' + ev.msg;
+    he.style.cssText = bad
+      ? 'background:#2a1a1a!important;color:#fecaca!important;border-left:4px solid #ef4444!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px'
+      : good
+      ? 'background:#14241a!important;color:#bbf7d0!important;border-left:4px solid #22c55e!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px'
+      : 'background:#252a33!important;color:#e8eaef!important;border-left:4px solid #6b7280!important;padding:12px;border-radius:12px;margin:10px 0;font-size:13px';
     he.classList.remove('hidden');
   }
 
@@ -2145,7 +3746,49 @@ function beginDay() {
   area.classList.add('hidden');
   el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🚪</div><strong>¡Abriendo puertas!</strong>';
   el('liveMessage').textContent = '¡Abriendo las puertas!';
-  el('clock').textContent = game.activeVenue === 'restaurant' ? '12:00' : '09:00';
+  const metaRun = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {label:'Local', startH:9};
+  const mkt = rollMarket();
+  if (el('runningTitle')) el('runningTitle').textContent = (metaRun.label || 'Local') + ' abierto';
+  if (el('runningSub')) {
+    let sub = 'Los clientes llegan. Sigue el ritmo de la jornada.';
+    if (metaRun.market) {
+      const ml = marketLabel(mkt);
+      sub = ml.text + ' (×' + mkt.toFixed(2) + '). ' + sub;
+    }
+    if (metaRun.clients === 'young') sub = 'Turno de noche · público joven. ' + sub;
+    if (metaRun.liters) sub = 'Ventas por litros de combustible. ' + sub;
+    el('runningSub').textContent = sub;
+  }
+  const sh0 = String(metaRun.startH || 9).padStart(2, '0');
+  el('clock').textContent = sh0 + ':00';
+  // Shift bar labels
+  const sm = el('shiftMorning'), sa = el('shiftAfternoon'), sn = el('shiftNight');
+  const shifts = metaRun.shifts || ['morning','afternoon'];
+  const labels = metaRun.shiftLabels || ['🌅 Mañana','🌇 Tarde'];
+  if (sm && sa) {
+    if (shifts.length === 1) {
+      sm.textContent = labels[0] || '🌙 Noche';
+      sm.classList.add('active');
+      sa.style.display = 'none';
+      if (sn) sn.style.display = 'none';
+    } else if (shifts.length === 3) {
+      sa.style.display = '';
+      if (sn) sn.style.display = '';
+      sm.textContent = labels[0] || '🌅 Mañana';
+      sa.textContent = labels[1] || '🌇 Tarde';
+      if (sn) sn.textContent = labels[2] || '🌙 Noche';
+      sm.classList.add('active');
+      sa.classList.remove('active');
+      if (sn) sn.classList.remove('active');
+    } else {
+      sa.style.display = '';
+      if (sn) sn.style.display = 'none';
+      sm.textContent = labels[0] || '🌅 Mañana';
+      sa.textContent = labels[1] || '🌇 Tarde';
+      sm.classList.add('active');
+      sa.classList.remove('active');
+    }
+  }
   sfx('open');
   vibrate(30);
 
@@ -2176,24 +3819,47 @@ function dayTick() {
     clearInterval(customerHandle);
     customerHandle = setInterval(customerVisit, customerIntervalMs());
   }
-  const sm = el('shiftMorning'), sa = el('shiftAfternoon');
+  const sm = el('shiftMorning'), sa = el('shiftAfternoon'), sn = el('shiftNight');
   if (sm && sa) {
-    if (game.activeVenue === 'restaurant') {
-      sm.textContent = '🍽️ Comida';
-      sa.textContent = '🌙 Cena';
+    const metaS = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+    const shifts = metaS.shifts || ['morning','afternoon'];
+    const labels = metaS.shiftLabels || ['🌅 Mañana','🌇 Tarde'];
+    if (shifts.length === 1) {
+      sm.textContent = labels[0] || '🌙 Noche';
+      sm.classList.add('active');
+      sa.style.display = 'none';
+      if (sn) sn.style.display = 'none';
+    } else if (shifts.length === 3) {
+      sa.style.display = '';
+      if (sn) sn.style.display = '';
+      sm.textContent = labels[0] || '🌅 Mañana';
+      sa.textContent = labels[1] || '🌇 Tarde';
+      if (sn) sn.textContent = labels[2] || '🌙 Noche';
+      sm.classList.toggle('active', sh === shifts[0]);
+      sa.classList.toggle('active', sh === shifts[1]);
+      if (sn) sn.classList.toggle('active', sh === shifts[2]);
     } else {
-      sm.textContent = '🌅 Mañana';
-      sa.textContent = '🌇 Tarde';
+      sa.style.display = '';
+      if (sn) sn.style.display = 'none';
+      sm.textContent = labels[0] || '🌅 Mañana';
+      sa.textContent = labels[1] || '🌇 Tarde';
+      sm.classList.toggle('active', sh === shifts[0]);
+      sa.classList.toggle('active', sh === shifts[1]);
     }
-    sm.classList.toggle('active', sh === 'morning');
-    sa.classList.toggle('active', sh === 'afternoon');
   }
   el('liveServed').textContent = dayState.customers;
-  el('liveIncome').textContent = euro(dayState.income);
-  el('liveExpenses').textContent = euro(dayState.ingredients + dayState.operating);
-  el('profit').textContent = euro(dayState.income - dayState.ingredients - dayState.operating);
+  setMoneyEl('liveIncome', dayState.income);
+  const exp = dayState.ingredients + dayState.operating;
+  const le = el('liveExpenses');
+  if (le) {
+    le.textContent = euro(exp);
+    le.classList.remove('money','loss','neutral');
+    le.classList.add(exp > 0.0001 ? 'loss' : 'neutral');
+  }
+  setMoneyEl('profit', dayState.income - dayState.ingredients - dayState.operating);
   el('customers').textContent = dayState.customers;
-  el('cash').textContent = el('footerCash').textContent = euro(game.cash);
+  setMoneyEl('cash', game.cash);
+  if (el('footerCash')) setMoneyEl('footerCash', game.cash);
   if (dayState.remaining <= 0) finishDay();
 }
 
@@ -2218,35 +3884,55 @@ function customerVisit() {
     return em;
   }
 
+  const metaC = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {clients:'all'};
+  const clientMode = metaC.clients || 'all';
+  // Pools por edad
+  const YOUNG = ['🧒🏻','🧒🏼',' compat','👦🏻','👦🏼','👦🏽','👧🏻','👧🏼','👧🏽','🧑🏻','🧑🏼','🧑🏽','👨🏻','👨🏼','👨🏽','👩🏻','👩🏼','👩🏽'];
+  const ADULT = ['🧑🏻','🧑🏼','🧑🏽','🧑🏾','👨🏻','👨🏼','👨🏽','👨🏾','👩🏻','👩🏼','👩🏽','👩🏾'];
+  const ALL_P = PERSONS;
+  const poolP = (clientMode === 'young') ? YOUNG : ((clientMode === 'adult' || clientMode === 'solo') ? ADULT : ALL_P);
+  const allowBaby = clientMode === 'all';
+  const allowFamily = clientMode === 'all';
+  const allowGroup = clientMode === 'young';
+  const isLiters = !!metaC.liters;
+
   const roll = Math.random();
   let groupType, buyCount, groupLabel;
-  if (roll < 0.55) {
-    groupType = 'solo';
-    buyCount = 1;
-    groupLabel = 'un cliente';
-  } else if (roll < 0.83) {
-    groupType = 'pair';
-    buyCount = 2;
-    groupLabel = 'una pareja';
+  if (clientMode === 'solo' || isLiters) {
+    groupType = 'solo'; buyCount = 1; groupLabel = 'un conductor';
+  } else if (metaC.multiBuy) {
+    // Supermercado: sola o pareja, varios productos en el carrito
+    if (roll < 0.55) { groupType = 'solo'; buyCount = 3 + Math.floor(Math.random() * 5); groupLabel = 'un cliente'; }
+    else { groupType = 'pair'; buyCount = 4 + Math.floor(Math.random() * 6); groupLabel = 'una pareja'; }
+  } else if (clientMode === 'young') {
+    if (roll < 0.45) { groupType = 'solo'; buyCount = 1; groupLabel = 'un cliente'; }
+    else if (roll < 0.78) { groupType = 'pair'; buyCount = 2; groupLabel = 'una pareja'; }
+    else { groupType = 'group'; buyCount = 2 + Math.floor(Math.random() * 3); groupLabel = 'un grupito'; }
+  } else if (clientMode === 'adult') {
+    if (roll < 0.62) { groupType = 'solo'; buyCount = 1; groupLabel = 'un cliente'; }
+    else { groupType = 'pair'; buyCount = 2; groupLabel = 'una pareja'; }
   } else {
-    groupType = 'family';
-    buyCount = 2 + Math.floor(Math.random() * 3);
-    groupLabel = 'una familia';
+    if (roll < 0.55) { groupType = 'solo'; buyCount = 1; groupLabel = 'un cliente'; }
+    else if (roll < 0.83) { groupType = 'pair'; buyCount = 2; groupLabel = 'una pareja'; }
+    else { groupType = 'family'; buyCount = 2 + Math.floor(Math.random() * 3); groupLabel = 'una familia'; }
   }
 
   let displayEmojis = [];
   if (groupType === 'solo') {
-    displayEmojis = [safeEmoji(pick(PERSONS))];
+    displayEmojis = [safeEmoji(pick(poolP))];
   } else if (groupType === 'pair') {
-    if (Math.random() < 0.35) {
-      displayEmojis = [safeEmoji(pick(PERSONS)), safeEmoji(pick(BABIES))];
+    if (allowBaby && Math.random() < 0.35) {
+      displayEmojis = [safeEmoji(pick(poolP)), safeEmoji(pick(BABIES))];
     } else {
-      displayEmojis = [safeEmoji(pick(PERSONS)), safeEmoji(pick(PERSONS))];
+      displayEmojis = [safeEmoji(pick(poolP)), safeEmoji(pick(poolP))];
     }
+  } else if (groupType === 'group') {
+    const size = 3 + Math.floor(Math.random() * 2);
+    for (let i = 0; i < size; i++) displayEmojis.push(safeEmoji(pick(poolP)));
   } else {
     const size = 3 + Math.floor(Math.random() * 2);
-    for (let i = 0; i < size; i++) displayEmojis.push(safeEmoji(pick(PERSONS)));
-    if (Math.random() < 0.45) displayEmojis.push(safeEmoji(pick(BABIES)));
+    for (let i = 0; i < size; i++) displayEmojis.push(safeEmoji(pick(poolP)));
+    if (allowBaby && Math.random() < 0.45) displayEmojis.push(safeEmoji(pick(BABIES)));
   }
 
   area.innerHTML = '';
@@ -2262,7 +3948,7 @@ function customerVisit() {
 
   const affordable = recipes.filter(r => canMake(r));
   if (!affordable.length) {
-    el('liveMessage').textContent = 'Faltan ingredientes. Los clientes se van sin comprar.';
+    el('liveMessage').textContent = 'No hay stock disponible. Los clientes se van sin comprar.';
     sfx('error');
     return;
   }
@@ -2281,6 +3967,34 @@ function customerVisit() {
     let rnd = Math.random() * sumW;
     let r = pool[0];
     for (let j = 0; j < pool.length; j++) { rnd -= weights[j]; if (rnd <= 0) { r = pool[j]; break; } }
+    let liters = 1;
+    if (isLiters && r.parts) {
+      // Cliente compra un solo tipo de combustible en varios litros
+      const fuelId = Object.keys(r.parts)[0];
+      const avail = Math.floor(game.stock[fuelId] || 0);
+      if (avail < 1) continue;
+      liters = Math.min(avail, 15 + Math.floor(Math.random() * 46)); // 15–60 L
+      // consumir litros del stock
+      game.stock[fuelId] = (game.stock[fuelId] || 0) - liters;
+      cleanStock(fuelId);
+      const unitPrice = Number(game.prices[r.id] ?? r.price);
+      const unitCost = recipeCost(r); // cost per liter already with market
+      const bonus = staffBonus();
+      const overhead = 0.05 * bonus.overhead * liters;
+      const pricePaid = unitPrice * liters * (bonus.priceMult || 1);
+      const costPaid = unitCost * liters;
+      dayState.customers++;
+      dayState.income += pricePaid;
+      dayState.ingredients += costPaid;
+      dayState.operating += overhead;
+      game.cash += pricePaid - overhead;
+      game.income += pricePaid;
+      game.operating += overhead;
+      dayState.items[r.name] = (dayState.items[r.name] || 0) + liters;
+      soldNames.push(liters + ' L de ' + r.name);
+      anySale = true;
+      break; // un solo producto por visita en gasolinera
+    }
     const sale = makeSale(r);
     if (!sale) break;
 
@@ -2300,7 +4014,7 @@ function customerVisit() {
   }
 
   if (!anySale) {
-    el('liveMessage').textContent = 'Faltan ingredientes. Los clientes se van sin comprar.';
+    el('liveMessage').textContent = 'No hay stock disponible. Los clientes se van sin comprar.';
     sfx('error');
     return;
   }
@@ -2309,7 +4023,7 @@ function customerVisit() {
   if (soldNames.length === 1) {
     el('liveMessage').textContent = faceStr + ' ha comprado ' + soldNames[0] + '.';
   } else {
-    el('liveMessage').textContent = faceStr + ' (' + groupLabel + ') han comprado: ' + soldNames.join(', ') + '.';
+    el('liveMessage').textContent = faceStr + ' han comprado: ' + soldNames.join(', ') + '.';
   }
   sfx('sale');
   vibrate(10);
@@ -2339,7 +4053,11 @@ function finishDay() {
   area.classList.add('hidden');
   stage.classList.remove('hidden', 'open');
   stage.classList.add('open'); // start open
-  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🌙</div><strong>Cerrando… '+(game.activeVenue==='restaurant'?'00:00':'21:00')+'</strong>';
+  const metaClose = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {startH:9, durationH:12};
+  let endH = (metaClose.startH || 9) + (metaClose.durationH || 12);
+  if (endH >= 24) endH -= 24;
+  const endStr = String(endH).padStart(2,'0') + ':00';
+  el('openMsg').innerHTML = '<div style="font-size:36px;margin-bottom:6px">🌙</div><strong>Cerrando… '+endStr+'</strong>';
   sfx('close');
 
   requestAnimationFrame(() => {
@@ -2386,21 +4104,31 @@ function finishDay() {
     }
     game._lastLevel = lv.level;
     checkBankruptcy();
+    syncVenueFromGame();
 
     el('dayLabel').textContent = 'Día ' + game.day + ' · Jornada cerrada';
-    el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · ' + (game.activeVenue === 'restaurant' ? '00:00' : '21:00');
-    el('reportDetails').innerHTML = `
-      <div class="lineitem"><span>Ingresos por ventas</span><strong>${euro(d.income)}</strong></div>
-      <div class="lineitem"><span>Coste de ingredientes</span><strong>−${euro(d.ingredients)}</strong></div>
-      <div class="lineitem"><span>Gastos operativos</span><strong>−${euro(d.operating)}</strong></div>
-      <div class="lineitem"><span>Clientes atendidos</span><strong>${d.customers}</strong></div>
-      <h3 style="margin-top:16px">Productos vendidos</h3>
-      ${Object.keys(d.items).length
-        ? Object.entries(d.items).map(([name, q]) => `<div class="lineitem"><span>${name}</span><strong>${q}</strong></div>`).join('')
-        : 'No se han realizado ventas.'}
-      <div class="notice" style="margin-top:12px">Se han generado facturas de luz y alquiler. Págales en Finanzas antes de que venzan.</div>`;
-    el('reportNet').textContent = euro(net);
-    el('reportNet').className = net < 0 ? 'loss' : 'money';
+    const metaR = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {startH:9, durationH:12};
+    let endHR = (metaR.startH || 9) + (metaR.durationH || 12);
+    if (endHR >= 24) endHR -= 24;
+    el('reportDate').textContent = 'Resumen del día ' + game.day + ' · ' + d.customers + ' clientes · ' + String(endHR).padStart(2,'0') + ':00';
+    const itemsHtml = Object.keys(d.items).length
+      ? Object.entries(d.items).map(function(pair) {
+          return '<div class="lineitem"><span>' + pair[0] + '</span><strong style="color:#ffffff">' + pair[1] + '</strong></div>';
+        }).join('')
+      : '<p class="muted">No se han realizado ventas.</p>';
+    el('reportDetails').innerHTML =
+      '<div class="lineitem"><span>Ingresos por ventas</span><strong style="color:#22c55e">' + euro(d.income) + '</strong></div>' +
+      '<div class="lineitem"><span>Coste de ingredientes</span><strong style="color:#ef4444">' + euro(d.ingredients) + '</strong></div>' +
+      '<div class="lineitem"><span>Gastos operativos</span><strong style="color:#ef4444">' + euro(d.operating) + '</strong></div>' +
+      '<div class="lineitem"><span>Clientes atendidos</span><strong style="color:#ffffff">' + d.customers + '</strong></div>' +
+      '<h3 style="margin-top:16px">Productos vendidos</h3>' + itemsHtml +
+      '<div class="notice" style="margin-top:12px">Se han generado facturas de luz y alquiler. Págales en Finanzas antes de que venzan.</div>';
+    const rn = el('reportNet');
+    if (rn) {
+      rn.textContent = euro(Math.abs(net));
+      rn.style.color = net > 0.0001 ? '#22c55e' : net < -0.0001 ? '#ef4444' : '#ffffff';
+      rn.className = net > 0.0001 ? 'money' : net < -0.0001 ? 'loss' : 'neutral';
+    }
     el('reportMessage').textContent = net >= 0
       ? '¡Buen trabajo! Resultado positivo. No olvides las facturas.'
       : 'Hoy has tenido pérdidas. Revisa precios y existencias.';
@@ -2418,23 +4146,31 @@ function nextDay() {
   game.day++;
   dayState = null;
   el('dayLabel').textContent = 'Día ' + game.day + ' · Preparando la apertura';
-  el('homeTip').textContent = 'Revisa existencias, precios y facturas pendientes antes de abrir.';
+  const metaH = (typeof VENUE_META !== 'undefined' && VENUE_META[game.activeVenue]) || {};
+  if (metaH.market) {
+    const m = game.marketMult || 1;
+    const ml = marketLabel(m);
+    el('homeTip').textContent = ml.text + ' (×' + Number(m).toFixed(2) + '). Revisa stock y precios antes de abrir.';
+  } else {
+    el('homeTip').textContent = 'Revisa almacén, precios y facturas pendientes antes de abrir.';
+  }
   renderAll();
   showTab('home');
   saveGame(true);
   sfx('click');
 }
 
-function resetGame() {
-  if (!confirm('¿Seguro que quieres borrar la partida? Se perderá todo el progreso.')) return;
-  localStorage.removeItem('cafebarrio-save');
+async function resetGame() {
+  closeSettings();
+  /* native confirm removed */ if (!(await gameConfirm('¿Seguro que quieres borrar la partida? Se perderá todo el progreso.', 'Confirmar'))) return;
+  localStorage.removeItem('empire-city-save');
   game = initial();
   cart = {};
   dayRunning = false;
   clearInterval(tickHandle);
   clearInterval(customerHandle);
   el('intro').classList.remove('hidden');
-  el('cafeName').value = '';
+  if(el('charName')) el('charName').value='';
   el('startDay').disabled = false;
   closeSettings();
   renderAll();
@@ -2567,7 +4303,7 @@ function exportSave() {
     const blob = new Blob([data], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'cafe-barrio-save-dia' + game.day + '.json';
+    a.download = 'empire-city-save-dia' + (game.day||1) + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
     toast('Partida exportada');
@@ -2584,7 +4320,7 @@ function importSave(ev) {
     try {
       const d = JSON.parse(reader.result);
       if (!d || !d.name) throw new Error('invalid');
-      localStorage.setItem('cafebarrio-save', JSON.stringify(d));
+      localStorage.setItem('empire-city-save', JSON.stringify(d));
       loadGame();
       if (game.started) el('intro').classList.add('hidden');
       renderAll();
@@ -2600,18 +4336,196 @@ function importSave(ev) {
   reader.readAsText(file);
 }
 
+
+function wireHubButtons() {
+  [['hubCafe','cafe'],['hubRest','restaurant'],['hubDisco','disco'],['hubBook','book'],['hubVideo','video'],['hubGame','game'],['hubGas','gas'],['hubBoutique','boutique'],['hubMarket','market'],['hubGold','gold']].forEach(function(pair) {
+    const btn = el(pair[0]);
+    if (btn && !btn._wired) {
+      btn._wired = true;
+      btn.addEventListener('click', function(e) { e.preventDefault(); enterBusiness(pair[1]); });
+    }
+  });
+  const conf = el('bizConfirmBtn');
+  const canc = el('bizCancelBtn');
+  if (conf && !conf._wired) { conf._wired = true; conf.addEventListener('click', function(e){ e.preventDefault(); confirmBizName(); }); }
+  if (canc && !canc._wired) { canc._wired = true; canc.addEventListener('click', function(e){ e.preventDefault(); cancelBizName(); }); }
+}
+
+
+const APP_VERSION = '1.0.20';
+let _verTaps = 0;
+let _verTimer = null;
+function onVersionTap() {
+  _verTaps++;
+  if (_verTimer) clearTimeout(_verTimer);
+  _verTimer = setTimeout(() => { _verTaps = 0; }, 2000);
+  if (_verTaps >= 5) {
+    _verTaps = 0;
+    const box = el('secretDev');
+    if (box) {
+      box.classList.toggle('hidden');
+      toast(box.classList.contains('hidden') ? 'Menú oculto' : 'Menú de pruebas');
+      sfx('click');
+    }
+  }
+}
+function cheatAddMoney() {
+  let n = Number(el('cheatAmount') && el('cheatAmount').value);
+  if (!Number.isFinite(n) || n <= 0) n = 500;
+  game.cash = (game.cash || 0) + n;
+  syncVenueFromGame();
+  toast('+' + euro(n) + ' en caja del local');
+  sfx('pay');
+  renderAll();
+  saveGame(true);
+}
+function cheatAddBank() {
+  let n = Number(el('cheatAmount') && el('cheatAmount').value);
+  if (!Number.isFinite(n) || n <= 0) n = 500;
+  game.bank = (game.bank || 0) + n;
+  addLedger('prestamo', n, 'dev', 'Prueba: ingreso banco');
+  toast('+' + euro(n) + ' en el banco');
+  sfx('pay');
+  renderAll();
+  saveGame(true);
+}
+
+
+let _confirmResolve = null;
+function gameConfirm(message, title) {
+  return new Promise((resolve) => {
+    _confirmResolve = resolve;
+    const t = el('confirmTitle');
+    const m = el('confirmMsg');
+    if (t) t.textContent = title || 'Confirmar';
+    if (m) m.textContent = message;
+    const modal = el('confirmModal');
+    if (modal) {
+      modal.style.zIndex = '100000';
+      modal.style.position = 'fixed';
+      modal.classList.add('show');
+    }
+  });
+}
+function closeConfirm(ok) {
+  const modal = el('confirmModal');
+  if (modal) modal.classList.remove('show');
+  if (_confirmResolve) {
+    const r = _confirmResolve;
+    _confirmResolve = null;
+    r(!!ok);
+  }
+}
+
+
+/* ========== NUMPAD ========== */
+let _np = { value: '', targetId: null, min: 0, max: 999999, decimals: 0, integer: false, onDone: null };
+
+function openNumpad(opts) {
+  opts = opts || {};
+  const node = el(opts.targetId);
+  const cur = node ? String(node.value || '').replace(',', '.') : '0';
+  _np = {
+    value: cur === '' || cur === '0' ? '' : cur,
+    targetId: opts.targetId,
+    min: opts.min != null ? opts.min : 0,
+    max: opts.max != null ? opts.max : 999999,
+    decimals: opts.decimals != null ? opts.decimals : 0,
+    integer: !!opts.integer,
+    onDone: typeof opts.onDone === 'function' ? opts.onDone : null,
+    title: opts.title || 'Cantidad'
+  };
+  const t = el('numpadTitle');
+  if (t) t.textContent = _np.title;
+  npRender();
+  el('numpadOverlay').classList.add('show');
+  sfx('click');
+}
+
+function npRender() {
+  const d = el('numpadDisplay');
+  if (d) d.textContent = _np.value === '' ? '0' : _np.value.replace('.', ',');
+}
+
+function npDigit(ch) {
+  if (ch === '.') {
+    if (_np.integer) return;
+    if (_np.value.indexOf('.') >= 0) return;
+    if (_np.value === '') _np.value = '0.';
+    else _np.value += '.';
+    npRender();
+    return;
+  }
+  // limit length
+  const plain = _np.value.replace('.', '');
+  if (plain.length >= 6) return;
+  if (_np.value === '0' && ch !== '.') _np.value = ch;
+  else _np.value += ch;
+  // decimals limit
+  const parts = _np.value.split('.');
+  if (parts[1] && parts[1].length > _np.decimals) {
+    _np.value = parts[0] + '.' + parts[1].slice(0, _np.decimals);
+  }
+  npRender();
+  sfx('click');
+}
+
+function npBack() {
+  _np.value = _np.value.slice(0, -1);
+  npRender();
+  sfx('click');
+}
+
+function closeNumpad(ok) {
+  const overlay = el('numpadOverlay');
+  if (overlay) overlay.classList.remove('show');
+  if (!ok) return;
+  let n = Number(String(_np.value).replace(',', '.'));
+  if (!Number.isFinite(n)) n = _np.min;
+  if (_np.integer) n = Math.round(n);
+  else if (_np.decimals >= 0) n = Math.round(n * Math.pow(10, _np.decimals)) / Math.pow(10, _np.decimals);
+  n = Math.max(_np.min, Math.min(_np.max, n));
+  const node = el(_np.targetId);
+  if (node) {
+    node.value = _np.integer ? String(n) : String(n);
+    // fire change handlers for qty
+    if (_np.targetId.indexOf('qty-') === 0) {
+      const id = _np.targetId.slice(4);
+      setQty(id, n);
+    }
+  }
+  if (_np.onDone) {
+    try { _np.onDone(n); } catch (e) {}
+  }
+  sfx('click');
+}
+
 /* ========== BOOT ========== */
+const APP_BUILD = '1.0.20';
+console.log('EMPIRE CITY build', APP_BUILD);
+
 
 loadGame();
+wireHubButtons();
 if (game.started) {
   el('intro').classList.add('hidden');
-  renderAll();
-  // música tras primer gesto del usuario
+  if (game.inHub !== false) {
+    el('hub').classList.remove('hidden');
+    renderHub();
+  } else {
+    el('hub').classList.add('hidden');
+    bindActiveVenue();
+    renderAll();
+  }
 } else {
   el('intro').classList.remove('hidden');
+  el('hub').classList.add('hidden');
 }
 updateSoundUI();
-document.addEventListener('pointerdown', () => { ensureAudio(); if (game.started && game.music) playMusic(); }, {once: true});
+// Música Cafe.mp3: se inicia en el primer toque (política de autoplay del navegador)
+try { if (game.music !== false) { initMusic(); } } catch (e) {}
+document.addEventListener('pointerdown', () => { ensureAudio(); if (game.music !== false) playMusic(); }, {once: true});
+document.addEventListener('touchstart', () => { ensureAudio(); if (game.music !== false) playMusic(); }, {once: true, passive: true});
 
 window.addEventListener('online', () => el('offlineBanner').classList.remove('show'));
 window.addEventListener('offline', () => el('offlineBanner').classList.add('show'));

@@ -1,12 +1,12 @@
 {
-  "name": "Café de Barrio",
-  "short_name": "Café Barrio",
-  "description": "Simulador de gestión de cafetería. Compra, prepara, vende y haz crecer tu negocio.",
+  "name": "EMPIRE CITY — Build Your Empire",
+  "short_name": "EMPIRE CITY",
+  "description": "Manage businesses, bank capital and build your empire from a neighborhood café to the top.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f5f0e8",
-  "theme_color": "#75452f",
+  "background_color": "#121418",
+  "theme_color": "#121418",
   "lang": "es",
   "icons": [
     {
